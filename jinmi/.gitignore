@@ -167,4 +167,17 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+# IntelliJ IDEA project files
+.idea/*
+!.idea/misc.xml
+!.idea/gradle.xml
+!.idea/compiler.xml
+!.idea/vcs.xml
+
+# Exclude personal settings
+.idea/workspace.xml
+.idea/dataSources*
+.idea/sqldialects.xml
+.idea/aws.xml
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,gradle
