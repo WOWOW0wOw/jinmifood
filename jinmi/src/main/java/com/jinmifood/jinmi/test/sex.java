@@ -1,4 +1,4 @@
 package com.jinmifood.jinmi.test;
 
-public class sex {fsdfsdfsd
+public class sex {
 }
