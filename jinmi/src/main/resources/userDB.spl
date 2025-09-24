@@ -36,7 +36,7 @@ CREATE TABLE itemCart (
                           userId INT NOT NULL,
                           itemName VARCHAR(255) NOT NULL,
                           itemOption VARCHAR(255),
-                          totalCount INT NOT NULL,
+                          totalCnt INT NOT NULL,
                           itemPrice INT NOT NULL,
                           deliveryFee INT,
                           price INT NOT NULL,
