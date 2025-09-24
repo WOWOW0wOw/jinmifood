@@ -23,6 +23,7 @@ public class ItemCartController {
     @GetMapping({""})
     public StatusResponseDTO list(@PathVariable Long userId) {
         List<ViewItemCartResponse> list =  itemCartService.list(userId);
+        return  StatusResponseDTO.ok(list);
     }
 
 }
