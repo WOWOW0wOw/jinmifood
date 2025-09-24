@@ -7,5 +7,5 @@ import lombok.ToString;
 @Getter
 @ToString
 @Setter
-public class ItemCartResponse {
+public class ViewItemCartResponse {
 }
