@@ -20,7 +20,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     public List<ViewItemResponse> list(Long itemId) {
-        List<Item> itemList = itemRepository.findAllbyitemId(itemId);
+        List<Item> itemList = itemRepository.findAllByItemId(itemId);
         return itemList.stream()
                 .map(item -> new ViewItemResponse(item))
                 .collect(Collectors.toList());

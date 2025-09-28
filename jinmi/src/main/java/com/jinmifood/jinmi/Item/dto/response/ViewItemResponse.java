@@ -29,7 +29,7 @@ public class ViewItemResponse {
     private LocalDateTime createAt;
 
     public ViewItemResponse(Item item) {
-        this.itemId = item.getId();
+        this.itemId = item.getItemId();
         this.itemName = item.getItemName();
         this.categoryId = item.getCategoryId();
         this.itemPrice = item.getItemPrice();
