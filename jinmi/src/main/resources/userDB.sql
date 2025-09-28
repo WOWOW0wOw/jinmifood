@@ -3,7 +3,7 @@ CREATE TABLE members (
                          email VARCHAR(320) NOT NULL,        -- 이메일 (유니크)
                          password VARCHAR(64) NOT NULL,             -- 비밀번호
                          address VARCHAR(255) NOT NULL,             -- 주소
-                         memberStatus VARCHAR(255), -- 회원상태
+                         memberStatus VARCHAR(255), -- 회원상태 // 이건 토큰으로 관리 db에 넣으면 비효울
                          pointId INT,                               -- 포인트 id
                          displayName VARCHAR(20) NOT NULL,          -- 닉네임
                          totalOrderCnt INT,               -- 누적 주문 수

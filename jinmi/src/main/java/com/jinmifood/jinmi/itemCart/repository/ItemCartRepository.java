@@ -5,6 +5,6 @@ import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 
 import java.util.List;
 
-public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
-    List<ItemCart> findAllbyuserId(Long userId);
-}
+//public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
+//    List<ItemCart> findAllbyuserId(Long userId);
+//}
