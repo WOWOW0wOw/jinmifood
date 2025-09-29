@@ -30,5 +30,16 @@ spring:
 
 logging:
   level:
+
     com.jinmifood.jinmi: info
     org.springframework.security: info
+
+
+summarization:
+  chunk:
+    size: 1500
+
+jwt:
+  secret: VGhpc0lzTXlTdXBlclNlY3VyZUtleUZvckppbm1pRm9vZFNlcnZpY2U=
+  access-token-expiration-time: 1800000 #(30분)
+
