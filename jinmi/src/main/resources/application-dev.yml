@@ -17,7 +17,3 @@ spring:
     hibernate:
       ddl-auto: create   # 개발은 create/update 편한 걸로
 
-logging:
-  level:
-    com.jinmifood.jinmi: trace
-    org.springframework.security: debug

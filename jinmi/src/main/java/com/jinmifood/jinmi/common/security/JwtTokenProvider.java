@@ -1,4 +1,4 @@
-package com.jinmifood.jinmi.security;
+package com.jinmifood.jinmi.common.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

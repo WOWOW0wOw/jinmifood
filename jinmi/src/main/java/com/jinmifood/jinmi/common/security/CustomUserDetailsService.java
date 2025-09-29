@@ -1,4 +1,4 @@
-package com.jinmifood.jinmi.security;
+package com.jinmifood.jinmi.common.security;
 
 import com.jinmifood.jinmi.user.domain.User;
 import com.jinmifood.jinmi.user.repository.UserRepository;
