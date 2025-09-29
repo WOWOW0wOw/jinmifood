@@ -1,9 +1,9 @@
 package com.jinmifood.jinmi.common.security;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,9 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 @Configuration
 @EnableWebSecurity
@@ -25,10 +23,9 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -38,31 +35,48 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // 기본 보안 옵션
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
-                .formLogin(formLogin -> formLogin.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
 
-                // 세션 statelesss 설정 (jwt)사용
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                // 세션 사용 안 함 (JWT)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // 인증/인가 실패시 처리
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                // JWT 필터를 Spring Security 기본 필터 이전에 등록
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                // 권한 설정 (403 오류 뜰 시 포스트맨 테스트 할 때 여기다 추가)
+
+                // 인증 실패 처리
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+
+                // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+
+                // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(HttpMethod.POST, "/users/join","/users/login").permitAll()
                         .anyRequest().authenticated()
 
+                        // ✅ Swagger/OpenAPI 문서 허용
+                        .requestMatchers(
+                                "/swagger-ui/**", "/swagger-ui.html",
+                                "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
+                                "/scalar/**" // ✅ 추가
+                        ).permitAll()
+
+
+                        // (선택) 헬스체크/에러 페이지 허용
+                        .requestMatchers("/actuator/health", "/error").permitAll()
+
+                        // 회원가입/로그인 등 공개 API
+                        .requestMatchers(HttpMethod.POST, "/users/join").permitAll()
+                        // .requestMatchers(HttpMethod.POST, "/users/login").permitAll() // 로그인 엔드포인트가 있으면 열어줘
+
+                        // 그 밖의 모든 요청은 인증 필요
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
     }
-
 }
