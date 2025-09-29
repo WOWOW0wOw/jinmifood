@@ -55,8 +55,8 @@ public class SecurityConfig {
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(HttpMethod.POST, "/users/join","/users/login").permitAll()
-                        .anyRequest().authenticated()
+                        // 회원가입 / 로그인
+                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login").permitAll()
 
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(
@@ -69,9 +69,6 @@ public class SecurityConfig {
                         // (선택) 헬스체크/에러 페이지 허용
                         .requestMatchers("/actuator/health", "/error").permitAll()
 
-                        // 회원가입/로그인 등 공개 API
-                        .requestMatchers(HttpMethod.POST, "/users/join").permitAll()
-                        // .requestMatchers(HttpMethod.POST, "/users/login").permitAll() // 로그인 엔드포인트가 있으면 열어줘
 
                         // 그 밖의 모든 요청은 인증 필요
                         .anyRequest().authenticated()
