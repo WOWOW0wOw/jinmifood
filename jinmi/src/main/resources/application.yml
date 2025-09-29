@@ -8,8 +8,9 @@ server:
       force: true
     session:
       timeout: 15m
-
 spring:
+  profiles:
+    active: dev
   application:
     name: jinmifood
   servlet:
