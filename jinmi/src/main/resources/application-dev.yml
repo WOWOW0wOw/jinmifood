@@ -15,5 +15,5 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create   # 개발은 create/update 편한 걸로
+      ddl-auto: update   # 개발은 create/update 편한 걸로
 

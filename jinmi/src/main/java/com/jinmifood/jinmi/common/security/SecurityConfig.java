@@ -57,7 +57,7 @@ public class SecurityConfig {
                 )
                 // 권한 설정 (403 오류 뜰 시 포스트맨 테스트 할 때 여기다 추가)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/users/join").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/join","/users/login").permitAll()
                         .anyRequest().authenticated()
 
                 );
