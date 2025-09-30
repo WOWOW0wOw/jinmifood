@@ -12,10 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Table(name = "item")
 @ToString
-@EntityListeners(AuditingEntityListener.class)
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
