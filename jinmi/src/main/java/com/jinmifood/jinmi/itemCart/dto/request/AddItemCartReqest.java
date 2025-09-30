@@ -1,5 +1,6 @@
 package com.jinmifood.jinmi.itemCart.dto.request;
 
+import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 import lombok.*;
 
 @NoArgsConstructor
@@ -9,14 +10,24 @@ import lombok.*;
 @ToString
 public class AddItemCartReqest {
 
-    private int itemId;
-    private int userId;
+    private Long itemId;
+    private Long userId;
     private String itemName;
     private String itemOption;
-    private int totalCount;
-    private int itemPrice;
-    private int deliveryFee;
-    private int price;
-    private int point;
-    private int totalPrice;
+    private Long totalCnt;
+    private Integer price;
+    private Integer totalPrice;
+
+    public ItemCart toEntity(){
+        return ItemCart.builder()
+                .itemId(this.itemId)
+                .userId(this.userId)
+                .itemName(this.itemName)
+                .itemOption(this.itemOption)
+                .totalCnt(this.totalCnt)
+                .price(this.price)
+                .totalPrice(this.totalPrice)
+                .build();
+    }
+
 }

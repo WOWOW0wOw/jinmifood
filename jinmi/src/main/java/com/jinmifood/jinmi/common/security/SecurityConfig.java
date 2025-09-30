@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // 회원가입 / 로그인
-                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/itemCart/**").permitAll()
 
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(
@@ -64,12 +64,6 @@ public class SecurityConfig {
                                 "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
                                 "/scalar/**" // ✅ 추가
                         ).permitAll()
-
-
-                        // (선택) 헬스체크/에러 페이지 허용
-                        .requestMatchers("/actuator/health", "/error").permitAll()
-
-
                         // 그 밖의 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 );
