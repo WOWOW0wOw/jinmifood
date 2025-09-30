@@ -1,5 +1,7 @@
 package com.jinmifood.jinmi.item.dto.request;
 
+import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.domain.ItemStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,19 +13,27 @@ import java.time.LocalDateTime;
 @ToString
 public class AddItemRequest {
 
-    private int itemId;
     private String itemName;
-    private int categoryId;
+    private Long categoryId;
     private int itemPrice;
-    private int orderCnt;
-    private int likeCnt;
-    private int reviewCnt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private String itemImg;
     private String itemInfImg;
     private int itemWeight;
-    private String role;
+    private ItemStatus status;
     private int count;
+
+
+public Item toEntity() {
+    return Item.builder()
+            .itemName(this.itemName)
+            .categoryId(this.categoryId)
+            .itemPrice(this.itemPrice)
+            .itemImg(this.itemImg)
+            .itemInfImg(this.itemInfImg)
+            .itemWeight(this.itemWeight)
+            .status(this.status)
+            .count(this.count)
+            .build();
+}
 
 }
