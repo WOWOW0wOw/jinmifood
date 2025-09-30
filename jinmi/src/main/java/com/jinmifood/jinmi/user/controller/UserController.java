@@ -29,12 +29,15 @@ public class UserController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
+
+    //회원가입
     @PostMapping("/join")
-    public ResponseEntity<StatusResponseDTO> joinUser(@Valid @RequestBody JoinUserRequest request) {
+    public StatusResponseDTO joinUser(@Valid @RequestBody JoinUserRequest request) {
         JoinUserResponse response = userService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(StatusResponseDTO.ok(response));
+        return StatusResponseDTO.ok(response);
     }
 
+    // 로그인 및 토큰 발급
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> loginUser(@RequestBody LoginUserRequest request) {
         TokenResponse token = userService.login(request);
@@ -44,8 +47,9 @@ public class UserController {
                 .body(token);
     }
 
+    // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<StatusResponseDTO> logout(HttpServletRequest request, Authentication authentication) {
+    public StatusResponseDTO logout(HttpServletRequest request, Authentication authentication) {
 
         String accessToken = jwtTokenProvider.resolveToken(request);
         //로그인된 사용자 식별정보 가져오가
@@ -54,7 +58,7 @@ public class UserController {
 
         userService.logout(accessToken,userIdentifier);
 
-        return ResponseEntity.ok(StatusResponseDTO.ok());
+        return StatusResponseDTO.ok("로그아웃 완료");
 
     }
 

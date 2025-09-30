@@ -56,6 +56,10 @@ public class User {
         USER, ADMIN
     }
 
+    public void updateLastLoginAt(){
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
     @PrePersist
     public void prePersist() {
         this.createAt = this.createAt == null? LocalDateTime.now() : this.createAt;

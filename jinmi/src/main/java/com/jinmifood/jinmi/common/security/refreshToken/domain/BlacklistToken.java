@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,13 +25,13 @@ public class BlacklistToken {
     @Column(name = "userIdentifier")
     private String userIdentifier; // AccessToken 남은 유효기간
 
-    @Column(name = "expiryTime")
-    private Long expiryTime; // AccessToken 남은시간
+    @Column(name = "expiryAt")
+    private LocalDateTime expiryAt; // AccessToken 남은시간
 
     @Builder
-    public BlacklistToken(String accessToken, String userIdentifier, Long expiryTime) {
+    public BlacklistToken(String accessToken, String userIdentifier, LocalDateTime expiryAt) {
         this.accessToken = accessToken;
         this.userIdentifier = userIdentifier;
-        this.expiryTime = expiryTime;
+        this.expiryAt = expiryAt;
     }
 }

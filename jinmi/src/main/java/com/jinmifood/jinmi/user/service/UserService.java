@@ -95,6 +95,9 @@ public class UserService {
             log.error("로그인 인증 실패: {}",e.getMessage());
             throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorException.NOT_FOUND));
+        user.updateLastLoginAt();
 
         // accessToken && refreshToken 생성
         // ⭐️ 수정: generateToken -> generateAccessToken
@@ -123,19 +126,19 @@ public class UserService {
         refreshTokenRepository.deleteById(userIdentifier);
         log.info("Refresh Token 삭제 완료 : 사용자 ID = {}", userIdentifier);
 
-        // ⭐️ 수정: getExpireTime -> getExpiration
-        Long remainingExpiration = jwtTokenProvider.getExpireTime(accessToken);
+        Long remainingSeconds = jwtTokenProvider.getExpireTime(accessToken);
 
-        if (remainingExpiration > 0) {
+        if (remainingSeconds > 0) {
 
-            // ⭐️ 수정: BlacklistToken.builder().build().... 빌더 패턴 오류 수정
+            LocalDateTime expiredAt = LocalDateTime.now().plusSeconds(remainingSeconds);
+
             BlacklistToken blacklistToken = BlacklistToken.builder()
                     .accessToken(accessToken)
                     .userIdentifier(userIdentifier)
-                    .expiryTime(remainingExpiration)
+                    .expiryAt(expiredAt)
                     .build();
             blacklistTokenRepository.save(blacklistToken);
-            log.info("Access Token 블랙리스트 추가 완료: 토큰 만료까지 {}초 남음", remainingExpiration);
+            log.info("Access Token 블랙리스트 추가 완료: 토큰 만료까지 {}초 남음", expiredAt);
         }
         log.info("로그아웃 성공: 사용자 ID = {}", userIdentifier);
     }
