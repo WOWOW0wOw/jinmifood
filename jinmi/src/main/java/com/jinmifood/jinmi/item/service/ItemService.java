@@ -1,6 +1,7 @@
 package com.jinmifood.jinmi.item.service;
 
 import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.dto.request.AddItemRequest;
 import com.jinmifood.jinmi.item.dto.response.ViewItemResponse;
 import com.jinmifood.jinmi.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,14 @@ public class ItemService {
         return itemList.stream()
                 .map(item -> new ViewItemResponse(item))
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional(readOnly = false)
+    public Item AddItem(AddItemRequest request) {
+        Item item = request.toEntity();
+        Item saveItem = itemRepository.save(item);
+        return item;
     }
 
 }

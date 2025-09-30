@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 public class ViewItemResponse {
 
-    private Long itemId; // 엔티티의 id -> itemId로 변경 (클라이언트에게 더 명확)
+    private Long itemId;
     private String itemName;
     private Long categoryId;
     private int itemPrice;
