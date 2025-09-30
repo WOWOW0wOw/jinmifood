@@ -1,8 +1,8 @@
-package com.jinmifood.jinmi.Item.service;
+package com.jinmifood.jinmi.item.service;
 
-import com.jinmifood.jinmi.Item.domain.Item;
-import com.jinmifood.jinmi.Item.dto.response.ViewItemResponse;
-import com.jinmifood.jinmi.Item.repository.ItemRepository;
+import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.dto.response.ViewItemResponse;
+import com.jinmifood.jinmi.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

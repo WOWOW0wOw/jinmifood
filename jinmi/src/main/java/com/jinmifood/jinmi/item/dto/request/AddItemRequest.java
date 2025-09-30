@@ -1,4 +1,4 @@
-package com.jinmifood.jinmi.Item.dto.request;
+package com.jinmifood.jinmi.item.dto.request;
 
 import lombok.*;
 

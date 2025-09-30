@@ -1,8 +1,7 @@
-package com.jinmifood.jinmi.Item.dto.response;
+package com.jinmifood.jinmi.item.dto.response;
 
-import com.jinmifood.jinmi.Item.domain.Item;
-import com.jinmifood.jinmi.Item.domain.itemStatus;
-import jakarta.persistence.Id;
+import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.domain.ItemStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +23,7 @@ public class ViewItemResponse {
     private String itemImg;
     private String itemInfImg;
     private int itemWeight;
-    private itemStatus status;
+    private ItemStatus status;
     private int count;
     private LocalDateTime createAt;
 

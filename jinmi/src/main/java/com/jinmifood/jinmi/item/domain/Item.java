@@ -1,4 +1,4 @@
-package com.jinmifood.jinmi.Item.domain;
+package com.jinmifood.jinmi.item.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,7 +26,7 @@ public class Item {
     private String itemName;
 
     @Column(nullable = false)
-    private int categoryId;
+    private Long categoryId;
 
     @Column(nullable = false)
     private int itemPrice;
@@ -53,14 +53,14 @@ public class Item {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private itemStatus status;
+    private ItemStatus status;
 
     @Column(nullable = false)
     private int count;
 
 
     @Builder
-    public Item(String itemName, int categoryId, int itemPrice, String itemImg, itemStatus status, int count,
+    public Item(String itemName, Long categoryId, int itemPrice, String itemImg, ItemStatus status, int count,
                 int orderCnt, int likeCnt, int reviewCnt, int itemWeight, String itemInfImg) {
         this.itemName = itemName;
         this.categoryId = categoryId;
@@ -74,7 +74,5 @@ public class Item {
         this.status = status;
         this.count = count;
     }
-
-
 
 }
