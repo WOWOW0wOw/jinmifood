@@ -57,12 +57,13 @@ public class SecurityConfig {
 
                         // 회원가입 / 로그인
                         .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/itemCart/**").permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/users/join", "/users/login", "/itemCart/list").permitAll()
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(
                                 "/swagger-ui/**", "/swagger-ui.html",
                                 "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
                                 "/scalar/**" // ✅ 추가
+                                ,"/itemCart/list"
                         ).permitAll()
                         // 그 밖의 모든 요청은 인증 필요
                         .anyRequest().authenticated()

@@ -12,9 +12,8 @@ public class ViewItemCartResponse {
 
     private final String itemName;
     private String itemOption;
-    private Long totalCnt;
+    private Integer totalCnt;
     private Integer price;
-    private Integer point;
     private Integer totalPrice;
 
     public ViewItemCartResponse(ItemCart itemCart) {
@@ -22,6 +21,6 @@ public class ViewItemCartResponse {
         this.itemOption = itemCart.getItemOption();
         this.totalCnt = itemCart.getTotalCnt();
         this.price = itemCart.getPrice();
-        this.totalPrice = itemCart.getTotalPrice();
+        this.totalPrice = itemCart.getTotalCnt() * itemCart.getPrice();
     }
 }

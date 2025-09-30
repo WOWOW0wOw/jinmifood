@@ -14,9 +14,8 @@ public class AddItemCartReqest {
     private Long userId;
     private String itemName;
     private String itemOption;
-    private Long totalCnt;
+    private Integer totalCnt;
     private Integer price;
-    private Integer totalPrice;
 
     public ItemCart toEntity(){
         return ItemCart.builder()
@@ -26,7 +25,6 @@ public class AddItemCartReqest {
                 .itemOption(this.itemOption)
                 .totalCnt(this.totalCnt)
                 .price(this.price)
-                .totalPrice(this.totalPrice)
                 .build();
     }
 

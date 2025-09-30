@@ -29,7 +29,7 @@ public class ItemCart {
     private String itemOption;
 
     @Column(nullable = false)
-    private Long totalCnt;
+    private Integer totalCnt;
 
     @Column(nullable = false)
     private Integer price;
@@ -38,14 +38,14 @@ public class ItemCart {
     private Integer totalPrice;
 
     @Builder
-    public ItemCart(Long itemId, Long userId,String itemName, String itemOption, Long totalCnt, Integer price, Integer totalPrice) {
+    public ItemCart(Long itemId, Long userId,String itemName, String itemOption, Integer totalCnt, Integer price) {
         this.itemId = itemId;
         this.userId = userId;
         this.itemName = itemName;
         this.itemOption = itemOption;
         this.totalCnt = totalCnt;
         this.price = price;
-        this.totalPrice = totalPrice;
+        this.totalPrice = totalCnt * price;
     }
 
 }
