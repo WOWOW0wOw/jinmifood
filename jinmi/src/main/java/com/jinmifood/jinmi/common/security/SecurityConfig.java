@@ -1,5 +1,6 @@
 package com.jinmifood.jinmi.common.security;
 
+import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,13 +52,16 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,blacklistTokenRepository), UsernamePasswordAuthenticationFilter.class)
 
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
                         // 회원가입 / 로그인
-                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/auth/reissue"
+                                ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/users/logout").authenticated()
 
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(

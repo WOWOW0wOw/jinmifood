@@ -3,10 +3,15 @@ package com.jinmifood.jinmi.user.service;
 import com.jinmifood.jinmi.common.exception.CustomException;
 import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.common.security.JwtTokenProvider;
+import com.jinmifood.jinmi.common.security.refreshToken.domain.BlacklistToken;
+import com.jinmifood.jinmi.common.security.refreshToken.domain.RefreshToken;
+import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
+import com.jinmifood.jinmi.common.security.refreshToken.repository.RefreshTokenRepository;
 import com.jinmifood.jinmi.user.domain.User;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
 import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
+import com.jinmifood.jinmi.user.dto.response.TokenResponse;
 import com.jinmifood.jinmi.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Service
 @Transactional
@@ -27,6 +34,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     // 이메일 찾기
     @Transactional(readOnly = true)
@@ -50,6 +60,10 @@ public class UserService {
         if(userRepository.existsByEmail(user.getEmail())) {
             throw new CustomException(ErrorException.DUPLICATE_EMAIL);
         }
+        // 핸드폰번호 중복확인
+        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+            throw new CustomException(ErrorException.DUPLICATE_PHONENUMBER);
+        }
         // 닉네임 중복확인
         if(userRepository.existsByDisplayName(user.getDisplayName())){
             throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
@@ -70,20 +84,62 @@ public class UserService {
      * @throws CustomException 인증 실패 시 (이메일 또는 비밀번호 불일치)
      */
     @Transactional(readOnly = false)
-    public String login(LoginUserRequest request) {
+    public TokenResponse login(LoginUserRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        Authentication authentication;
         try{
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            authentication = authenticationManager.authenticate(authenticationToken);
 
-            String token = jwtTokenProvider.generateToken(authentication);
-            return token;
         } catch(Exception e){
-            log.error("로그인 인증 실패",e.getMessage());
+            log.error("로그인 인증 실패: {}",e.getMessage());
             throw new BadCredentialsException("아이디 또는 비밀번호가 일치하지 않습니다.");
-
         }
+
+        // accessToken && refreshToken 생성
+        // ⭐️ 수정: generateToken -> generateAccessToken
+        String accessToken = jwtTokenProvider.generateAccessToken(authentication);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
+
+        String userIdentifier = authentication.getName();
+        LocalDateTime expiryDate = jwtTokenProvider.getExpiryDateTime(refreshToken);
+
+        refreshTokenRepository.findById(userIdentifier)
+                .ifPresentOrElse(
+                        token -> token.updateToken(refreshToken, expiryDate),
+                        () -> refreshTokenRepository.save(RefreshToken.builder()
+                                .userIdentifier(userIdentifier)
+                                .tokenValue(refreshToken)
+                                .expiryDate(expiryDate)
+                                .build())
+                );
+        return new TokenResponse(accessToken, refreshToken);
     }
+
+    @Transactional
+    public void logout(String accessToken, String userIdentifier) {
+
+        // Refresh Token db에서 삭제 (재발급 막음)
+        refreshTokenRepository.deleteById(userIdentifier);
+        log.info("Refresh Token 삭제 완료 : 사용자 ID = {}", userIdentifier);
+
+        // ⭐️ 수정: getExpireTime -> getExpiration
+        Long remainingExpiration = jwtTokenProvider.getExpireTime(accessToken);
+
+        if (remainingExpiration > 0) {
+
+            // ⭐️ 수정: BlacklistToken.builder().build().... 빌더 패턴 오류 수정
+            BlacklistToken blacklistToken = BlacklistToken.builder()
+                    .accessToken(accessToken)
+                    .userIdentifier(userIdentifier)
+                    .expiryTime(remainingExpiration)
+                    .build();
+            blacklistTokenRepository.save(blacklistToken);
+            log.info("Access Token 블랙리스트 추가 완료: 토큰 만료까지 {}초 남음", remainingExpiration);
+        }
+        log.info("로그아웃 성공: 사용자 ID = {}", userIdentifier);
+    }
+
 
 
 }
