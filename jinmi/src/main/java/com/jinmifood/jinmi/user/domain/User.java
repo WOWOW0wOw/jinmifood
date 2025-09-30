@@ -39,7 +39,7 @@ public class User {
     @Column
     private Long totalOrderCnt; // 누적 주문 수
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phoneNumber; // 전화번호
 
     @Column

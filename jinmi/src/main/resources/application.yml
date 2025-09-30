@@ -43,4 +43,5 @@ summarization:
 jwt:
   secret: VGhpc0lzTXlTdXBlclNlY3VyZUtleUZvckppbm1pRm9vZFNlcnZpY2U=
   access-token-expiration-time: 1800000 #(30분)
+  refresh-token-expiration-time: 604800000 # 7일
 

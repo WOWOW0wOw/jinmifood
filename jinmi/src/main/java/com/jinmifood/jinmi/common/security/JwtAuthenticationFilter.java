@@ -1,10 +1,12 @@
 package com.jinmifood.jinmi.common.security;
 
+import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -13,19 +15,34 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final BlacklistTokenRepository blacklistTokenRepository; // 블랙리스트 확인용
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = resolveToken(request);
+        String accessToken = jwtTokenProvider.resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        if (StringUtils.hasText(accessToken)) {
+
+            // ⭐️ 1. Access Token이 블랙리스트에 있는지 확인 (로그아웃된 토큰 검사)
+            if (blacklistTokenRepository.existsById(accessToken)) {
+                log.warn("블랙리스트 토큰 접근 시도: {}", accessToken);
+                // 401 Unauthorized 응답
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Logged out token.");
+                return;
+            }
+
+            // 2. 토큰이 유효한지 검증 (기존 로직)
+            if (jwtTokenProvider.validateToken(accessToken)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         filterChain.doFilter(request, response);

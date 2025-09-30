@@ -4,9 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -28,19 +32,41 @@ public class GlobalException {
     protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
-
         String detailMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
-        ErrorResponse response = new ErrorResponse(
-                status,
-                status.getReasonPhrase(),
-                detailMessage);
+        // ⭐️ @Builder 패턴으로 변경
+        ErrorResponse response = ErrorResponse.builder()
+                .status(status.value())
+                .message(status.getReasonPhrase())
+                .errors(List.of(detailMessage))
+                .build();
 
         log.error("BadCredentialsException 핸들링", detailMessage);
 
         return ResponseEntity
                 .status(status)
                 .body(response);
+    }
+
+    // @valid 실패처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+
+        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .collect(Collectors.toList());
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ErrorResponse response = ErrorResponse.builder()
+                .status(status.value())
+                .message(status.getReasonPhrase())
+                .errors(errors)
+                .build();
+
+        log.error("MethodArgumentNotValidException 핸들링", errors.toString());
+
+        return new ResponseEntity<>(response, status);
     }
 
     @ExceptionHandler({Exception.class, RuntimeException.class})
