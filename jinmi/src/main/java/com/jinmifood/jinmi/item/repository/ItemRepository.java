@@ -1,6 +1,6 @@
-package com.jinmifood.jinmi.Item.repository;
+package com.jinmifood.jinmi.item.repository;
 
-import com.jinmifood.jinmi.Item.domain.Item;
+import com.jinmifood.jinmi.item.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
