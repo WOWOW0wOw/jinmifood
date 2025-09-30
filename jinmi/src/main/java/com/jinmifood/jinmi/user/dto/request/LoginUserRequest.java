@@ -13,6 +13,6 @@ public class LoginUserRequest {
     @Email(message = "이메일 형식에 맞지 않습니다.")
     private String email;
 
-    @NotBlank(message = "비밀번호는 필수 입렵 입니다.")
+    @NotBlank(message = "비밀번호는 필수 입력 입니다.")
     private String password;
 }
