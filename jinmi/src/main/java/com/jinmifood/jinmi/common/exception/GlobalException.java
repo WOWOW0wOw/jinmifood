@@ -19,7 +19,7 @@ public class GlobalException {
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
 
-        log.error("CUstomException 핸들링", ex.getError().getDetail());
+        log.error("CustomException 핸들링", ex.getError().getDetail());
 
         ErrorResponse response = ErrorResponse.toErrorResponse(ex.getError());
 

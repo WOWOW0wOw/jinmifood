@@ -27,10 +27,32 @@ public class ItemCartController {
 
     @PostMapping({"/add"})
     public StatusResponseDTO add(@RequestBody AddItemCartReqest addCart) {
-
         ItemCart cart = itemCartService.addItemCart(addCart);
-
         return StatusResponseDTO.ok(cart);
+    }
+
+    @PostMapping({"/remove"})
+    public StatusResponseDTO remove(@RequestParam Long userId, @RequestParam Long itemId){
+        itemCartService.removeCart(userId, itemId);
+        return StatusResponseDTO.ok("삭제 완료");
+    }
+
+    @PostMapping({"/removeAll"})
+    public StatusResponseDTO removeAll(@RequestParam Long userId){
+        itemCartService.removeAllCart(userId);
+        return StatusResponseDTO.ok("전체 삭제 완료");
+    }
+
+    @PostMapping({"/update/qty"})
+    public StatusResponseDTO update(@RequestParam Long userId, @RequestParam Long itemId, @RequestParam int qty){
+        itemCartService.updateQuantity(userId, itemId, qty);
+        return StatusResponseDTO.ok("수량 수정 완료");
+    }
+
+    @PostMapping({"/update/option"})
+    public StatusResponseDTO updateOption(@RequestParam Long userId, @RequestParam Long itemId, @RequestParam String option){
+        itemCartService.updateOption(userId, itemId, option);
+        return StatusResponseDTO.ok("옵션 수정 완료");
     }
 
 }

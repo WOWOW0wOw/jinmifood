@@ -30,9 +30,9 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/join")
-    public ResponseEntity<StatusResponseDTO> joinUser(@Valid @RequestBody JoinUserRequest request) {
+    public StatusResponseDTO joinUser(@Valid @RequestBody JoinUserRequest request) {
         JoinUserResponse response = userService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(StatusResponseDTO.ok(response));
+        return StatusResponseDTO.ok( response.getUserId() + "님 회원가입 완료");
     }
 
     @PostMapping("/login")

@@ -44,5 +44,45 @@ public class ItemCartService {
         return cart;
     }
 
+    @Transactional
+    public void removeCart(Long userId, Long itemId) {
 
+        ItemCart cart = itemCartRepository.findByItemIdAndUserId(itemId, userId);
+        if(cart == null) {
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+        itemCartRepository.delete(cart);
+
+    }
+
+    @Transactional
+    public void removeAllCart(Long userId) {
+        List<ItemCart> items = itemCartRepository.findAllByUserId(userId);
+        itemCartRepository.deleteAllInBatch(items);
+    }
+
+    @Transactional
+    public void updateOption(Long userId, Long cartId, String option) {
+        ItemCart cart = itemCartRepository.findByItemIdAndUserId(cartId, userId);
+        cart.setItemOption(option);
+        itemCartRepository.save(cart);
+    }
+
+
+    @Transactional
+    public void updateQuantity(Long userId, Long cartId, int qty) {
+        if(qty < 1) {
+            throw new CustomException(ErrorException.QTY_NOTZERO);
+        }else if(qty > 100) {
+            throw new CustomException(ErrorException.QTY_FULL);
+        }
+        //재고 검증 나중에 해야함
+
+
+
+        ItemCart cart = itemCartRepository.findByItemIdAndUserId(cartId, userId);
+        cart.setTotalCnt(qty);
+        cart.setTotalPrice(qty * cart.getPrice());
+        itemCartRepository.save(cart);
+    }
 }
