@@ -15,7 +15,7 @@ public class ViewItemResponse {
 
     private Long itemId; // 엔티티의 id -> itemId로 변경 (클라이언트에게 더 명확)
     private String itemName;
-    private int categoryId;
+    private Long categoryId;
     private int itemPrice;
     private int orderCnt;
     private int likeCnt;
