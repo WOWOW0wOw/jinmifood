@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
@@ -16,6 +17,8 @@ public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
     List<ItemCart> findAllByUserId(Long userId);
 
     boolean existsByItemIdAndUserId(Long itemId, Long userId);
+
+    ItemCart findByItemIdAndUserId(Long itemId, Long userId);
 }
 
 

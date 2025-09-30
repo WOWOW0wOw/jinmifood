@@ -34,8 +34,10 @@ public class UserController {
     @PostMapping("/join")
     public StatusResponseDTO joinUser(@Valid @RequestBody JoinUserRequest request) {
         JoinUserResponse response = userService.registerUser(request);
+
         return StatusResponseDTO.ok(response);
     }
+
 
     // 로그인 및 토큰 발급
     @PostMapping("/login")
