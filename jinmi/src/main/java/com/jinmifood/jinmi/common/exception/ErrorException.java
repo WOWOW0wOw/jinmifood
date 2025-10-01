@@ -23,7 +23,8 @@ public enum ErrorException {
     QTY_FULL(HttpStatus.CONFLICT, "최대 100개까지 담을 수 있습니다."),
 
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "DB에 토큰 정보가 존재하지 않습니다."),
-    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Refresh Token입니다.");
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Refresh Token입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Access Token 입니다.");
 
 
     private final HttpStatus httpStatus;

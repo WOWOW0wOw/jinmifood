@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
@@ -31,9 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(User user) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
 
-        // ⭐️ 수정: CustomUserDetails 객체를 반환
+        //  수정: CustomUserDetails 객체를 반환
         return new CustomUserDetails(
-                user.getId(), // ⭐️ DB에서 가져온 PK(ID)를 첫 번째 인자로 전달
+                user.getId(), //  DB에서 가져온 PK(ID)를 첫 번째 인자로 전달
                 user.getEmail(),
                 user.getPassword(),
                 Collections.singleton(grantedAuthority)

@@ -143,6 +143,44 @@ public class UserService {
         log.info("로그아웃 성공: 사용자 ID = {}", userIdentifier);
     }
 
+    // 회원탈퇴 로직
+    @Transactional
+    public void deleteUser(Long userId, String userIdentifier, String accessToken) {
+        log.info("회원 삭제 시작: userId={}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("사용자 찾기 실패: userId={}", userId);
+                    return new CustomException(ErrorException.NOT_FOUND);
+                });
+
+        log.info("사용자 정보 확인 완료: Email={}", user.getEmail());
+
+        refreshTokenRepository.deleteById(userIdentifier);
+        log.info("Refresh Token 삭제 완료 : 사용자 ID = {}", userIdentifier);
+
+        Long remainningExpiration = jwtTokenProvider.getExpireTime(accessToken);
+
+        if (remainningExpiration > 0) {
+            LocalDateTime expiredAt = LocalDateTime.now().plusSeconds(remainningExpiration);
+
+            BlacklistToken blacklistToken = BlacklistToken.builder()
+                    .accessToken(accessToken)
+                    .userIdentifier(userIdentifier)
+                    .expiryAt(expiredAt)
+                    .build();
+            blacklistTokenRepository.save(blacklistToken);
+            log.info("Access Token 블랙리스트 추가 완료: 토큰 만료까지 {}초 남음", expiredAt);
+
+        }
+
+        log.info("토큰 무효화 로직 진행 완료");
+        userRepository.delete(user);
+        log.info("회원 탈퇴 및 계정 삭제 성공 ID = {} Email = {}",userId, userIdentifier);
+
+
+    }
+
 
 
 }

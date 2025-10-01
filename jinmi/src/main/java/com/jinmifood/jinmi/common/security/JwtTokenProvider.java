@@ -38,14 +38,17 @@ public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private final long accessTokenExpireTime;
     private final long refreshTokenExpireTime;
+    private final CustomUserDetailsService customUserDetailsService;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
                             @Value("${jwt.access-token-expiration-time}") long accessTokenExpireTime,
-                            @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpireTime) {
+                            @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpireTime,
+                            CustomUserDetailsService customUserDetailsService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpireTime = accessTokenExpireTime;
         this.refreshTokenExpireTime = refreshTokenExpireTime;
+        this .customUserDetailsService = customUserDetailsService;
     }
 
     // 1. JWT Access Token 생성
@@ -83,6 +86,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         // 토큰에서 클레임(정보) 추출
         Claims claims = parseClaims(token);
+        String userIdentifier = claims.getSubject();
 
         // 권한 정보 추출
         Collection<? extends GrantedAuthority> authorities;
@@ -100,7 +104,7 @@ public class JwtTokenProvider {
         }
 
         // Refresh Token의 Subject(사용자 ID/이메일)만 사용합니다.
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        UserDetails principal = customUserDetailsService.loadUserByUsername(userIdentifier);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }

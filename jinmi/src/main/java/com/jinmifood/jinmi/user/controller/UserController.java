@@ -1,6 +1,9 @@
 package com.jinmifood.jinmi.user.controller;
 
 
+import com.jinmifood.jinmi.common.exception.CustomException;
+import com.jinmifood.jinmi.common.exception.ErrorException;
+import com.jinmifood.jinmi.common.security.CustomUserDetails;
 import com.jinmifood.jinmi.common.security.JwtTokenProvider;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
@@ -15,10 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -61,6 +62,31 @@ public class UserController {
         userService.logout(accessToken,userIdentifier);
 
         return StatusResponseDTO.ok("로그아웃 완료");
+
+    }
+
+    @DeleteMapping("/delete")
+    public StatusResponseDTO delete(@AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest request) {
+
+
+        if (userDetails == null) {
+            //️ NullPointerException을 CustomException으로 대체하여 응답
+            log.error("@AuthenticationPrincipal userDetails is NULL. 인증 정보가 SecurityContext에 없습니다.");
+            throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN); // 401 에러를 던지도록 수정
+        }
+        Long userId = userDetails.getId();
+
+        log.info("Controller: User ID({}) 확인 완료. Access Token 추출 시작.", userId);
+        String accessToken = jwtTokenProvider.resolveToken(request);
+
+        log.info("Controller: Access Token 추출 완료. 서비스 호출 시작.");
+
+
+        String userIdentifier = jwtTokenProvider.getAuthentication(accessToken).getName();
+        userService.deleteUser(userId,userIdentifier,accessToken);
+        log.info("Controller: 서비스 호출 완료. 삭제 성공 응답.");
+
+        return StatusResponseDTO.ok("회원 탈퇴 성공");
 
     }
 

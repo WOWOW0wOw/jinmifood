@@ -25,6 +25,11 @@ public class SecurityConfig {
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider, blacklistTokenRepository);
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -35,7 +40,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 // 기본 보안 옵션
                 .csrf(csrf -> csrf.disable())
@@ -52,7 +57,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,blacklistTokenRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
@@ -66,6 +71,8 @@ public class SecurityConfig {
                                 ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/users/logout").authenticated()
+
+                        .requestMatchers(HttpMethod.DELETE, "/users/delete").authenticated()
 
 
 
