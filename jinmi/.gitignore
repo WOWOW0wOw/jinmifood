@@ -180,7 +180,6 @@ gradle-app.setting
 .idea/sqldialects.xml
 .idea/aws.xml
 
-# Secret yml files
-/src/main/resources/application-secret.yml
+
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,gradle
