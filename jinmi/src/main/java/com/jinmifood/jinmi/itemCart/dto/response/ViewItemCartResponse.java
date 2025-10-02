@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 public class ViewItemCartResponse {
 
-    private final String itemName;
+    private String itemName;
     private String itemOption;
     private Integer totalCnt;
     private Integer price;
