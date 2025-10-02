@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "item")
-@ToString
+@ToString()
+@Builder
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,7 @@ public class Item {
     private String itemName;
 
     @Column(nullable = false)
-    private Long categoryId;
+    private Long categoryId; // 카테고리테이블 참조
 
     @Column(nullable = false)
     private int itemPrice;
@@ -35,11 +36,10 @@ public class Item {
 
     private int reviewCnt;
 
-    @CreatedDate
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createAt;
 
-    @LastModifiedDate // 엔티티 업데이트 시 자동으로 현재 시간을 기록
     private LocalDateTime updateAt;
 
     @Column(nullable = false)
@@ -56,21 +56,12 @@ public class Item {
     @Column(nullable = false)
     private int count;
 
-
-    @Builder
-    public Item(String itemName, Long categoryId, int itemPrice, String itemImg, ItemStatus status, int count,
-                int orderCnt, int likeCnt, int reviewCnt, int itemWeight, String itemInfImg) {
-        this.itemName = itemName;
-        this.categoryId = categoryId;
-        this.itemPrice = itemPrice;
-        this.orderCnt = orderCnt;
-        this.likeCnt = likeCnt;
-        this.reviewCnt = reviewCnt;
-        this.itemImg = itemImg;
-        this.itemInfImg = itemInfImg;
-        this.itemWeight = itemWeight;
-        this.status = status;
-        this.count = count;
+    @PrePersist
+    public void prePersist() {
+        this.createAt = this.createAt == null ? LocalDateTime.now() : this.createAt;
+        this.updateAt = this.updateAt == null ? LocalDateTime.now() : this.updateAt;
+        this.status = this.count == 0 ? ItemStatus.SOLDOUT : ItemStatus.SALE;
     }
+
 
 }

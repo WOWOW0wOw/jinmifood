@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Table(name = "category")
 @ToString
 public class Category {
@@ -24,13 +24,9 @@ public class Category {
     @Column(name = "categoryName", nullable = false, length = 16)
     private String categoryName;
 
-    @Column(name = "itemID", nullable = false)
-    private Long itemId;
-
     @Builder
-    public Category(Long categoryId, Long itemId, String categoryName) {
+    public Category(Long categoryId, String categoryName) {
         this.categoryId = categoryId;
-        this.itemId = itemId;
         this.categoryName = categoryName;
     }
 

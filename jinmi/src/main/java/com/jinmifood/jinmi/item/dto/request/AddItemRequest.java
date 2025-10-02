@@ -4,8 +4,6 @@ import com.jinmifood.jinmi.item.domain.Item;
 import com.jinmifood.jinmi.item.domain.ItemStatus;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,7 +17,6 @@ public class AddItemRequest {
     private String itemImg;
     private String itemInfImg;
     private int itemWeight;
-    private ItemStatus status;
     private int count;
 
 
@@ -31,7 +28,6 @@ public Item toEntity() {
             .itemImg(this.itemImg)
             .itemInfImg(this.itemInfImg)
             .itemWeight(this.itemWeight)
-            .status(this.status)
             .count(this.count)
             .build();
 }

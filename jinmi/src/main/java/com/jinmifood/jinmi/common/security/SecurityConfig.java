@@ -64,17 +64,16 @@ public class SecurityConfig {
 
                         // 회원가입 / 로그인
 
+
                         .requestMatchers(HttpMethod.GET, "/users/join", "/users/login", "/itemCart/list").permitAll()
 
 
-                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/auth/reissue", "/itemCart/**"
+                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/auth/reissue", "/itemCart/**", "/items/add", "/categories/add"
                                 ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/users/logout").authenticated()
 
                         .requestMatchers(HttpMethod.DELETE, "/users/delete").authenticated()
-
-
 
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(
