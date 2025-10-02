@@ -13,6 +13,7 @@ spring:
     import: optional:application-secret.yml
   profiles:
     active: dev
+    include: secret
   application:
     name: jinmifood
   servlet:
