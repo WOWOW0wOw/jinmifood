@@ -2,9 +2,6 @@ package com.jinmifood.jinmi.item.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "item")
 @ToString()
 @Builder
@@ -35,7 +33,6 @@ public class Item {
     private int likeCnt;
 
     private int reviewCnt;
-
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createAt;
