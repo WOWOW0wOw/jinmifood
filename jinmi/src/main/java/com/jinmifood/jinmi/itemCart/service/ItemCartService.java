@@ -32,6 +32,11 @@ public class ItemCartService {
 
     @Transactional
     public ItemCart addItemCart(AddItemCartReqest addCart) {
+        //재고 검증 나중에 해야함
+
+
+
+
         ItemCart cart = addCart.toEntity();
         if(itemCartRepository.existsByItemIdAndUserId(cart.getItemId(), cart.getUserId())) {
             throw new CustomException(ErrorException.DUPLICATE_CART);
@@ -46,13 +51,11 @@ public class ItemCartService {
 
     @Transactional
     public void removeCart(Long userId, Long itemId) {
-
         ItemCart cart = itemCartRepository.findByItemIdAndUserId(itemId, userId);
         if(cart == null) {
             throw new CustomException(ErrorException.NOT_FOUND);
         }
         itemCartRepository.delete(cart);
-
     }
 
     @Transactional

@@ -19,6 +19,7 @@ public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
     boolean existsByItemIdAndUserId(Long itemId, Long userId);
 
     ItemCart findByItemIdAndUserId(Long itemId, Long userId);
+
 }
 
 
