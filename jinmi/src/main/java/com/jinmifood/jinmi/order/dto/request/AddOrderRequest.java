@@ -3,8 +3,14 @@ package com.jinmifood.jinmi.order.dto.request;
 import com.jinmifood.jinmi.order.domain.Order;
 import com.jinmifood.jinmi.order.domain.OrderStatus;
 import com.jinmifood.jinmi.order.domain.PaymentType;
+import lombok.*;
 
-public class AddOrderReqest {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class AddOrderRequest {
 
     private Long itemId;
     private Long userId;

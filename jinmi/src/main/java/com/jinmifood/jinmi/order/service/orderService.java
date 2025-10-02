@@ -1,7 +1,7 @@
 package com.jinmifood.jinmi.order.service;
 
 import com.jinmifood.jinmi.order.domain.Order;
-import com.jinmifood.jinmi.order.dto.request.AddOrderReqest;
+import com.jinmifood.jinmi.order.dto.request.AddOrderRequest;
 import com.jinmifood.jinmi.order.dto.response.ViewOrderResponse;
 import com.jinmifood.jinmi.order.repository.orderRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -45,9 +46,15 @@ public class orderService {
     }
 
     @Transactional
-    public Order addOrder(AddOrderReqest order) {
-        Order addOrder = order.toEntity();
-        addOrder.setOrderCode(createOrderCode());
-        return orderRepository.save(addOrder);
+    public List<Order> addOrder(List<AddOrderRequest> order) {
+        List<Order> addOrder = new ArrayList<>();
+        for (AddOrderRequest addorderRequest : order) {
+            addOrder.add(addorderRequest.toEntity());
+        }
+        String code = createOrderCode();
+        for (Order CreateOrder : addOrder) {
+            CreateOrder.setOrderCode(code);
+        }
+        return orderRepository.saveAll(addOrder);
     }
 }
