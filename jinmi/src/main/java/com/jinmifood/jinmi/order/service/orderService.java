@@ -6,6 +6,7 @@ import com.jinmifood.jinmi.order.dto.response.ViewOrderResponse;
 import com.jinmifood.jinmi.order.repository.orderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,9 @@ public class orderService {
         return code;
     }
 
-    public List<ViewOrderResponse> list(Long userId) {
-        List<Order> orderList = orderRepository.findAllByUserId(userId);
+    public List<ViewOrderResponse> list(Long userId, Long offset) {
+        List<Order> orderList = offset == null ? orderRepository.findAllByUserIdOrderByIdDesc(userId, Limit.of(10))
+                : orderRepository.findAllByUserIdAndIdLessThanOrderByIdDesc(userId, offset, Limit.of(10));
         return orderList.stream()
                 .map(order -> new ViewOrderResponse(order))
                 .collect(Collectors.toList());
@@ -57,4 +59,12 @@ public class orderService {
         }
         return orderRepository.saveAll(addOrder);
     }
+
+    @Transactional
+    public void removeOrder(Long userId, Long orderId) {
+        orderRepository.deleteByIdAndUserId(orderId, userId);
+    }
+
+    // 배송상태 나중에 추가
+
 }

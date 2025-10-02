@@ -19,7 +19,6 @@ public class AddOrderRequest {
     private String orderCode;
     private String orderTime;
     private PaymentType paymentType;
-    private Integer totalPrice;
     private OrderStatus orderStatus;
     private String itemName;
     private String itemOption;
@@ -35,7 +34,6 @@ public class AddOrderRequest {
                 .orderCode(this.orderCode)
                 .orderTime(this.orderTime)
                 .paymentType(this.paymentType)
-                .totalPrice(this.totalPrice)
                 .orderStatus(this.orderStatus)
                 .itemName(this.itemName)
                 .itemOption(this.itemOption)

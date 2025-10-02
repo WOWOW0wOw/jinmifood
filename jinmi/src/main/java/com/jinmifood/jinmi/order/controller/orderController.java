@@ -19,9 +19,9 @@ public class orderController {
 
     private final orderService orderService;
 
-    @GetMapping({"/list"})
-    public StatusResponseDTO list(@RequestParam Long userId) {
-        List<ViewOrderResponse> list = orderService.list(userId);
+    @GetMapping({"/list", "/list/{offset}"})
+    public StatusResponseDTO list(@RequestParam Long userId, Long offset) {
+        List<ViewOrderResponse> list = orderService.list(userId, offset);
         return StatusResponseDTO.ok(list);
     }
 
@@ -29,5 +29,11 @@ public class orderController {
     public StatusResponseDTO add(@RequestBody List<AddOrderRequest> addOrderRequest){
         List<Order> order = orderService.addOrder(addOrderRequest);
         return StatusResponseDTO.ok(order);
+    }
+
+    @PostMapping({"/remove"})
+    public StatusResponseDTO remove(@RequestParam Long userId, @RequestParam Long orderId){
+        orderService.removeOrder(userId, orderId);
+        return StatusResponseDTO.ok("삭제 완료");
     }
 }

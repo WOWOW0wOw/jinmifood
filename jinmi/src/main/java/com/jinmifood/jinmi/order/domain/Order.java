@@ -15,35 +15,47 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "orderId", nullable = false)
     private Long id;
+
     @Column(nullable = false)
     private Long itemId;
+
     @Column(nullable = false)
     private Long userId;
+
     @Column(nullable = false)
     private String itemName;
+
     @Column(nullable = false)
     private String itemOption;
+
     @Column(nullable = false)
     private String orderCode;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
     @Column(nullable = false)
     private String orderTime;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+
     @Column(nullable = false)
     private Integer price;
+
     @Column(nullable = false)
     private Integer qty;
+
     @Column(nullable = false)
     private Integer totalPrice;
+
     @Column(nullable = false)
     private String itemImg;
 
     @Builder
-    public Order(Long itemId, Long userId, String itemName, String itemOption, String orderCode, OrderStatus orderStatus, String orderTime, PaymentType paymentType, Integer price, Integer qty, Integer totalPrice, String itemImg) {
+    public Order(Long itemId, Long userId, String itemName, String itemOption, String orderCode, OrderStatus orderStatus, String orderTime, PaymentType paymentType, Integer price, Integer qty, String itemImg) {
         this.itemId = itemId;
         this.userId = userId;
         this.itemName = itemName;
@@ -54,7 +66,7 @@ public class Order {
         this.paymentType = paymentType;
         this.price = price;
         this.qty = qty;
-        this.totalPrice = totalPrice;
+        this.totalPrice = price * qty;
         this.itemImg = itemImg;
 
     }
