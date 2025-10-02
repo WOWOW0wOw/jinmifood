@@ -33,7 +33,7 @@ public class orderService {
             randomString += alphabet.charAt(random.nextInt(alphabet.length()));
             randomString += numbers.charAt(random.nextInt(numbers.length()));
         }
-        String code = randomString + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss")) + "-";
+        String code = randomString + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
         log.info("code : {}", code);
         return code;
     }
