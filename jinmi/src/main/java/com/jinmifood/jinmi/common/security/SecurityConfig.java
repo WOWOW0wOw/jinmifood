@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // 회원가입 / 로그인
-                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/itemCart/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/itemCart/**","/items/add","/categories/add").permitAll()
 
                         // ✅ Swagger/OpenAPI 문서 허용
                         .requestMatchers(
