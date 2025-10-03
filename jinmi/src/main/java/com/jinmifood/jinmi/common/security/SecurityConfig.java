@@ -62,7 +62,9 @@ public class SecurityConfig {
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
+
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
+
                         .requestMatchers(
                                 // 회원가입/로그인/토큰 재발급
                                 "/users/join", "/users/login", "/auth/reissue",

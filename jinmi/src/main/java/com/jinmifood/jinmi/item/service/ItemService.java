@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,17 @@ public class ItemService {
         itemRepository.save(item);
         log.info("아이템 저장 완료 Item: {}", item);
         return item;
+    }
+
+    @Transactional
+    public void removeItem(@RequestParam long itemId) {
+        Item item = itemRepository.findItemByItemId(itemId);
+        log.info("item: {}", item);
+        if(item == null) {
+            System.out.println("송명보형 바보");
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+        itemRepository.delete(item);
     }
 
 }
