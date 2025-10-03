@@ -30,6 +30,7 @@ public enum ErrorException {
     DUPLICATE_ITEM_NAME(HttpStatus.CONFLICT, "이미 존재하는 아이템 이름입니다."),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다.");
 
+
     private final HttpStatus httpStatus;
     private final String detail;
 

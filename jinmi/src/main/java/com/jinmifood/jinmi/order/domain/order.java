@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "order")
+@Table(name = "orders")
 @ToString()
 public class order {
 

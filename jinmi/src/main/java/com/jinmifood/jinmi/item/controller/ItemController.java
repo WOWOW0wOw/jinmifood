@@ -29,4 +29,10 @@ public class ItemController {
 
     }
 
+    @PostMapping("/remove")
+    public StatusResponseDTO removeItem(@RequestParam long itemId) {
+        itemService.removeItem(itemId);
+        return StatusResponseDTO.ok("삭제 완료");
+    }
+
 }
