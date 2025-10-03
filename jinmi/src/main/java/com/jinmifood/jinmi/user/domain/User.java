@@ -52,6 +52,20 @@ public class User {
     @Column
     private LocalDateTime createAt; // 가입날짜
 
+    public void updatePassword(String encodedNewPassword) { this.password = encodedNewPassword; }
+
+    public void updateDetails(String displayName, String phoneNumber, String address) {
+        if( displayName != null ) {
+            this.displayName = displayName;
+        }
+        if( phoneNumber != null ) {
+            this.phoneNumber = phoneNumber;
+        }
+        if( address != null ) {
+            this.address = address;
+        }
+    }
+
     public enum Role {
         USER, ADMIN
     }
