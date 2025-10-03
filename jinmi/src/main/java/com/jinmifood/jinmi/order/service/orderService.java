@@ -1,6 +1,6 @@
 package com.jinmifood.jinmi.order.service;
 
-import com.jinmifood.jinmi.order.domain.Order;
+import com.jinmifood.jinmi.order.domain.Orders;
 import com.jinmifood.jinmi.order.dto.request.AddOrderRequest;
 import com.jinmifood.jinmi.order.dto.response.ViewOrderResponse;
 import com.jinmifood.jinmi.order.repository.orderRepository;
@@ -40,7 +40,7 @@ public class orderService {
     }
 
     public List<ViewOrderResponse> list(Long userId, Long offset) {
-        List<Order> orderList = offset == null ? orderRepository.findAllByUserIdOrderByIdDesc(userId, Limit.of(10))
+        List<Orders> orderList = offset == null ? orderRepository.findAllByUserIdOrderByIdDesc(userId, Limit.of(10))
                 : orderRepository.findAllByUserIdAndIdLessThanOrderByIdDesc(userId, offset, Limit.of(10));
         return orderList.stream()
                 .map(order -> new ViewOrderResponse(order))
@@ -48,13 +48,13 @@ public class orderService {
     }
 
     @Transactional
-    public List<Order> addOrder(List<AddOrderRequest> order) {
-        List<Order> addOrder = new ArrayList<>();
+    public List<Orders> addOrder(List<AddOrderRequest> order) {
+        List<Orders> addOrder = new ArrayList<>();
         for (AddOrderRequest addorderRequest : order) {
             addOrder.add(addorderRequest.toEntity());
         }
         String code = createOrderCode();
-        for (Order CreateOrder : addOrder) {
+        for (Orders CreateOrder : addOrder) {
             CreateOrder.setOrderCode(code);
         }
         return orderRepository.saveAll(addOrder);

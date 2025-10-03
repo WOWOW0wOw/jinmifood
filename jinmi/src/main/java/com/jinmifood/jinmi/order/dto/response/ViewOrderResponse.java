@@ -1,7 +1,7 @@
 package com.jinmifood.jinmi.order.dto.response;
 
-import com.jinmifood.jinmi.order.domain.Order;
 import com.jinmifood.jinmi.order.domain.OrderStatus;
+import com.jinmifood.jinmi.order.domain.Orders;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,7 +20,7 @@ public class ViewOrderResponse {
     private String orderCode;
     private String orderTime;
 
-    public ViewOrderResponse(Order order) {
+    public ViewOrderResponse(Orders order) {
         this.itemName = order.getItemName();
         this.itemOption = order.getItemOption();
         this.price = order.getPrice();

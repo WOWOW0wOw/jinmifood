@@ -1,7 +1,7 @@
 package com.jinmifood.jinmi.order.dto.request;
 
-import com.jinmifood.jinmi.order.domain.Order;
 import com.jinmifood.jinmi.order.domain.OrderStatus;
+import com.jinmifood.jinmi.order.domain.Orders;
 import com.jinmifood.jinmi.order.domain.PaymentType;
 import lombok.*;
 
@@ -25,8 +25,8 @@ public class AddOrderRequest {
     private String itemImg;
 
 
-    public Order toEntity() {
-        return Order.builder()
+    public Orders toEntity() {
+        return Orders.builder()
                 .itemId(this.itemId)
                 .userId(this.userId)
                 .qty(this.qty)

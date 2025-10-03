@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
 @ToString()
-public class Order {
+public class Orders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +55,7 @@ public class Order {
     private String itemImg;
 
     @Builder
-    public Order(Long itemId, Long userId, String itemName, String itemOption, String orderCode, OrderStatus orderStatus, String orderTime, PaymentType paymentType, Integer price, Integer qty, String itemImg) {
+    public Orders(Long itemId, Long userId, String itemName, String itemOption, String orderCode, OrderStatus orderStatus, String orderTime, PaymentType paymentType, Integer price, Integer qty, String itemImg) {
         this.itemId = itemId;
         this.userId = userId;
         this.itemName = itemName;
