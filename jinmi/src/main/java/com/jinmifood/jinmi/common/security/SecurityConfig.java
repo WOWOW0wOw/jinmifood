@@ -62,27 +62,33 @@ public class SecurityConfig {
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
-                        // 회원가입 / 로그인
-
-
-                        .requestMatchers(HttpMethod.GET, "/users/join", "/users/login", "/itemCart/list", "/order/**").permitAll()
-
-
-                        .requestMatchers(HttpMethod.POST, "/users/join", "/users/login", "/auth/reissue", "/itemCart/**", "/items/add", "/categories/add"
-                                , "/order/**"
-                                ).permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/users/logout").authenticated()
-
-                        .requestMatchers(HttpMethod.DELETE, "/users/delete").authenticated()
-
-                        // ✅ Swagger/OpenAPI 문서 허용
+                        //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
                         .requestMatchers(
-                                "/swagger-ui/**", "/swagger-ui.html",
-                                "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**",
-                                "/scalar/**" // ✅ 추가
-                                ,"/itemCart/list"
+                                // 회원가입/로그인/토큰 재발급
+                                "/users/join", "/users/login", "/auth/reissue",
+
+                                // 장바구니 리스트 조회는 비회원도 가능하다고 가정
+                                "/itemCart/list",
+
+                                // 장바구니/주문 관련 API
+                                "/itemCart/**", "/order/**",
+
+                                // 상품 및 카테고리 추가
+                                "/items/add", "/categories/add",
+
+                                // Swagger/OpenAPI 문서
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"
                         ).permitAll()
+
+                        //  인증 필요 (authenticated) 경로를 URL 패턴으로 통합
+                        .requestMatchers(
+                                // 내 정보 조회 및 수정
+                                "/users/my-info", "/users/myUpdateInfo",
+
+                                // 로그아웃, 회원탈퇴
+                                "/users/logout", "/users/delete"
+                        ).authenticated()
+
                         // 그 밖의 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 );

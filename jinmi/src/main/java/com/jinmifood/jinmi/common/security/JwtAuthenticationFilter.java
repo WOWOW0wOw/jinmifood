@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.warn("Access Token 유효성 검사 실패. 토큰: {}", accessToken.substring(0, 10) + "...");
             }
         } else{
-            log.warn("요청 헤더에서 Access Token을 찾을 수 없음.");
+            log.debug("요청 헤더에서 Access Token을 찾을 수 없음.");
         }
 
         filterChain.doFilter(request, response);

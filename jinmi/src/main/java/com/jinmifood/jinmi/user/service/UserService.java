@@ -10,7 +10,9 @@ import com.jinmifood.jinmi.common.security.refreshToken.repository.RefreshTokenR
 import com.jinmifood.jinmi.user.domain.User;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
+import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
 import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
+import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
 import com.jinmifood.jinmi.user.dto.response.TokenResponse;
 import com.jinmifood.jinmi.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -182,5 +185,62 @@ public class UserService {
     }
 
 
+    public MyInfoResponse getMyinfo(Long userId) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorException.NOT_FOUND));
+
+        return MyInfoResponse.from(user);
+    }
+
+    @Transactional
+    public void updateMyInfo(Long userId, UpdateMyInfoRequest request) {
+        log.info("회원정보 수정 시작: userId={}", userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("사용자 정보를 찾을 수 없음: userId={}", userId);
+                    return new CustomException(ErrorException.NOT_FOUND);
+                });
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            log.warn("현재 비밀번호 불일치: userId={}", userId);
+            throw new CustomException(ErrorException.PASSWORD_MISMATCH);
+        }
+        String newDisplayName = request.getDisplayName();
+        if (newDisplayName != null && !newDisplayName.equals(user.getDisplayName())) {
+            if(userRepository.existsByDisplayName(newDisplayName)) {
+                log.warn("닉네임 중복: userId={}, newDisplayName={}", userId, newDisplayName);
+                throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
+            }
+        }
+
+        String newPhoneNumber = request.getPhoneNumber();
+        if (newPhoneNumber != null && !newPhoneNumber.equals(user.getPhoneNumber())) {
+            Optional<User> existingUser = userRepository.findByPhoneNumber(newPhoneNumber);
+
+            if (existingUser.isPresent()) {
+                log.warn("전화번호 중복: userId={}, newPhoneNumber={}", userId, newPhoneNumber);
+                throw new CustomException(ErrorException.DUPLICATE_PHONENUMBER);
+            }
+        }
+
+        if (request.isPasswordChangeRequested()){
+            String newPassword = request.getNewPassword();
+            String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$";
+            if(!newPassword.matches(passwordPattern)){
+                log.warn("새 비밀번호 패턴 불일치: userId={}", userId);
+                throw new CustomException(ErrorException.PASSWORD_MISPATTERN);
+            }
+           String encodedNewPassword = passwordEncoder.encode(newPassword);
+           user.updatePassword(encodedNewPassword);
+           log.info("비밀번호 변경완료: userId={}", userId);
+        }
+        user.updateDetails(
+                request.getDisplayName(),
+                request.getPhoneNumber(),
+                request.getAddress()
+        );
+        log.info("기타 정보 수정완료: userId={}", userId);
+    }
 }

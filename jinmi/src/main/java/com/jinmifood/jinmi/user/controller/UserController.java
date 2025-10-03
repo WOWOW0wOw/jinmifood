@@ -8,7 +8,9 @@ import com.jinmifood.jinmi.common.security.JwtTokenProvider;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
+import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
 import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
+import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
 import com.jinmifood.jinmi.user.dto.response.TokenResponse;
 import com.jinmifood.jinmi.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,8 +68,9 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public StatusResponseDTO delete(@AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest request) {
-
+    public StatusResponseDTO delete(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            HttpServletRequest request) {
 
         if (userDetails == null) {
             //️ NullPointerException을 CustomException으로 대체하여 응답
@@ -89,5 +92,27 @@ public class UserController {
         return StatusResponseDTO.ok("회원 탈퇴 성공");
 
     }
+    // 내 정보 불러오기
+    @GetMapping("/myInfo")
+    public StatusResponseDTO getMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
+        Long userId = userDetails.getId();
+
+        MyInfoResponse response = userService.getMyinfo(userId);
+
+        return StatusResponseDTO.ok(response);
+    }
+    // 내정보 수정하기
+    @PutMapping("/myUpdateInfo")
+    public StatusResponseDTO updateMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody UpdateMyInfoRequest request) {
+
+        Long userId = userDetails.getId();
+
+        userService.updateMyInfo(userId,request);
+        return StatusResponseDTO.ok("회원정보가 수정 성공");
+
+    }
 }

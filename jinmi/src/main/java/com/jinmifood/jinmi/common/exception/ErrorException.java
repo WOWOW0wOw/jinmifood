@@ -26,7 +26,9 @@ public enum ErrorException {
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "DB에 토큰 정보가 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Refresh Token입니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Access Token 입니다."),
-    
+    PASSWORD_MISMATCH(HttpStatus.CONFLICT,"현재 비밀번호 불일치"),
+    PASSWORD_MISPATTERN(HttpStatus.CONFLICT,"새 비밀번호 패턴 불일치"),
+
     DUPLICATE_ITEM_NAME(HttpStatus.CONFLICT, "이미 존재하는 아이템 이름입니다."),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다.");
 
