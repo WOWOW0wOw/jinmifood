@@ -1,0 +1,82 @@
+/* 공통 레이아웃 */
+.hd { background:#fff; }
+.hd__container,
+.hd__sub__container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* 상단 바 */
+.hd__container {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 우측 정렬 */
+    border-bottom: 1px solid #f1f1f1;
+}
+
+/* 우측 버튼들 */
+.pill-btn {
+    display:inline-flex; align-items:center; height:30px;
+    padding:0 12px; border-radius:16px;
+    background:#f6f7f9; color:#333; text-decoration:none;
+    font-size:13px; margin-left:8px;
+}
+.pill-btn:hover { background:#e9eef7; }
+
+.cart-btn {
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:30px; border-radius:16px; background:#f6f7f9; margin-left:8px; text-decoration:none; color:#333;
+}
+.cart-btn:hover { background:#e9eef7; }
+
+.badge {
+    position:absolute; top:-6px; right:-6px;
+    min-width:18px; height:18px; padding:0 4px;
+    border-radius:9px; background:#ef4444; color:#fff;
+    font-size:11px; display:flex; align-items:center; justify-content:center;
+}
+
+/* 하단 바 */
+.hd__sub { border-bottom:1px solid #eee; background:#fff; }
+.hd__sub__container {
+    height:72px;
+    display:flex; align-items:center;
+}
+
+/* 좌 로고 */
+.logo {
+    font-weight:800; letter-spacing:.3px; color:#111; text-decoration:none;
+    display:inline-flex; align-items:center; font-size:22px;
+}
+.logo span { color:#2f80ed; margin-left:2px; }
+
+/* 가운데 GNB (가운데 정렬) */
+.hd__center { flex: 1; display:flex; justify-content:center; }
+.gnb { list-style:none; margin:0; padding:0; display:flex; gap:36px; }
+.gnb__item { position:relative; display:flex; align-items:center; height:72px; }
+.gnb__link { color:#111; text-decoration:none; font-size:15px; }
+.gnb__link:hover { color:#2f80ed; }
+
+/* 드롭다운 (회사소개) */
+.gnb__item.has-sub .dropdown {
+    position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    display:none; min-width:120px;
+    background:#444; color:#fff; padding:6px 0; border-radius:4px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:20;
+}
+.gnb__item.has-sub:hover .dropdown,
+.gnb__item.has-sub:focus-within .dropdown { display:block; }
+
+.dropdown li { list-style:none; }
+.dropdown a {
+    display:block; padding:8px 14px; color:#fff; text-decoration:none; font-size:13px; white-space:nowrap;
+}
+.dropdown a:hover { background:#2b2b2b; }
+
+/* 반응형(간단) */
+@media (max-width: 960px) {
+    .gnb { gap:22px; }
+}
+@media (max-width: 720px) {
+    .hd__container { height:40px; }
+    .hd__sub__container { height:60px; }
+    .hd__center { display:none; } /* 모바일은 추후 버거메뉴로 교체 권장 */
+}
