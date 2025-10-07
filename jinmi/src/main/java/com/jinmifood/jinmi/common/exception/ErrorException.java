@@ -19,6 +19,8 @@ public enum ErrorException {
 
     DUPLICATE_CART(HttpStatus.CONFLICT, "이미 장바구니에 있습니다."),
     FULL_CART(HttpStatus.CONFLICT, "장바구니가 이미 찼습니다"),
+    DUPLICATE_LIKE(HttpStatus.CONFLICT,"이미 좋아요를 눌렀습니다."),
+
 
     QTY_NOTZERO(HttpStatus.CONFLICT, "최소 하나를 담아야합니다."),
     QTY_FULL(HttpStatus.CONFLICT, "최대 100개까지 담을 수 있습니다."),

@@ -75,11 +75,12 @@ public class SecurityConfig {
                                 // 장바구니/주문 관련 API
                                 "/itemCart/**", "/order/**",
 
-                                // 상품 및 카테고리 추가
-                                "/items/add", "/categories/add",
+                                // 상품 및 카테고리,좋아요,후기,문의 관련 API
+                                "/items/**", "/categories/**", "/likes/**",
 
                                 // Swagger/OpenAPI 문서
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"
+
                         ).permitAll()
 
                         //  인증 필요 (authenticated) 경로를 URL 패턴으로 통합
