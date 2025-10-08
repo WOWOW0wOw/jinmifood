@@ -14,6 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -38,13 +43,36 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // http://localhost:5173이 React 개발 서버의 기본 주소
+        config.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+
+        // 모든 메서드 허용 (GET, POST, PUT, DELETE)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // 모든 헤더 허용 (Authorization 헤더 포함)
+        config.setAllowedHeaders(List.of("*"));
+
+        // 쿠키 및 인증 정보(jwt)를 포함한 요청 허용
+        config.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // 모든 경로 (/**)에 대해 위 설정 적용
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+
+    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 // 기본 보안 옵션
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
 
@@ -85,7 +113,7 @@ public class SecurityConfig {
                         //  인증 필요 (authenticated) 경로를 URL 패턴으로 통합
                         .requestMatchers(
                                 // 내 정보 조회 및 수정
-                                "/users/my-info", "/users/myUpdateInfo",
+                                "/users/myInfo", "/users/myUpdateInfo",
 
                                 // 로그아웃, 회원탈퇴
                                 "/users/logout", "/users/delete"

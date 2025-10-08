@@ -24,10 +24,7 @@ import org.springframework.util.StringUtils;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,6 +37,7 @@ public class JwtTokenProvider {
     private final long refreshTokenExpireTime;
     private final CustomUserDetailsService customUserDetailsService;
 
+
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
                             @Value("${jwt.access-token-expiration-time}") long accessTokenExpireTime,
                             @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpireTime,
@@ -49,6 +47,7 @@ public class JwtTokenProvider {
         this.accessTokenExpireTime = accessTokenExpireTime;
         this.refreshTokenExpireTime = refreshTokenExpireTime;
         this .customUserDetailsService = customUserDetailsService;
+        log.info("JWT ACCESS TOKEN EXPIRE TIME: {} ms ({} 분)", accessTokenExpireTime, accessTokenExpireTime / 60000);
     }
 
     // 1. JWT Access Token 생성
@@ -92,20 +91,40 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities;
 
         // 권한 클레임(claims.get("auth"))이 존재하는지 확인
-        if (claims.get("auth") != null) {
-            // Access Token인 경우, 권한 정보를 가져와 설정
-            authorities = Arrays.stream(claims.get("auth").toString().split(","))
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList());
-        } else {
-            // Refresh Token인 경우, 권한 정보 없이 생성 (토큰 재발급만 목적)
-            authorities = Collections.emptyList();
+        if (claims.get(AUTHORITIES_KEY) != null) { // AUTHORITIES_KEY 사용
+            String authClaims = claims.get(AUTHORITIES_KEY).toString();
 
+            // Access Token인 경우 권한 정보를 가져와 설정
+            if (StringUtils.hasText(authClaims)) { // 권한 문자열이 유효한지 확인
+                authorities = Arrays.stream(authClaims.split(","))
+                        .map(String::trim)
+                        .filter(StringUtils::hasText) //  빈 권한 필터링
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+            } else {
+                authorities = Collections.emptyList();
+            }
+
+        } else {
+            // Refresh Token이거나 'auth' 클레임이 없는 경우 (권한 정보 없이 생성)
+            authorities = Collections.emptyList();
         }
+
+        // authorities가 비어있다면 (Refresh Token이거나 Access Token에 권한이 누락된 경우)
+        // Spring Security의 기본 'ROLE_ANONYMOUS' 대신 특정 역할 부여
+        if (authorities.isEmpty() && claims.get(AUTHORITIES_KEY) == null) {
+            // Refresh Token처럼 처리: 권한 없이 사용자 정보만 로드
+        } else if (authorities.isEmpty() && claims.get(AUTHORITIES_KEY) != null) {
+            // Access Token인데 권한 추출에 실패했을 경우: 기본 권한 부여 (예: ROLE_USER)
+            authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+
 
         // Refresh Token의 Subject(사용자 ID/이메일)만 사용합니다.
         UserDetails principal = customUserDetailsService.loadUserByUsername(userIdentifier);
 
+        //  만약 Refresh Token이고 authorities가 비어있다면, principal에서 authorities를 가져오지 않도록
+        // 아래와 같이 수정합니다. (현재 코드는 principal에서 authorities를 가져오지 않고 그대로 사용하므로 괜찮습니다.)
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
@@ -115,13 +134,13 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.", e);
+            log.warn("잘못된 JWT 서명입니다.", e);
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.", e);
+            log.debug("만료된 JWT 토큰입니다.(필터에서 처리됨)", e);
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.", e);
+            log.warn("지원되지 않는 JWT 토큰입니다.", e);
         } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.", e);
+            log.warn("JWT 토큰이 잘못되었습니다.", e);
         }
         return false;
     }

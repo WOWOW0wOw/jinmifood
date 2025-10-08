@@ -1,13 +1,26 @@
 import React from "react";
+import {Link} from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import "./header.css";
 
 export default function Header({ cartCnt = 0 }) {
+
+    const { isLoggedIn, user, handleLogout } = useAuth();
+
+    const displayName = user?.displayName || '회원';
     return (
         <header className="hd">
             {/* 상단 바: 우측 정렬 */}
             <div className="hd__container">
                 <div className="hd__right">
-                    <a href="/login" className="pill-btn">로그인</a>
+                    {isLoggedIn ? (
+                        <>
+                            <span className="pill-btn">{displayName}님</span>
+                            <button onClick={handleLogout} className="pill-btn">로그아웃</button>
+                        </>
+                    ) : (
+                        <Link to="/login" className="pill-btn">로그인</Link>
+                    )}
                     <a href="/orders" className="pill-btn">주문조회</a>
                     <a href="/cart" className="cart-btn" aria-label="장바구니">
                         🛒<span className="badge">{cartCnt}</span>
