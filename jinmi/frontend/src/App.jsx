@@ -1,8 +1,8 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header.jsx'
-import LoginPage from "./pages/LoginPage.jsx";
-import Signup from "./pages/Signup.jsx";
+import LoginPage from "./pages/User/LoginPage.jsx";
+import Signup from "./pages/User/Signup.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import CartPage from "./pages/itemCart/CartPage.jsx";
 

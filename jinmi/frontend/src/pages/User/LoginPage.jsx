@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import apiClient from "../api/apiClient.js";
-import { useAuth} from "../context/AuthContext.jsx";
+import apiClient from "../../api/apiClient.js";
+import { useAuth} from "../../context/AuthContext.jsx";
 import axios from 'axios';
+import styles from './css/Login.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
@@ -10,6 +11,8 @@ export default function LoginPage() {
 
     const navigate = useNavigate();
     const { handleLogin } = useAuth();
+
+    const [error, setError] = useState(null);
 
     const [credentials, setCredentials] = useState({
         email: '',
@@ -22,6 +25,7 @@ export default function LoginPage() {
             ...credentials,
             [name]: value,
         });
+        if(error) setError(null);
     };
 
     const handleSubmit = async (e) => {
@@ -62,25 +66,33 @@ export default function LoginPage() {
 
 
     return (
-        <div className="login-page">
+        <div className={styles.container}>
             <h2>로그인</h2>
-            <form className="login-form" onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit}>
                 <input type="email"
                        name="email"
                        placeholder="이메일"
                        value={credentials.email}
                        onChange={handleChange}
-                       required />
+                       required
+                       className={styles.input}
+                />
 
                 <input type="password"
                        name="password"
                        placeholder="비밀번호"
                        value={credentials.password}
                        onChange={handleChange}
-                       required />
-                <button type="submit">로그인</button>
-                <p>
-                    계정이 없으신가요? <a href="/signup">회원가입</a>
+                       required
+                       className={styles.input}
+                />
+
+                {error && <p className={styles.error}>{error}</p>}
+
+                <button type="submit" className={styles.button}>로그인</button>
+
+                <p className={styles.signupLink}>
+                    계정이 없으신가요? <span onClick={() => navigate('/signup')} className={styles.link}>회원가입</span>
                 </p>
             </form>
         </div>
