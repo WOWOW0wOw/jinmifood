@@ -115,4 +115,17 @@ public class UserController {
         return StatusResponseDTO.ok("회원정보가 수정 성공");
 
     }
+
+    @GetMapping("/checkNickname")
+    public StatusResponseDTO checkNickname(@RequestParam("displayName") String nickname) {
+
+        if(userService.existsByDisplayName(nickname)){
+            log.warn("닉네임 중복 확인: {} 닉네임이 이미 존재합니다.", nickname);
+            throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
+        }
+
+        log.info("닉네임 중복 확인: {} 닉네임 사용 가능", nickname);
+        return StatusResponseDTO.ok("사용 가능한 닉네임 입니다.");
+
+    }
 }

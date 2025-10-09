@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import com.jinmifood.jinmi.common.constant.ReservedKeywords;
 
 @Slf4j
 @Service
@@ -40,6 +41,17 @@ public class UserService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
+
+
+    private boolean isReservedKeywordUsed(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        final String lowerCaseText = text.toLowerCase();
+
+        return ReservedKeywords.RESERVED_LIST.stream()
+                .anyMatch(keyword -> lowerCaseText.contains(keyword));
+    }
 
     // 이메일 찾기
     @Transactional(readOnly = true)
@@ -55,9 +67,21 @@ public class UserService {
         return userRepository.existsByDisplayName(nickname);
 
     }
+
+
     // 가입
     @Transactional
     public JoinUserResponse registerUser(JoinUserRequest user) {
+
+        if (isReservedKeywordUsed(user.getDisplayName())) {
+            throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
+        }
+
+        String emailId = user.getEmail().split("@")[0];
+        if (isReservedKeywordUsed(emailId)) {
+            throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
+        }
+
 
         // 이메일 중복확인
         if(userRepository.existsByEmail(user.getEmail())) {
@@ -67,10 +91,11 @@ public class UserService {
         if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
             throw new CustomException(ErrorException.DUPLICATE_PHONENUMBER);
         }
-        // 닉네임 중복확인
+        // 닉네임 중복확인 (일반적인 중복 확인)
         if(userRepository.existsByDisplayName(user.getDisplayName())){
             throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
         }
+
         //비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
@@ -103,7 +128,6 @@ public class UserService {
         user.updateLastLoginAt();
 
         // accessToken && refreshToken 생성
-        // ⭐️ 수정: generateToken -> generateAccessToken
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
 
@@ -209,6 +233,12 @@ public class UserService {
         }
         String newDisplayName = request.getDisplayName();
         if (newDisplayName != null && !newDisplayName.equals(user.getDisplayName())) {
+
+            if (isReservedKeywordUsed(newDisplayName)) {
+                log.warn("닉네임 예약 키워드 사용 시도: userId={}, newDisplayName={}", userId, newDisplayName);
+                throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
+            }
+
             if(userRepository.existsByDisplayName(newDisplayName)) {
                 log.warn("닉네임 중복: userId={}, newDisplayName={}", userId, newDisplayName);
                 throw new CustomException(ErrorException.DUPLICATE_NICKNAME);
@@ -232,9 +262,9 @@ public class UserService {
                 log.warn("새 비밀번호 패턴 불일치: userId={}", userId);
                 throw new CustomException(ErrorException.PASSWORD_MISPATTERN);
             }
-           String encodedNewPassword = passwordEncoder.encode(newPassword);
-           user.updatePassword(encodedNewPassword);
-           log.info("비밀번호 변경완료: userId={}", userId);
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            user.updatePassword(encodedNewPassword);
+            log.info("비밀번호 변경완료: userId={}", userId);
         }
         user.updateDetails(
                 request.getDisplayName(),
