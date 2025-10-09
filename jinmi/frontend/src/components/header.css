@@ -5,7 +5,7 @@
 
 /* 상단 바 */
 .hd__container {
-    height: 44px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: flex-end; /* 우측 정렬 */
@@ -14,18 +14,18 @@
 
 /* 우측 버튼들 */
 .pill-btn {
-    display:inline-flex; align-items:center; height:30px;
-    padding:0 12px; border-radius:16px;
-    background:#f6f7f9; color:#333; text-decoration:none;
+    display:inline-flex; align-items:center; height:40px;
+    padding:0 15px; border-radius:20px;
+    background: #8c5f21; color: #fbfbfb; text-decoration:none;
     font-size:13px; margin-left:8px;
 }
-.pill-btn:hover { background:#e9eef7; }
+.pill-btn:hover { background: #e3b979; }
 
 .cart-btn {
     position:relative; display:inline-flex; align-items:center; justify-content:center;
-    width:34px; height:30px; border-radius:16px; background:#f6f7f9; margin-left:8px; text-decoration:none; color:#333;
+    width:34px; height:30px; border-radius:16px; background: #f8e3d0; margin-left:8px; text-decoration:none; color:#333;
 }
-.cart-btn:hover { background:#e9eef7; }
+.cart-btn:hover { background: #8c5f21; }
 
 .badge {
     position:absolute; top:-6px; right:-6px;
