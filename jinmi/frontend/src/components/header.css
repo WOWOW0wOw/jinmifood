@@ -43,7 +43,7 @@
 
 /* 좌 로고 */
 .logo {
-    font-weight:800; letter-spacing:.3px; color:#111; text-decoration:none;
+    font-weight:800; letter-spacing:0.3px; color:#111; text-decoration:none;
     display:inline-flex; align-items:center; font-size:22px;
 }
 .logo span { color:#2f80ed; margin-left:2px; }
