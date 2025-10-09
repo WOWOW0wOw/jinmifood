@@ -26,6 +26,7 @@ public class ViewItemResponse {
     private ItemStatus status;
     private int count;
     private LocalDateTime createAt;
+    private LocalDateTime updateAt;
 
     public ViewItemResponse(Item item) {
         this.itemId = item.getItemId();
@@ -41,5 +42,8 @@ public class ViewItemResponse {
         this.status = item.getStatus();
         this.count = item.getCount();
         this.createAt = item.getCreateAt();
+        this.updateAt = item.getUpdateAt();
     }
+
+
 }

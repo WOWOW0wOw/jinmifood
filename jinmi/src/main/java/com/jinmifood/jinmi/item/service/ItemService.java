@@ -5,6 +5,7 @@ import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.item.domain.Category;
 import com.jinmifood.jinmi.item.domain.Item;
 import com.jinmifood.jinmi.item.dto.request.AddItemRequest;
+import com.jinmifood.jinmi.item.dto.request.UpdateItemRequest;
 import com.jinmifood.jinmi.item.dto.response.ViewItemResponse;
 import com.jinmifood.jinmi.item.repository.CategoryRepository;
 import com.jinmifood.jinmi.item.repository.ItemRepository;
@@ -66,6 +67,57 @@ public class ItemService {
             throw new CustomException(ErrorException.NOT_FOUND);
         }
         itemRepository.delete(item);
+    }
+
+    @Transactional
+    public void removeAllItem() {
+        itemRepository.deleteAll();
+    }
+
+
+    @Transactional
+    public Item updateItem(Long itemId, UpdateItemRequest request) {
+        Item item = itemRepository.findItemByItemId(itemId);
+
+        if(item == null) {
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+
+        if (request.getItemName() != null && !request.getItemName().equals(item.getItemName())) {
+            List<Item> existingItems = itemRepository.findAllByItemName(request.getItemName());
+            if (!existingItems.isEmpty() && existingItems.stream().anyMatch(i -> !i.getItemId().equals(itemId))) {
+                throw new CustomException(ErrorException.DUPLICATE_ITEM_NAME);
+            }
+        }
+
+        item.updateItemDetails(request);
+
+        log.info("아이템 수정 완료 item: {}", item);
+        return item;
+    }
+
+    public List<ViewItemResponse> getItemList(){
+
+        List<Item> itemList = itemRepository.findAll();
+        log.info("ItemList: {}", itemList);
+        if(itemList.isEmpty()) {
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+
+        return itemList.stream()
+                .map(ViewItemResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ViewItemResponse> getItemListByCategoryId(Long categoryId){
+        List<Item> itemList = itemRepository.findAllByCategoryId(categoryId);
+        log.info("ItemList: {}", itemList);
+        if(itemList.isEmpty()) {
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+        return itemList.stream()
+                .map(ViewItemResponse::new)
+                .collect(Collectors.toList());
     }
 
 }
