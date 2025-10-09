@@ -2,6 +2,8 @@ package com.jinmifood.jinmi.review.domain;
 
 
 import com.jinmifood.jinmi.item.domain.ItemStatus;
+import com.jinmifood.jinmi.review.dto.request.AddReviewRequest;
+import com.jinmifood.jinmi.review.dto.request.UpdateReviewRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,9 +27,6 @@ public class Review {
     @Column(name = "itemId", nullable = false)
     private Long itemId;
 
-    @Column(name = "authorId", nullable = false)
-    private Long authorId;
-
     @Column(name = "userId", nullable = false)
     private Long userId;
 
@@ -50,6 +49,15 @@ public class Review {
         this.updateAt = this.updateAt == null ? LocalDateTime.now() : this.updateAt;
     }
 
+    public void updateReviewDetails(UpdateReviewRequest request){
+        if(request.getContent() != null){
+            this.content = request.getContent();
+        }
+        if(request.getImage() != null){
+            this.image = request.getImage();
+        }
+        this.updateAt = LocalDateTime.now();
+    }
 
 
 
