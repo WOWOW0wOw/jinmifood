@@ -106,6 +106,13 @@ public class SecurityConfig {
                                 // 상품 및 카테고리,좋아요,후기,문의 관련 API
                                 "/items/**", "/categories/**", "/likes/**",
 
+                                // 리뷰 리스트
+                                "/reviews/listByItem","/reviews/listAll",
+
+                                // 인큐리 리스트
+                                
+                                "/inquiry/listByItem","/inquiry/listAll",
+
                                 // Swagger/OpenAPI 문서
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"
 

@@ -9,15 +9,13 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class AddReviewRequest {
+public class UpdateReviewRequest {
 
-    private Long itemId;
     private String content;
     private String image;
 
     public Review toEntity() {
         return Review.builder()
-                .itemId(this.itemId)
                 .content(this.content)
                 .image(this.image)
                 .build();

@@ -63,7 +63,6 @@ public class ItemService {
         Item item = itemRepository.findItemByItemId(itemId);
         log.info("item: {}", item);
         if(item == null) {
-            System.out.println("송명보형 바보");
             throw new CustomException(ErrorException.NOT_FOUND);
         }
         itemRepository.delete(item);

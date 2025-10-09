@@ -114,5 +114,13 @@ public class Item {
         }
     }
 
+    public void updateReviewCnt(){ this.reviewCnt++; }
+
+    public void decreaseReviewCnt(){
+        if(this.reviewCnt > 0){
+            this.reviewCnt--;
+        }
+    }
+
 
 }
