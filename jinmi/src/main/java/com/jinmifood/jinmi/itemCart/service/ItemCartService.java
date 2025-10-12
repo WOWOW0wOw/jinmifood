@@ -45,9 +45,9 @@ public class ItemCartService {
     }
 
     @Transactional
-    public void removeCart(Long userId, Long itemId) {
+    public void removeCart(Long userId, Long cartId) {
 
-        ItemCart cart = itemCartRepository.findByItemIdAndUserId(itemId, userId);
+        ItemCart cart = itemCartRepository.findByIdAndUserId(cartId, userId);
         if(cart == null) {
             throw new CustomException(ErrorException.NOT_FOUND);
         }
@@ -80,7 +80,7 @@ public class ItemCartService {
 
 
 
-        ItemCart cart = itemCartRepository.findByItemIdAndUserId(cartId, userId);
+        ItemCart cart = itemCartRepository.findByIdAndUserId(cartId, userId);
         cart.setTotalCnt(qty);
         cart.setTotalPrice(qty * cart.getPrice());
         itemCartRepository.save(cart);

@@ -1,21 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { fetchCart, updateQuantity, removeItem, clearCart } from "../../api/cart";
-import './cart.css';
+import { fetchCart, updateQuantity, removeItem, clearCart } from '../../api/itemCart.js';
+import './itemCart.css';
 
 export default function CartPage() {
-    const [items, setItems] = useState([]);     // [{ itemCartId, itemId, name, price, quantity, imageUrl }]
+    const [items, setItems] = useState([]); // [{ id, name, optionName, qty, price, imageUrl }]
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [checked, setChecked] = useState(() => new Set()); // 선택된 itemCartId 집합
+    const [checked, setChecked] = useState(() => new Set()); // 선택된 id 집합
 
     useEffect(() => {
         (async () => {
             try {
                 setLoading(true);
                 setError('');
-                const data = await fetchCart();
-                // 백엔드 DTO 키와 맞추세요 (예: content, data.items 등)
-                const list = Array.isArray(data) ? data : (data.items || data.content || []);
+                const list = await fetchCart(); // ← 이제 항상 표준화된 배열이 옴
                 setItems(list);
             } catch (e) {
                 setError(e.message || '불러오기 에러');
@@ -28,17 +26,17 @@ export default function CartPage() {
     const allChecked = items.length > 0 && checked.size === items.length;
 
     const selectedItems = useMemo(
-        () => items.filter(i => checked.has(i.itemCartId ?? i.id)),
+        () => items.filter((i) => checked.has(i.id)),
         [items, checked]
     );
 
     const totalCount = useMemo(
-        () => selectedItems.reduce((acc, cur) => acc + (cur.quantity ?? 1), 0),
+        () => selectedItems.reduce((acc, cur) => acc + (cur.qty ?? 1), 0),
         [selectedItems]
     );
 
     const totalPrice = useMemo(
-        () => selectedItems.reduce((acc, cur) => acc + (cur.price || 0) * (cur.quantity ?? 1), 0),
+        () => selectedItems.reduce((acc, cur) => acc + (cur.price || 0) * (cur.qty ?? 1), 0),
         [selectedItems]
     );
 
@@ -46,12 +44,12 @@ export default function CartPage() {
         if (allChecked) {
             setChecked(new Set());
         } else {
-            setChecked(new Set(items.map(i => i.itemCartId ?? i.id)));
+            setChecked(new Set(items.map((i) => i.id)));
         }
     }
 
     function toggleOne(id) {
-        setChecked(prev => {
+        setChecked((prev) => {
             const next = new Set(prev);
             next.has(id) ? next.delete(id) : next.add(id);
             return next;
@@ -59,27 +57,25 @@ export default function CartPage() {
     }
 
     async function handlePlus(item) {
-        const id = item.itemCartId ?? item.id;
-        const nextQty = (item.quantity ?? 1) + 1;
-        await handleUpdateQty(id, nextQty);
+        const nextQty = (item.qty ?? 1) + 1;
+        await handleUpdateQty(item.id, nextQty);
     }
 
     async function handleMinus(item) {
-        const id = item.itemCartId ?? item.id;
-        const nextQty = Math.max(1, (item.quantity ?? 1) - 1);
-        await handleUpdateQty(id, nextQty);
+        const nextQty = Math.max(1, (item.qty ?? 1) - 1);
+        await handleUpdateQty(item.id, nextQty);
     }
 
     async function handleUpdateQty(id, qty) {
+        console.log("id = " + id)
         try {
             // Optimistic UI
-            setItems(prev => prev.map(i => ( (i.itemCartId ?? i.id) === id ? { ...i, quantity: qty } : i )));
+            setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty: qty } : i)));
             await updateQuantity(id, qty);
         } catch (e) {
             setError(e.message || '수량 변경 실패');
-            // 실패 시 새로고침으로 원복
-            const data = await fetchCart();
-            const list = Array.isArray(data) ? data : (data.items || data.content || []);
+            // 실패 시 서버 데이터로 동기화
+            const list = await fetchCart();
             setItems(list);
         }
     }
@@ -88,8 +84,8 @@ export default function CartPage() {
         if (!confirm('해당 상품을 삭제할까요?')) return;
         try {
             await removeItem(id);
-            setItems(prev => prev.filter(i => (i.itemCartId ?? i.id) !== id));
-            setChecked(prev => {
+            setItems((prev) => prev.filter((i) => i.id !== id));
+            setChecked((prev) => {
                 const next = new Set(prev);
                 next.delete(id);
                 return next;
@@ -115,9 +111,7 @@ export default function CartPage() {
             alert('주문할 상품을 선택해주세요.');
             return;
         }
-        // 주문 페이지로 이동(선택한 카트ID들 쿼리로 넘기기 등)
-        const ids = selectedItems.map(i => i.itemCartId ?? i.id).join(',');
-        // 예: /order?cartIds=1,2,3
+        const ids = selectedItems.map((i) => i.id).join(',');
         window.location.href = `/order?cartIds=${ids}`;
     }
 
@@ -154,28 +148,22 @@ export default function CartPage() {
                             <div className="col col-act">관리</div>
                         </div>
 
-                        {items.map(item => {
-                            const id = item.itemCartId ?? item.id;
-                            const qty = item.quantity ?? 1;
+                        {items.map((item) => {
+                            const qty = item.qty ?? 1;
                             const sum = (item.price || 0) * qty;
 
                             return (
-                                <div className="cart-row" key={id}>
+                                <div className="cart-row" key={item.id}>
                                     <div className="col col-chk">
                                         <input
                                             type="checkbox"
-                                            checked={checked.has(id)}
-                                            onChange={() => toggleOne(id)}
+                                            checked={checked.has(item.id)}
+                                            onChange={() => toggleOne(item.id)}
                                         />
                                     </div>
 
                                     <div className="col col-item">
                                         <div className="item-wrap">
-                                            <img
-                                                src={item.imageUrl || '/placeholder.png'}
-                                                alt={item.name}
-                                                onError={(e) => (e.currentTarget.src = '/placeholder.png')}
-                                            />
                                             <div className="item-info">
                                                 <div className="name">{item.name}</div>
                                                 {item.optionName && <div className="opt">옵션: {item.optionName}</div>}
@@ -192,7 +180,7 @@ export default function CartPage() {
                                                 value={qty}
                                                 onChange={(e) => {
                                                     const v = Math.max(1, Number(e.target.value) || 1);
-                                                    handleUpdateQty(id, v);
+                                                    handleUpdateQty(item.id, v);
                                                 }}
                                             />
                                             <button onClick={() => handlePlus(item)}>+</button>
@@ -202,7 +190,7 @@ export default function CartPage() {
                                     <div className="col col-sum">{sum.toLocaleString()}원</div>
 
                                     <div className="col col-act">
-                                        <button className="btn danger" onClick={() => handleRemove(id)}>
+                                        <button className="btn danger" onClick={() => handleRemove(item.id)}>
                                             삭제
                                         </button>
                                     </div>

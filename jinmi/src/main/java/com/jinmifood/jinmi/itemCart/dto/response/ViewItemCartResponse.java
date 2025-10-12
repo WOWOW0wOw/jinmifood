@@ -10,6 +10,8 @@ import lombok.ToString;
 @Setter
 public class ViewItemCartResponse {
 
+    private Long cartId;
+    private Long itemId;
     private String itemName;
     private String itemOption;
     private Integer totalCnt;
@@ -17,6 +19,8 @@ public class ViewItemCartResponse {
     private Integer totalPrice;
 
     public ViewItemCartResponse(ItemCart itemCart) {
+        this.cartId = itemCart.getId();
+        this.itemId = itemCart.getItemId();
         this.itemName = itemCart.getItemName();
         this.itemOption = itemCart.getItemOption();
         this.totalCnt = itemCart.getTotalCnt();
