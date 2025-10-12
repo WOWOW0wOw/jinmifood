@@ -30,9 +30,13 @@ public enum ErrorException {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED,"유효하지 않거나 만료된 Access Token 입니다."),
     PASSWORD_MISMATCH(HttpStatus.CONFLICT,"현재 비밀번호 불일치"),
     PASSWORD_MISPATTERN(HttpStatus.CONFLICT,"새 비밀번호 패턴 불일치"),
+    EMAIL_SEND_FAIL(HttpStatus.UNAUTHORIZED,"인증 메일 발송 실패" ),
+    INVALID_AUTH_CODE(HttpStatus.BAD_REQUEST, "이메일 인증코드가 맞지 않습니다."),
+    EXPIRED_AUTH_CODE(HttpStatus.BAD_REQUEST, "인증코드가 만료되어 삭제되었습니다."),
 
     DUPLICATE_ITEM_NAME(HttpStatus.CONFLICT, "이미 존재하는 아이템 이름입니다."),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다.");
+
 
 
     private final HttpStatus httpStatus;
