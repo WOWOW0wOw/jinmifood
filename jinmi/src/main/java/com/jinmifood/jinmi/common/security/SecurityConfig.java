@@ -111,7 +111,7 @@ public class SecurityConfig {
 
                                 // 인큐리 리스트
                                 
-                                "/inquiry/listByItem","/inquiry/listAll",
+                                "/inquiries/listByItem","/inquiries/listAll",
 
                                 // Swagger/OpenAPI 문서
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"

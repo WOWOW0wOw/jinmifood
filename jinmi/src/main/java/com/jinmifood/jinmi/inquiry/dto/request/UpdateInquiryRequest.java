@@ -9,16 +9,14 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class AddInquiryRequest {
+public class UpdateInquiryRequest {
 
-    private Long itemId;
     private String content;
     private String title;
     private String image;
 
     public Inquiry toEntity() {
         return Inquiry.builder()
-                .itemId(this.itemId)
                 .content(this.content)
                 .title(this.title)
                 .image(this.image)
