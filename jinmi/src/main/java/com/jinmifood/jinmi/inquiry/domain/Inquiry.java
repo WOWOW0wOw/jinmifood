@@ -1,6 +1,7 @@
 package com.jinmifood.jinmi.inquiry.domain;
 
 
+import com.jinmifood.jinmi.inquiry.dto.request.UpdateInquiryRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.w3c.dom.Text;
@@ -60,6 +61,18 @@ public class Inquiry {
 
     public void updateAnswer() {
         this.answer = true;
+    }
+
+    public void updateAnswerContent(String answerContent) {
+        this.answerContent = this.answerContent == null ? "" : answerContent;
+        this.answer = true;
+    }
+
+    public void updateInquiryDetails(UpdateInquiryRequest request) {
+        this.content = request.getContent();
+        this.title = request.getTitle();
+        this.image = request.getImage();
+        this.updateAt = LocalDateTime.now();
     }
 
 

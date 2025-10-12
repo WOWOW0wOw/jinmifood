@@ -112,8 +112,8 @@ public class SecurityConfig {
                                 // 리뷰 리스트
                                 "/reviews/listByItem","/reviews/listAll",
 
-                                // 인큐리 리스트
-                                "/inquiry/listByItem","/inquiry/listAll",
+                                // 인큐리 리스트                            
+                                "/inquiries/listByItem","/inquiries/listAll",
 
                                 // Swagger/OpenAPI 문서
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"
