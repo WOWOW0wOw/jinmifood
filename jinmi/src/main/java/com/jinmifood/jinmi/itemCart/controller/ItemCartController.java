@@ -7,6 +7,7 @@ import com.jinmifood.jinmi.itemCart.dto.response.ViewItemCartResponse;
 import com.jinmifood.jinmi.itemCart.service.ItemCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +20,11 @@ public class ItemCartController {
 
     private final ItemCartService itemCartService;
 
-    @GetMapping({"/list"})
-    public StatusResponseDTO list(@RequestParam Long userId) {
+    @GetMapping({""})
+    public StatusResponseDTO list(@AuthenticationPrincipal(expression = "id") Long userId) {
+        log.info("userId = {}", userId);
         List<ViewItemCartResponse> list =  itemCartService.list(userId);
+        log.info("list = {}", list);
         return  StatusResponseDTO.ok(list);
     }
 
@@ -31,21 +34,26 @@ public class ItemCartController {
         return StatusResponseDTO.ok(cart);
     }
 
-    @PostMapping({"/remove"})
-    public StatusResponseDTO remove(@RequestParam Long userId, @RequestParam Long itemId){
-        itemCartService.removeCart(userId, itemId);
+    @PostMapping({"/remove/{cartId}"})
+    public StatusResponseDTO remove(@AuthenticationPrincipal(expression = "id") Long userId, @PathVariable Long cartId){
+        itemCartService.removeCart(userId, cartId);
         return StatusResponseDTO.ok("삭제 완료");
     }
 
     @PostMapping({"/removeAll"})
-    public StatusResponseDTO removeAll(@RequestParam Long userId){
+    public StatusResponseDTO removeAll(@AuthenticationPrincipal(expression = "id") Long userId){
         itemCartService.removeAllCart(userId);
         return StatusResponseDTO.ok("전체 삭제 완료");
     }
 
-    @PostMapping({"/update/qty"})
-    public StatusResponseDTO update(@RequestParam Long userId, @RequestParam Long itemId, @RequestParam int qty){
-        itemCartService.updateQuantity(userId, itemId, qty);
+    @PostMapping("/update/{cartId}/{qty}")
+    public StatusResponseDTO update(
+            @AuthenticationPrincipal(expression = "id") Long userId,
+            @PathVariable Long cartId,
+            @PathVariable int qty
+    ) {
+        log.info("userId = {}, cartId = {}, qty = {}", userId, cartId, qty);
+        itemCartService.updateQuantity(userId, cartId, qty);
         return StatusResponseDTO.ok("수량 수정 완료");
     }
 

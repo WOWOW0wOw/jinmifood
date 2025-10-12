@@ -49,9 +49,8 @@ jwt:
 
 logging:
   level:
-
-    com.jinmifood.jinmi: info
-    org.springframework.security: info
+    com.jinmifood.jinmi: debug
+    org.springframework.security: debug
 
 
 summarization:

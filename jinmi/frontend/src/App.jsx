@@ -9,7 +9,6 @@ import CartPage from "./pages/itemCart/CartPage.jsx";
 const Home     = () => <div className="page">메인</div>
 const About    = () => <div className="page">회사소개</div>
 const Products = () => <div className="page">전체상품</div>
-const Cart     = () => <div className="page">장바구니</div>
 
 
 export default function App() {

@@ -20,6 +20,7 @@ public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{
 
     ItemCart findByItemIdAndUserId(Long itemId, Long userId);
 
+    ItemCart findByIdAndUserId(Long cartId, Long userId);
 }
 
 

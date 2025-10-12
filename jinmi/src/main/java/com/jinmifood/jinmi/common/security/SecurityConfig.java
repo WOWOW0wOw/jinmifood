@@ -90,14 +90,16 @@ public class SecurityConfig {
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
-
+                        .requestMatchers("/error").permitAll()
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
 
                         .requestMatchers(
                                 // 회원가입/로그인/토큰 재발급
                                 "/users/join", "/users/login", "/auth/reissue","/users/checkNickname",
+
                                 // 이메일 인증
                                 "/email/send","/email/verify",
+                                
                                 // 장바구니 리스트 조회는 비회원도 가능하다고 가정
                                 "/itemCart/list",
 
@@ -111,7 +113,6 @@ public class SecurityConfig {
                                 "/reviews/listByItem","/reviews/listAll",
 
                                 // 인큐리 리스트
-                                
                                 "/inquiry/listByItem","/inquiry/listAll",
 
                                 // Swagger/OpenAPI 문서
@@ -128,8 +129,12 @@ public class SecurityConfig {
                                 "/users/logout", "/users/delete"
                         ).authenticated()
 
+                        .requestMatchers("/", "/favicon.ico", "/assets/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         // 그 밖의 모든 요청은 인증 필요
                         .anyRequest().authenticated()
+
                 );
 
         return http.build();
