@@ -1,12 +1,9 @@
-package com.jinmifood.jinmi.itemCart.repository;
+package com.jinmifood.jinmi.itemCart.config;
 
-import org.springframework.data.domain.Limit;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 
 import java.util.List;
-import java.util.Optional;
 
 
 public interface ItemCartRepository extends JpaRepository<ItemCart, Long>{

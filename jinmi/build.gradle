@@ -40,6 +40,9 @@ dependencies {
 
     // 구글 이메일
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebClient 포함
+
 }
 
 tasks.named('test') {

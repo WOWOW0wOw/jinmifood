@@ -67,6 +67,7 @@ frontend/.env.*.local
 .env
 .env.*.local
 !.env.example
+.env.local
 
 # =========================
 # 기타

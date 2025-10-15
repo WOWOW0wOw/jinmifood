@@ -116,7 +116,11 @@ public class SecurityConfig {
                                 "/inquiries/listByItem","/inquiries/listAll",
 
                                 // Swagger/OpenAPI 문서
-                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**"
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**",
+
+                                "/payments/confirm",
+                                "/payments/webhook",
+                                "/pay/success", "/pay/fail"
 
                         ).permitAll()
 
