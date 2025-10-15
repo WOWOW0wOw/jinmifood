@@ -46,7 +46,7 @@ export default function Header({ cartCnt = 0 }) {
                             </li>
 
                             <li className="gnb__item">
-                                <a className="gnb__link" href="/products">전체상품</a>
+                                <a className="gnb__link" href="/items">전체상품</a>
                             </li>
 
                             <li className="gnb__item">
