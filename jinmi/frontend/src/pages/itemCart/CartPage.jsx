@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchCart, updateQuantity, removeItem, clearCart } from '../../api/itemCart.js';
+import { tempSaveAmount } from '../../api/payments.js';
 import './itemCart.css';
 
 export default function CartPage() {
@@ -111,9 +112,47 @@ export default function CartPage() {
             alert('주문할 상품을 선택해주세요.');
             return;
         }
-        const ids = selectedItems.map((i) => i.id).join(',');
-        window.location.href = `/order?cartIds=${ids}`;
+        handlePay();
     }
+
+    async function handlePay() {
+           try {
+                 if (selectedItems.length === 0) {
+                       alert('주문할 상품을 선택해주세요.');
+                       return;
+                     }
+                 const amount = selectedItems.reduce((acc, cur) => acc + (cur.price || 0) * (cur.qty ?? 1), 0);
+                 if (amount <= 0) {
+                       alert('결제 금액이 올바르지 않습니다.');
+                       return;
+                     }
+
+                     // 주문명: 첫 상품 + 외 N건
+                         const first = selectedItems[0];
+                 const orderName = selectedItems.length === 1
+                   ? `${first.name}${first.optionName ? ` (${first.optionName})` : ''}`
+                       : `${first.name} 외 ${selectedItems.length - 1}건`;
+
+                     // 백엔드 세션에 금액 임시 저장 (검증용)
+                         const orderId = `ORD-${Date.now()}`;       // 임시 주문ID(고유)
+                 await tempSaveAmount(orderId, amount);     // POST /api/payments/saveAmount
+
+                     // 토스 결제창 호출
+                         const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY; // 테스트 키 가능
+                 const toss = window.TossPayments(clientKey);
+                 await toss.requestPayment('카드', {
+                       amount,                     // 결제금액
+                       orderId,                    // 위에서 만든 주문ID
+                       orderName,                  // 주문명
+                       customerName: '고객',        // (선택) 로그인 사용자명으로 넣어도 OK
+                       successUrl: `${location.origin}/payments/success`,
+                       failUrl: `${location.origin}/payments/fail`,
+                     });
+               } catch (e) {
+                 console.error(e);
+                 alert(e.message || '결제 준비 중 오류가 발생했습니다.');
+               }
+         }
 
     if (loading) return <div className="cart-container">불러오는 중...</div>;
 

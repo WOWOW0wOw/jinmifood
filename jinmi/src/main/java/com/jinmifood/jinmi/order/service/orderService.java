@@ -3,7 +3,7 @@ package com.jinmifood.jinmi.order.service;
 import com.jinmifood.jinmi.order.domain.Orders;
 import com.jinmifood.jinmi.order.dto.request.AddOrderRequest;
 import com.jinmifood.jinmi.order.dto.response.ViewOrderResponse;
-import com.jinmifood.jinmi.order.repository.orderRepository;
+import com.jinmifood.jinmi.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Limit;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class orderService {
 
-    private final orderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
     public String createOrderCode(){
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -6,7 +6,7 @@ import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 import com.jinmifood.jinmi.itemCart.dto.request.AddItemCartReqest;
 import com.jinmifood.jinmi.itemCart.dto.response.ViewItemCartResponse;
-import com.jinmifood.jinmi.itemCart.repository.ItemCartRepository;
+import com.jinmifood.jinmi.itemCart.config.ItemCartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,5 +1,8 @@
 package com.jinmifood.jinmi.itemCart.controller;
 
+import com.jinmifood.jinmi.common.exception.CustomException;
+import com.jinmifood.jinmi.common.exception.ErrorException;
+import com.jinmifood.jinmi.common.security.CustomUserDetails;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
 import com.jinmifood.jinmi.itemCart.domain.ItemCart;
 import com.jinmifood.jinmi.itemCart.dto.request.AddItemCartReqest;
@@ -21,7 +24,11 @@ public class ItemCartController {
     private final ItemCartService itemCartService;
 
     @GetMapping({""})
-    public StatusResponseDTO list(@AuthenticationPrincipal(expression = "id") Long userId) {
+    public StatusResponseDTO list(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        if(userDetails == null) {
+            throw new CustomException(ErrorException.USER_NOT_FOUND);
+        }
+        Long userId = userDetails.getId();
         log.info("userId = {}", userId);
         List<ViewItemCartResponse> list =  itemCartService.list(userId);
         log.info("list = {}", list);

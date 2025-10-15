@@ -1,5 +1,6 @@
 export const CART_API = '/api/itemCart';
 
+
 function authHeaders() {
     const token = localStorage.getItem('accessToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
@@ -7,7 +8,10 @@ function authHeaders() {
 
 export async function fetchCart() {
     const res = await fetch(`${CART_API}`, { headers: { ...authHeaders() } });
-    if (!res.ok) throw new Error('장바구니 불러오기 실패');
+    if (!res.ok) {
+        confirm("로그인 후 이용 가능합니다");
+        window.location.href = '/login';
+    }
 
     const body = await res.json();
 
