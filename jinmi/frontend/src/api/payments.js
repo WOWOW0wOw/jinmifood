@@ -1,5 +1,5 @@
 // src/api/payments.js
-function authHeaders({ requireAuth = false } = {}) {
+export function authHeaders({ requireAuth = false } = {}) {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         if (requireAuth && typeof window !== 'undefined') {
@@ -11,13 +11,49 @@ function authHeaders({ requireAuth = false } = {}) {
     return { Authorization: `Bearer ${token}` };
 }
 
-// 결제 전 금액을 서버 세션에 임시 저장 (백엔드: POST /payments/saveAmount)
-export async function tempSaveAmount(orderId, amount) {
-    const res = await fetch('/api/payments/saveAmount', {
+function unwrap(json) {
+    if (!json) return null;
+    return json.data ?? json.result ?? json.content ?? json.items ?? json;
+}
+
+/** 결제 준비 (서버가 orderId/amount 확정) */
+export async function preparePayment({ cartIds, orderName }) {
+    const res = await fetch('/api/payments/prepare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders({ requireAuth: true }) },
-        body: JSON.stringify({ orderId, amount: String(amount) }),
+        body: JSON.stringify({ cartIds, orderName }),
     });
-    if (!res.ok) throw new Error('결제금액 임시 저장 실패');
-    return res.json();
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        throw new Error(json?.message || '결제 준비 실패');
+    }
+    return unwrap(json); // { orderId, amount, orderName }
+}
+
+/** 결제 승인(성공 콜백에서 호출) — amount는 보내지 않음 */
+export async function confirmPayment({ orderId, paymentKey }) {
+    const res = await fetch('/api/payments/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders({ requireAuth: true }) },
+        body: JSON.stringify({ orderId, paymentKey }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        throw new Error(json?.message || '결제 승인 실패');
+    }
+    return unwrap(json); // { orderId, paymentKey, price, status, ... }
+}
+
+/** 결제 취소(옵션) */
+export async function cancelPayment({ paymentKey, cancelReason }) {
+    const res = await fetch('/api/payments/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders({ requireAuth: true }) },
+        body: JSON.stringify({ paymentKey, cancelReason }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        throw new Error(json?.message || '결제 취소 실패');
+    }
+    return unwrap(json); // "CANCELED"
 }

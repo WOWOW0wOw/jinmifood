@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ConfirmPaymentResponse {
     private String orderId;
     private String paymentKey;
-    private Integer amount;
+    private Integer price;
     private PaymentStatus status;
     private String method;
     private String receiptUrl;

@@ -10,8 +10,8 @@ export default function PaymentFailPage() {
     return (
         <div style={{ padding: 24 }}>
             <h1>결제 실패</h1>
-            <p>code: {code}</p>
-            <p>message: {message}</p>
+            {code && <p>코드: {code}</p>}
+            {message && <p>사유: {decodeURIComponent(message)}</p>}
             <button onClick={() => navigate('/cart')}>장바구니로</button>
         </div>
     );

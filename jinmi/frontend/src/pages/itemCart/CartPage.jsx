@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchCart, updateQuantity, removeItem, clearCart } from '../../api/itemCart.js';
-import { tempSaveAmount } from '../../api/payments.js';
+import { preparePayment } from '../../api/payments.js'; // ⬅️ 변경: tempSaveAmount → preparePayment
 import './itemCart.css';
 
 export default function CartPage() {
-    const [items, setItems] = useState([]); // [{ id, name, optionName, qty, price, imageUrl }]
+    const [items, setItems] = useState([]); // [{ id, name, optionName, qty, price }]
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [checked, setChecked] = useState(() => new Set()); // 선택된 id 집합
@@ -14,7 +14,7 @@ export default function CartPage() {
             try {
                 setLoading(true);
                 setError('');
-                const list = await fetchCart(); // ← 이제 항상 표준화된 배열이 옴
+                const list = await fetchCart();
                 setItems(list);
             } catch (e) {
                 setError(e.message || '불러오기 에러');
@@ -68,16 +68,16 @@ export default function CartPage() {
     }
 
     async function handleUpdateQty(id, qty) {
-        console.log("id = " + id)
         try {
             // Optimistic UI
-            setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty: qty } : i)));
+            setItems((prev) => prev.map((i) => (i.id === id ? { ...i, qty } : i)));
             await updateQuantity(id, qty);
         } catch (e) {
             setError(e.message || '수량 변경 실패');
-            // 실패 시 서버 데이터로 동기화
+            // 실패 시 서버 데이터로 동기화(선택 유지 시도)
             const list = await fetchCart();
             setItems(list);
+            setChecked((prev) => new Set([...prev].filter((id) => list.some((i) => i.id === id))));
         }
     }
 
@@ -116,43 +116,62 @@ export default function CartPage() {
     }
 
     async function handlePay() {
-           try {
-                 if (selectedItems.length === 0) {
-                       alert('주문할 상품을 선택해주세요.');
-                       return;
-                     }
-                 const amount = selectedItems.reduce((acc, cur) => acc + (cur.price || 0) * (cur.qty ?? 1), 0);
-                 if (amount <= 0) {
-                       alert('결제 금액이 올바르지 않습니다.');
-                       return;
-                     }
+        try {
+            if (selectedItems.length === 0) {
+                alert('주문할 상품을 선택해주세요.');
+                return;
+            }
 
-                     // 주문명: 첫 상품 + 외 N건
-                         const first = selectedItems[0];
-                 const orderName = selectedItems.length === 1
-                   ? `${first.name}${first.optionName ? ` (${first.optionName})` : ''}`
-                       : `${first.name} 외 ${selectedItems.length - 1}건`;
+            // 화면 표시에 쓸 금액(참고용) — 실제 승인은 서버의 prepare 결과를 사용
+            const amountDisplay = selectedItems.reduce(
+                (acc, cur) => acc + (cur.price || 0) * (cur.qty ?? 1),
+                0
+            );
+            if (amountDisplay <= 0) {
+                alert('결제 금액이 올바르지 않습니다.');
+                return;
+            }
 
-                     // 백엔드 세션에 금액 임시 저장 (검증용)
-                         const orderId = `ORD-${Date.now()}`;       // 임시 주문ID(고유)
-                 await tempSaveAmount(orderId, amount);     // POST /api/payments/saveAmount
+            // 주문명: 첫 상품 + 외 N건
+            const first = selectedItems[0];
+            const fallbackOrderName =
+                selectedItems.length === 1
+                    ? `${first.name}${first.optionName ? ` (${first.optionName})` : ''}`
+                    : `${first.name} 외 ${selectedItems.length - 1}건`;
 
-                     // 토스 결제창 호출
-                         const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY; // 테스트 키 가능
-                 const toss = window.TossPayments(clientKey);
-                 await toss.requestPayment('카드', {
-                       amount,                     // 결제금액
-                       orderId,                    // 위에서 만든 주문ID
-                       orderName,                  // 주문명
-                       customerName: '고객',        // (선택) 로그인 사용자명으로 넣어도 OK
-                       successUrl: `${location.origin}/payments/success`,
-                       failUrl: `${location.origin}/payments/fail`,
-                     });
-               } catch (e) {
-                 console.error(e);
-                 alert(e.message || '결제 준비 중 오류가 발생했습니다.');
-               }
-         }
+            // 선택된 장바구니 id들을 서버에 전달해서 금액/orderId 확정(서버가 검증)
+            const cartIds = selectedItems.map((i) => i.id);
+            const prepared = await preparePayment({ cartIds, orderName: fallbackOrderName });
+            // 서버에서 확정한 값만 신뢰
+            const { orderId, amount, orderName } = prepared || {};
+            console.log('amount: ', amount);
+            if (!orderId || !amount) {
+                throw new Error('결제 준비에 실패했습니다.(orderId/amount 누락)');
+            }
+
+            // Toss SDK 가드
+            if (!window.TossPayments || typeof window.TossPayments !== 'function') {
+                throw new Error('결제 모듈이 로드되지 않았습니다. 새로고침 후 다시 시도해주세요.');
+            }
+
+            const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY;
+            if (!clientKey) {
+                throw new Error('클라이언트 키가 설정되지 않았습니다(VITE_TOSS_CLIENT_KEY).');
+            }
+
+            const toss = window.TossPayments(clientKey);
+            await toss.requestPayment('카드', {
+                amount,                    // ✅ 서버 확정 금액
+                orderId,                   // ✅ 서버가 준 주문번호
+                orderName: orderName || fallbackOrderName,
+                successUrl: `${location.origin}/payments/success`,
+                failUrl: `${location.origin}/payments/fail`,
+            });
+        } catch (e) {
+            console.error(e);
+            alert(e.message || '결제 준비 중 오류가 발생했습니다.');
+        }
+    }
 
     if (loading) return <div className="cart-container">불러오는 중...</div>;
 
@@ -216,6 +235,7 @@ export default function CartPage() {
                                         <div className="qty">
                                             <button onClick={() => handleMinus(item)}>-</button>
                                             <input
+                                                type="number" min="1" // ⬅️ 입력형 지정
                                                 value={qty}
                                                 onChange={(e) => {
                                                     const v = Math.max(1, Number(e.target.value) || 1);
@@ -249,7 +269,13 @@ export default function CartPage() {
                         </div>
                         <div className="order-actions">
                             <a href="/products" className="btn">계속 쇼핑하기</a>
-                            <button className="btn primary" onClick={handleOrder}>주문하기</button>
+                            <button
+                                className="btn primary"
+                                onClick={handleOrder}
+                                disabled={selectedItems.length === 0} // ⬅️ 안전장치
+                            >
+                                주문하기
+                            </button>
                         </div>
                     </div>
                 </>

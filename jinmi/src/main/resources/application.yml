@@ -8,6 +8,7 @@ server:
       force: true
     session:
       timeout: 15m
+
 spring:
   config:
     import: optional:application-secret.yml

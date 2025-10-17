@@ -118,6 +118,7 @@ public class SecurityConfig {
                                 // Swagger/OpenAPI 문서
                                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/scalar/**",
 
+                                "/payments/**",
                                 "/payments/confirm",
                                 "/payments/webhook",
                                 "/pay/success", "/pay/fail"

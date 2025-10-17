@@ -25,19 +25,6 @@ public class orderService {
 
     private final OrderRepository orderRepository;
 
-    public String createOrderCode(){
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String numbers = "0123456789";
-        String randomString = "";
-        Random random = new Random();
-        for (int i = 0; i < 3; i++) {
-            randomString += alphabet.charAt(random.nextInt(alphabet.length()));
-            randomString += numbers.charAt(random.nextInt(numbers.length()));
-        }
-        String code = randomString + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
-        log.info("code : {}", code);
-        return code;
-    }
 
     public List<ViewOrderResponse> list(Long userId, Long offset) {
         List<Orders> orderList = offset == null ? orderRepository.findAllByUserIdOrderByIdDesc(userId, Limit.of(10))
@@ -52,10 +39,6 @@ public class orderService {
         List<Orders> addOrder = new ArrayList<>();
         for (AddOrderRequest addorderRequest : order) {
             addOrder.add(addorderRequest.toEntity());
-        }
-        String code = createOrderCode();
-        for (Orders CreateOrder : addOrder) {
-            CreateOrder.setOrderCode(code);
         }
         return orderRepository.saveAll(addOrder);
     }
