@@ -5,6 +5,7 @@ import LoginPage from "./pages/User/LoginPage.jsx";
 import Signup from "./pages/User/Signup.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import CartPage from "./pages/itemCart/CartPage.jsx";
+import MyPage from "./pages/User/MyPage.jsx";
 
 const Home     = () => <div className="page">메인</div>
 const About    = () => <div className="page">회사소개</div>
@@ -22,6 +23,7 @@ export default function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route path="/mypage" element={<MyPage />} />
             </Routes>
         </AuthProvider>
     )

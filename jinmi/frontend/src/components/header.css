@@ -21,6 +21,21 @@
 }
 .pill-btn:hover { background: #e3b979; }
 
+.hd__right__dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left:8px;
+    padding-bottom: 20px;
+    z-index: 40;
+}
+
+.hd__right__dropdown .user-name-btn {
+    margin-left: 0;
+    cursor: default;
+    z-index: 25;
+    position: relative;
+}
+
 .cart-btn {
     position:relative; display:inline-flex; align-items:center; justify-content:center;
     width:34px; height:30px; border-radius:16px; background: #f8e3d0; margin-left:8px; text-decoration:none; color:#333;
@@ -65,11 +80,66 @@
 .gnb__item.has-sub:hover .dropdown,
 .gnb__item.has-sub:focus-within .dropdown { display:block; }
 
-.dropdown li { list-style:none; }
-.dropdown a {
-    display:block; padding:8px 14px; color:#fff; text-decoration:none; font-size:13px; white-space:nowrap;
+.hd__right__dropdown.has-sub .user-dropdown {
+    position:absolute;
+    top: 100%;
+    right:0;
+    left:auto;
+    transform: translateY(-20px);
+
+    display:none;
+    min-width:130px;
+    background:#fff;
+    color:#333;
+    padding:6px 0;
+    border-radius:4px;
+    box-shadow:0 8px 24px rgba(0,0,0,.12);
+    z-index: 50;
+    border: 1px solid #eee;
 }
-.dropdown a:hover { background:#2b2b2b; }
+
+.hd__right__dropdown.has-sub:hover .user-dropdown,
+.hd__right__dropdown.has-sub:focus-within .user-dropdown {
+    display:block;
+}
+
+.dropdown li { list-style:none; }
+.dropdown a ,.dropdown button{
+    display:block;
+    width:100%;
+    padding:8px 14px;
+    color:#333;
+    text-decoration:none;
+    font-size:13px;
+    white-space:nowrap;
+
+    /*버튼 초기화 스타일*/
+    background:none;
+    border:none;
+    text-align:left;
+    cursor:pointer;
+}
+.dropdown a:hover, .dropdown button:hover {
+    background:#f1f1f1;
+    color:#111;
+}
+
+.gnb__item .dropdown a {
+    color:#fff;
+}
+.gnb__item .dropdown a:hover {
+    background:#2b2b2b;
+}
+
+.hd__right__dropdown .user-dropdown a,
+.hd__right__dropdown .user-dropdown button {
+    color: #333;
+}
+
+.hd__right__dropdown .user-dropdown a:hover,
+.hd__right__dropdown .user-dropdown button:hover {
+    background: #f1f1f1;
+}
 
 /* 반응형(간단) */
 @media (max-width: 960px) {

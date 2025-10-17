@@ -264,7 +264,7 @@ const Signup = () => {
 
         const reservedKeywords = [
             'admin', 'administrator', 'system', 'root', 'super', '관리자', '운영자',
-            'master', 'webmaster', 'support', 'cs', 'ceo','시발','병신','ㅈ병신','ㅅ발','시발롬','좆까','시발련','시발년','개새끼','개병신','새끼','십새끼'
+            'master', 'webmaster', 'support', 'cs', 'ceo','시발','병신','ㅈ병신','ㅅ발','시발롬','좆까','시발련','시발년','개새끼','개병신','새끼','십새끼','ㅅㅂ','ㅄ','ㄳㅋ','ㄳㄲ','ㅈㅄ'
         ];
 
         const isReserved = reservedKeywords.some(keyword =>
@@ -423,42 +423,43 @@ const Signup = () => {
         <div className={styles.container}>
             <h2>회원가입</h2>
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.formSection}>
-                <h3 className={styles.sectionTitle}>사이트 이용 정보 입력</h3>
 
-                <div className={styles.inputGroupBlock}>
-                    <label className={styles.label}>이메일 주소 (아이디)</label>
-                    <div className={styles.inputGroup}>
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="* 이메일 주소"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={styles.input}
-                    disabled={isSubmitting || isEmailVerified}  // 인증 완료 시 비활성화
-                />
-                        <button
-                            type="button"
-                            onClick={handleEmailSend}
-                            className={isEmailVerified ? styles.verifiedButton : styles.checkButton}
-                            disabled={isSubmitting || isEmailVerified}
-                        >
-                            {isEmailVerified ? '인증 완료' : (isEmailSent ? '재요청' : '인증 요청')}
-                        </button>
+                <div className={styles.formSection}>
+                    <h3 className={styles.sectionTitle}>사이트 이용 정보 입력</h3>
+
+                    <div className={styles.inputGroupBlock}>
+                        <label className={styles.label}>* 이메일 주소 (아이디)</label>
+                        <div className={styles.inputGroup}>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="예: example@email.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className={styles.input}
+                                disabled={isSubmitting || isEmailVerified}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleEmailSend}
+                                className={isEmailVerified ? styles.verifiedButton : styles.checkButton}
+                                disabled={isSubmitting || isEmailVerified}
+                            >
+                                {isEmailVerified ? '인증 완료' : (isEmailSent ? '재요청' : '인증 요청')}
+                            </button>
+                        </div>
                     </div>
-                </div>
-                    {/*인증코드 입력 필드 isEmailSent 상태일 때만 표시*/}
+
                     {isEmailSent && !isEmailVerified && (
-                        <div className={styles.inputGroupBlock} style={{marginTop: '10px'}}>
-                            <label className={styles.label}>* 인증 코드 입력</label>
+                        <div className={styles.inputGroupBlock} style={{marginTop: '-10px'}}>
+                            <label className={styles.label}>* 이메일 인증 코드</label>
                             <div className={styles.inputGroup}>
                                 <input
                                     type="text"
                                     name="authCode"
-                                    placeholder="6자리 인증 코드를 입력하세요"
+                                    placeholder="발송된 6자리 인증 코드를 입력하세요"
                                     value={authCode}
-                                    onChange={handleChange} // handleChange 사용
+                                    onChange={handleChange}
                                     className={styles.input}
                                     disabled={isSubmitting}
                                     maxLength={6}
@@ -474,12 +475,11 @@ const Signup = () => {
                             </div>
                         </div>
                     )}
-                    {/* 타이머 및 인증 메시지 */}
                     {(emailAuthMessage || isEmailVerified || (isEmailSent && emailTimer > 0)) && (
                         <p className={isEmailVerified ? styles.successMessage : styles.errorMessage}
                            style={{
-                               marginTop: '-10px',
-                               marginBottom: isEmailVerified ? '15px' : '0'
+                               marginTop: isEmailSent && !isEmailVerified ? '0px' : '-5px',
+                               marginBottom: isEmailVerified ? '20px' : '10px'
                            }}>
                             {emailAuthMessage}
                             {isEmailSent && emailTimer > 0 && !isEmailVerified && (
@@ -488,71 +488,70 @@ const Signup = () => {
                         </p>
                     )}
 
-                <div className={styles.inputGroupBlock}>
-                    <label className={styles.label}>비밀번호</label>
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="* 비밀번호 (영문, 숫자 포함 8~20자)"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={styles.input}
-                    disabled={isSubmitting}
-                />
-                </div>
-                <div className={styles.inputGroupBlock}>
-                    <label className={styles.label}>비밀번호 확인</label>
-                <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="* 비밀번호를 다시 입력하세요"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className={styles.input}
-                    disabled={isSubmitting}
-                />
-                    </div>
-                </div>
-
-
-
-
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>개인 정보 입력</h3>
                     <div className={styles.inputGroupBlock}>
-                    <label className={styles.label}>닉네임</label>
-                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>* 비밀번호</label>
                         <input
-                            type="text"
-                            name="displayName"
-                            placeholder="* 닉네임 (2자 이상 15자 이하)"
-                            value={formData.displayName}
+                            type="password"
+                            name="password"
+                            placeholder="영문 대소문자, 숫자 포함 8~20자"
+                            value={formData.password}
                             onChange={handleChange}
                             className={styles.input}
                             disabled={isSubmitting}
                         />
-                        <button
-                            type="button"
-                            onClick={handleNicknameCheck}
-                            className={styles.checkButton}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? '확인 중...' : '중복 확인'}
-                        </button>
                     </div>
-                    {nicknameCheckMessage && (
-                        <p className={isNicknameChecked ? styles.successMessage : styles.errorMessage}>
-                            {nicknameCheckMessage}
-                        </p>
-                    )}
+                    <div className={styles.inputGroupBlock}>
+                        <label className={styles.label}>* 비밀번호 확인</label>
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="비밀번호를 다시 한번 입력해주세요"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            className={styles.input}
+                            disabled={isSubmitting}
+                        />
+                    </div>
+                </div>
+
+
+                <div className={styles.formSection}>
+                    <h3 className={styles.sectionTitle}>개인 정보 입력</h3>
+
+                    <div className={styles.inputGroupBlock}>
+                        <label className={styles.label}>* 닉네임</label>
+                        <div className={styles.inputGroup}>
+                            <input
+                                type="text"
+                                name="displayName"
+                                placeholder="회원님을 나타낼 2자 이상 15자 이하 닉네임"
+                                value={formData.displayName}
+                                onChange={handleChange}
+                                className={styles.input}
+                                disabled={isSubmitting}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleNicknameCheck}
+                                className={styles.checkButton}
+                                disabled={isSubmitting}
+                            >
+                                중복 확인
+                            </button>
+                        </div>
+                        {nicknameCheckMessage && (
+                            <p className={isNicknameChecked ? styles.successMessage : styles.errorMessage}>
+                                {nicknameCheckMessage}
+                            </p>
+                        )}
                     </div>
 
                     <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>휴대폰 번호</label>
+                        <label className={styles.label}>* 휴대폰 번호</label>
                         <input
                             type="tel"
                             name="phoneNumber"
-                            placeholder="예: 01012345678"
+                            placeholder="'-' 없이 숫자만 입력 (예: 01012345678)"
                             value={formData.phoneNumber}
                             onChange={handleChange}
                             className={styles.input}
@@ -560,42 +559,43 @@ const Signup = () => {
                         />
                     </div>
 
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>주소</label>
-                        <div className={styles.inputGroup}>
+                    <div className={styles.addressGroup}>
+                        <div className={styles.inputGroupBlock} style={{ marginBottom: '10px' }}>
+                            <label className={styles.label}>* 주소</label>
+                            <div className={styles.inputGroup}>
+                                <input
+                                    type="text"
+                                    name="baseAddressDisplay"
+                                    placeholder={isApiLoaded ? "주소 검색 버튼을 클릭하여 기본 주소 입력" : "주소 검색 시스템 로딩 중..."}
+                                    value={addressParts.base}
+                                    readOnly
+                                    onClick={handleAddressSearch}
+                                    className={styles.input}
+                                    disabled={isSubmitting || !isApiLoaded}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddressSearch}
+                                    className={styles.checkButton}
+                                    disabled={isSubmitting || !isApiLoaded}
+                                >
+                                    주소 검색
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ padding: '0 0 10px 0' }}>
                             <input
                                 type="text"
-                                name="baseAddressDisplay"
-                                placeholder={isApiLoaded ? "주소 검색 버튼을 눌러주세요" : "주소 검색 시스템 로딩 중..."}
-                                value={addressParts.base}
-                                readOnly
-                                onClick={handleAddressSearch}
-                                className={styles.input}
-                                disabled={isSubmitting || !isApiLoaded}
+                                name="detailAddress"
+                                placeholder="나머지 상세 주소 입력 (선택 사항)"
+                                value={addressParts.detail}
+                                onChange={handleChange}
+                                className={`${styles.input} ${styles.detailAddressInput}`}
+                                disabled={isSubmitting || !isApiLoaded || addressParts.base.length === 0}
+                                id="detailAddressInput"
                             />
-                            <button
-                                type="button"
-                                onClick={handleAddressSearch}
-                                className={styles.checkButton}
-                                disabled={isSubmitting || !isApiLoaded}
-                            >
-                                {isApiLoaded ? '주소 검색' : '로딩 중'}
-                            </button>
                         </div>
-                    </div>
-
-                    {/* 상세 주소 입력 필드 */}
-                    <div className={styles.inputGroupBlock}>
-                        <input
-                            type="text"
-                            name="detailAddress"
-                            placeholder="상세 주소 (선택)"
-                            value={addressParts.detail}
-                            onChange={handleChange}
-                            className={styles.input}
-                            disabled={isSubmitting || !isApiLoaded || addressParts.base.length === 0}
-                            id="detailAddressInput"
-                        />
                     </div>
 
                 </div>
@@ -605,13 +605,14 @@ const Signup = () => {
                 <button
                     type="submit"
                     className={styles.button}
-                    disabled={isSubmitting} // 이메일 인증 완료해야 가입
+                    disabled={isSubmitting}
                 >
-                    {isSubmitting ? '가입 처리 중...' : '회원가입 완료'}
+                    {isSubmitting ? '회원가입 처리 중...' : '회원가입 완료'}
                 </button>
             </form>
+
             <p className={styles.loginLink}>
-                이미 계정이 있으신가요? <span onClick={() => navigate('/login')} className={styles.link}>로그인</span>
+                이미 계정이 있으신가요? <span onClick={() => navigate('/login')} className={styles.link}>로그인 페이지로 이동</span>
             </p>
         </div>
     );
