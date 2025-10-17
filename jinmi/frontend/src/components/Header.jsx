@@ -14,10 +14,25 @@ export default function Header({ cartCnt = 0 }) {
             <div className="hd__container">
                 <div className="hd__right">
                     {isLoggedIn ? (
-                        <>
-                            <span className="pill-btn">{displayName}님</span>
-                            <button onClick={handleLogout} className="pill-btn">로그아웃</button>
-                        </>
+
+                            <div className="hd__right__dropdown has-sub">
+                                <button className="pill-btn user-name-btn">{displayName}님</button>
+
+                                <ul className="dropdown user-dropdown" role="menu">
+                                    <li role="none">
+                                        <Link role="menuitem" to="/mypage">마이페이지</Link>
+                                    </li>
+                                    <li role="none">
+                                        <button
+                                            role="menuitem"
+                                            onClick={handleLogout}
+                                            className="dropdown-logout-btn"
+                                        >
+                                            로그아웃
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                     ) : (
                         <Link to="/login" className="pill-btn">로그인</Link>
                     )}

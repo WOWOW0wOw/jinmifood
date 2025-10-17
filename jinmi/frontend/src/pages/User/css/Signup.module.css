@@ -1,67 +1,127 @@
 
 .container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 30px 40px;
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
+
+h2 {
+    font-size: 2.2em;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 40px;
+    position: relative;
+}
+h2::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -15px;
+    width: 60px;
+    height: 4px;
+    background-color: #8c5f21;
+    border-radius: 2px;
+}
+
 .form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px;
 }
 
 .formSection {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-bottom: 25px;
-    padding: 20px;
-    background-color: #fcfcfc;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 25px;
     text-align: left;
+    margin-bottom: 15px;
 }
 
 .sectionTitle {
-    font-size: 1.3em;
+    font-size: 1.4em;
     font-weight: 700;
-    color: #333;
+    color: #34495e;
     margin-top: 0;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #007bff;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ced4da;
 }
+
+.inputGroupBlock {
+    margin-bottom: 20px;
+}
+
+.addressGroup {
+
+    padding: 0;
+}
+
 
 .label {
     display: block;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    margin-bottom: 5px;
-    color: #555;
+    margin-bottom: 8px;
+    color: #495057;
+    text-align: left;
 }
-.inputGroupBlock {
-    margin-bottom: 15px;
-}
+
 .input {
     padding: 12px;
+    height: 44px;
     border-radius: 4px;
     border: 1px solid #ddd;
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
+    background-color: #ffffff;
 }
+
+.input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+.input[disabled] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
+.detailAddressInput {
+    margin-top: 0;
+    background-color: #ededed;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.detailAddressInput:focus {
+    background-color: #ffffff;
+}
+
+
 .inputGroup {
     display: flex;
     gap: 10px;
-    align-items: stretch;
+    align-items: center;
 }
+
 
 .inputGroup .input {
     flex-grow: 1;
 }
-.checkButton {
-    padding: 12px 15px;
+
+.checkButton,
+.verifiedButton {
+    padding: 0 15px;
+    height: 44px;
+    min-width: 90px;
     background-color: #6c757d;
     color: white;
     border: none;
@@ -71,75 +131,95 @@
     font-weight: bold;
     transition: background-color 0.3s;
     white-space: nowrap;
-    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkButton:hover:not(:disabled) {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+.checkButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.verifiedButton {
+    background-color: #28a745;
+    opacity: 0.8;
 }
 
 .button {
-    padding: 12px;
-    background-color: #007bff;
+    padding: 18px;
+    margin-top: 30px;
+    background-color: #8c5f21;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 19px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 10px rgb(139, 94, 33);
+}
+.button:hover:not(:disabled) {
+    background-color: #e3b979;
+    box-shadow: 0 6px 15px rgb(225, 184, 120);
+}
+.button:disabled {
+    background-color: #a0c4ff;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 .error {
     color: #dc3545;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 14.5px;
+    font-weight: 600;
     background-color: #f8d7da;
-    padding: 10px;
-    border-radius: 4px;
+    border: 1px solid #f5c6cb;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+.successMessage,
+.errorMessage {
+    font-size: 14px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    text-align: left;
+    padding-left: 5px;
 }
 .successMessage {
     color: #28a745;
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    text-align: left;
-    padding-left: 5px;
+    font-weight: 500;
 }
-
 .errorMessage {
     color: #dc3545;
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    text-align: left;
-    padding-left: 5px;
+    font-weight: 500;
+}
+
+.timer {
+    font-weight: 600;
+    color: #007bff;
+    margin-left: 5px;
 }
 
 .loginLink {
-    margin-top: 20px;
-    font-size: 14px;
+    margin-top: 35px;
+    font-size: 15px;
+    color: #6c757d;
 }
-
 .link {
     color: #007bff;
     cursor: pointer;
     font-weight: bold;
+    text-decoration: none;
+}
+.link:hover {
     text-decoration: underline;
-}
-.timer {
-    font-weight: bold;
-    color: #007bff;
-    margin-left: 10px;
-}
-
-
-.verifiedButton {
-    padding: 12px 15px;
-    background-color: #28a745; /* 녹색 */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: default;
-    font-size: 14px;
-    font-weight: bold;
-    white-space: nowrap;
-    height: 44px;
-    opacity: 0.8;
 }

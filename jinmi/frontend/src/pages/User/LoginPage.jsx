@@ -57,9 +57,12 @@ export default function LoginPage() {
             } else if (error.message === 'Network Error') {
                 errorMessage = '네트워크 연결 상태를 확인해주세요.';
             }
+            if (errorMessage === 'Bad Request'){
+                errorMessage = '아이디와 비밀번호가 틀렸습니다.';
+            }
 
             console.error('Login Error:', error);
-            alert(`로그인 실패: ${errorMessage}`);
+            alert(`${errorMessage}`);
         }
     };
 

@@ -8,6 +8,8 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import CartPage from "./pages/itemCart/CartPage.jsx";
 import PaymentSuccessPage from "./pages/Payments/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/Payments/PaymentFailPage.jsx";
+import MyPage from "./pages/User/MyPage.jsx";
+
 
 const Home     = () => <div className="page">메인</div>
 const About    = () => <div className="page">회사소개</div>
@@ -26,6 +28,8 @@ export default function App() {
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/payments/success" element={<PaymentSuccessPage />} />
                 <Route path="/payments/fail" element={<PaymentFailPage />} />
+                <Route path="/mypage" element={<MyPage />} />
+
             </Routes>
         </AuthProvider>
     )

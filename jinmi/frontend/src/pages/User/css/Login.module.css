@@ -29,7 +29,7 @@
 .button {
 
     padding: 12px;
-    background-color: #007bff;
+    background-color: #8c5f21;
     color: white;
     border: none;
     border-radius: 4px;
@@ -37,10 +37,12 @@
     font-size: 16px;
     font-weight: bold;
     transition: background-color 0.3s;
+    box-shadow: 0 4px 10px rgb(139, 94, 33);
 }
 
 .button:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: #e3b979;
+    box-shadow: 0 6px 15px rgb(225, 184, 120);
 }
 
 .error {
