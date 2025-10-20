@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -68,6 +69,16 @@ public class ItemCartController {
     public StatusResponseDTO updateOption(@RequestParam Long userId, @RequestParam Long itemId, @RequestParam String option){
         itemCartService.updateOption(userId, itemId, option);
         return StatusResponseDTO.ok("옵션 수정 완료");
+    }
+
+    @GetMapping("/count")
+    public Map<String, Long> count(@AuthenticationPrincipal CustomUserDetails user) {
+        if(user == null) {
+            return Map.of("count", 0L);
+        }
+        Long userId = user.getId();
+        long c = itemCartService.countByUserId(userId);
+        return Map.of("count", c);
     }
 
 }

@@ -9,6 +9,7 @@ import CartPage from "./pages/itemCart/CartPage.jsx";
 import PaymentSuccessPage from "./pages/Payments/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/Payments/PaymentFailPage.jsx";
 import MyPage from "./pages/User/MyPage.jsx";
+import { fetchCartCountFast } from "./api/itemCart.js";
 
 
 const Home     = () => <div className="page">메인</div>
@@ -18,7 +19,7 @@ const About    = () => <div className="page">회사소개</div>
 export default function App() {
     return (
         <AuthProvider>
-            <Header cartCnt={0} />
+            <Header cartCnt={fetchCartCountFast()} />
             <Routes>
                 <Route path="/" element={<Home/>} />
                 <Route path="/about" element={<About/>} />

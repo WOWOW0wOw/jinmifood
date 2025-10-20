@@ -28,8 +28,14 @@ export async function fetchCart() {
         price: x.price ?? 0,
         // imageUrl: x.imageUrl ?? x.thumbnailUrl ?? null,
     }));
-
     return list;
+}
+
+export async function fetchCartCountFast() {
+    const res = await fetch('/api/itemCart/count', { headers: { ...authHeaders() } });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.count ?? 0;
 }
 
 export async function updateQuantity(cartId, qty) {

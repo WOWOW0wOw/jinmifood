@@ -85,4 +85,9 @@ public class ItemCartService {
         cart.setTotalPrice(qty * cart.getPrice());
         itemCartRepository.save(cart);
     }
+
+    public Long countByUserId(Long userId) {
+        Long cnt = itemCartRepository.countByUserId(userId);
+        return cnt;
+    }
 }

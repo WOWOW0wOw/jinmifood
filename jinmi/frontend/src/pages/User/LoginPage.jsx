@@ -45,7 +45,7 @@ export default function LoginPage() {
             const { accessToken, refreshToken } = response.data; // 백엔드 응답 확인
 
             handleLogin(accessToken,refreshToken);
-
+            window.location.replace("/");
             alert('로그인에 성공하였습니다.');
             navigate('/');
         } catch (error) {
