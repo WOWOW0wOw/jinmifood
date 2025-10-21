@@ -126,6 +126,67 @@
     margin-top: 20px;
 }
 
+.categoryContainer {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.categoryButton {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.categoryButton:hover {
+    background-color: #0056b3;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.dropdownContent.show {
+    display: block;
+}
+
+.dropdownItem {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    text-align: left;
+}
+
+.dropdownItem:hover {
+    background-color: #f1f1f1;
+    border-radius: 5px;
+}
+
+.noItemsMessage {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 1.1em;
+    margin-top: 30px;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .itemList {

@@ -10,9 +10,10 @@ export const fetchAllItems = async () => {
         return response.data.data; // StatusResponseDTO의 'data' 필드
     } catch (error) {
         console.error('Error fetching all items:', error);
-        throw error; // 에러를 호출자에게 다시 던져서 처리하게 함
+        throw error;
     }
 };
+
 
 /**
  * 특정 카테고리 ID에 해당하는 상품 목록을 가져옵니다.
@@ -27,6 +28,22 @@ export const fetchItemsByCategoryId = async (categoryId) => {
         return response.data.data; // StatusResponseDTO의 'data' 필드
     } catch (error) {
         console.error(`Error fetching items for category ${categoryId}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * 모든 카테고리 목록을 가져옵니다.
+ * @returns {Promise<Array>} 카테고리 객체 배열 (예: [{ categoryId: 1, categoryName: '의류' }])
+ */
+export const fetchAllCategories = async () => {
+    try {
+        // 실제 백엔드 API 엔드포인트에 맞게 수정해야 합니다.
+        // 예: /categories/list 또는 /items/categories
+        const response = await apiClient.get('/categories/list'); // 가정: 카테고리 목록을 가져오는 API 엔드포인트
+        return response.data.data;
+    } catch (error) {
+        console.error('Error fetching all categories:', error);
         throw error;
     }
 };
