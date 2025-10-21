@@ -45,22 +45,8 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // 401 오류가 발생했고, 재시도 중이 아닌 경우에만 처리 시작
+
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
-
-            // 🚨 1. 특정 URL (회원 정보 수정)에 대한 예외 처리 🚨
-            const IS_FORCE_LOGOUT_URL = originalRequest.url.includes('/users/myUpdateInfo');
-
-            if (IS_FORCE_LOGOUT_URL) {
-                console.error("회원정보 수정 중 Access Token 만료. 만료 시간이 지나 로그아웃됩니다.");
-                alert("만료 시간이 지나 로그아웃됩니다.");
-
-                // 토큰 삭제 및 강제 로그아웃 처리
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-
-                return Promise.reject(error);
-            }
 
             if (!originalRequest.url.includes('/auth/reissue')) {
 
@@ -80,11 +66,13 @@ apiClient.interceptors.response.use(
                         localStorage.removeItem('accessToken');
                         localStorage.removeItem('refreshToken');
                         console.error("Refresh Token이 없어 Access Token 재발급 실패. 자동 로그아웃을 진행합니다.");
+                        window.location.href = '/login';
                         return Promise.reject(error);
                     }
 
                     try {
-                        const rs = await axios.post(`${API_BASE_URL}/auth/reissue`, {
+                        console.log("재발급 시도 Refresh Token:", refreshToken);
+                        const rs = await apiClient.post('/auth/reissue', {
                             refreshToken: refreshToken
                         });
 
@@ -94,21 +82,25 @@ apiClient.interceptors.response.use(
 
                         console.log("Access Token 재발급 성공 및 토큰 갱신 완료");
 
+                        originalRequest.headers.Authorization = 'Bearer ' + newAccessToken;
                         isRefreshing = false;
                         processQueue(null, newAccessToken);
-
-                        originalRequest.headers.Authorization = 'Bearer ' + newAccessToken;
-                        return apiClient(originalRequest);
+                        return apiClient(originalRequest); // 재시도!
                     } catch (err) {
                         isRefreshing = false;
                         processQueue(err, null);
 
                         localStorage.removeItem('accessToken');
                         localStorage.removeItem('refreshToken');
-                        console.error(" Access Token 재발급 실패. 자동 로그아웃을 진행합니다.");
-                        if (err.response?.status !== 404) {
-                            console.error("재발급 실패 상세:", err.response?.data);
+
+                        let errorMessage = "토큰 재발급 실패. 보안상의 이유로 로그아웃됩니다.";
+                        if (err.response?.status === 401) {
+                            errorMessage = "보안 위험(비정상적 토큰) 감지로 인해 자동 로그아웃됩니다.";
+                        } else if (err.response?.status === 404) {
+                            errorMessage = "세션이 만료되었습니다. 다시 로그인해주세요.";
                         }
+                        console.error(errorMessage, err.response?.data);
+                        window.location.href = '/login';
                         return Promise.reject(err);
                     }
                 } else {

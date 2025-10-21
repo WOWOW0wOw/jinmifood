@@ -1,8 +1,8 @@
-// MyPage.jsx
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient.js";
+import { useAuth } from "../../context/AuthContext.jsx"
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
@@ -18,6 +18,7 @@ const STEPS = {
 
 export default function MyPage() {
     const navigate = useNavigate();
+    const { handleLogout } = useAuth();
     const [myInfo, setMyInfo] = useState(initialMyInfo);
     const [formData, setFormData] = useState({
         currentPassword: "",
@@ -129,9 +130,11 @@ export default function MyPage() {
             setError(errorMessage);
             setMessage(errorMessage);
 
-            if (err.response?.status === 401) {
+            if (!localStorage.getItem('accessToken')) {
+                handleLogout();
                 navigate("/login");
             }
+
         } finally {
             setLoading(false);
         }
@@ -176,7 +179,7 @@ export default function MyPage() {
         setMessage("");
 
         try {
-            await apiClient.post("/users/login", {
+            await apiClient.post("/users/checkPassword", {
                 email: myInfo.email,
                 password: password
             });
@@ -186,13 +189,14 @@ export default function MyPage() {
 
             setFormData(prev => ({
                 ...prev,
-                currentPassword: password
+                currentPassword: password //
             }));
 
             return true;
 
         } catch (err) {
             console.error("비밀번호 확인 실패:", err.response? err.response.data : err);
+
             const fixedErrorMessage = "비밀번호가 일치하지 않습니다.";
             setError(fixedErrorMessage);
 
@@ -201,6 +205,7 @@ export default function MyPage() {
             return false;
         }
     };
+
 
 
     const handleSubmit = async (e) => {
@@ -224,32 +229,32 @@ export default function MyPage() {
 
             setMessage("회원정보가 성공적으로 수정되었습니다.");
 
-            setStep(STEPS.INFO_DISPLAY);
-
-            await fetchMyInfo();
-
-            setFormData(prev => ({
-                ...prev,
-                currentPassword: "",
-                newPassword: ""
-            }));
+            window.location.reload();
 
 
         } catch (err) {
             console.error("정보 수정 실패:", err.response ? err.response.data : err);
             const errorMessage = err.response?.data?.message || "정보 수정에 실패했습니다.";
 
-            if (err.response?.status === 401) {
-                navigate("/login"); // AuthContext의 handleLogout()을 호출하는 대신 로그인 화면으로 이동시켜 강제 로그아웃 효과
+            if (!localStorage.getItem('accessToken')) {
+
+                handleLogout();
+                navigate("/login");
                 return;
             }
+
+
             let displayMessage;
             if(errorMessage === "PASSWORD_MISPATTERN"){
-                 displayMessage = "영문 대소문자, 숫자를 포함한 8~20자리를 입력하세요.";
+                displayMessage = "영문 대소문자, 숫자를 포함한 8~20자리를 입력하세요.";
             }else if(errorMessage === "DUPLICATE_PHONENUMBER"){
                 displayMessage = "이미 가입된 휴대전화번호 입니다."
             }else if(errorMessage === "DUPLICATE_NICKNAME"){
                 displayMessage = "이미 가입된 닉네임 입니다."
+            }else if(errorMessage === "PHONENUMBER_MISPATTERN"){
+                displayMessage = "휴대폰 번호 형식이 올바르지 않습니다. 예(: 010xxxxxxxx)"
+            }else{
+                displayMessage = errorMessage;
             }
             setError(displayMessage);
         }
@@ -285,7 +290,7 @@ export default function MyPage() {
             <PasswordCheckForm
                 email={myInfo.email}
                 onConfirm={handlePasswordCheck}
-                onCancel={() => setStep(STEPS.INFO_DISPLAY)}
+                onCancel={() => {window.location.reload();}}
                 errorMessage={error}
                 clearError={() => setError(null)}
             />
@@ -297,7 +302,7 @@ export default function MyPage() {
                 formData={formData}
                 handleChange={handleChange}
                 handleSubmit={handleSubmit}
-                onCancel={() => {setStep(STEPS.INFO_DISPLAY); setEroor(null);}}
+                onCancel={() => {window.location.reload();}}
                 errorMessage={error}
                 getAddressParts={getAddressParts}
                 handleAddressSearch={handleAddressSearch}
@@ -305,6 +310,7 @@ export default function MyPage() {
             />
         );
     }
+
 
     return (
         <div className="my-page-container">
@@ -524,7 +530,7 @@ const UpdateForm = ({
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleChange}
-                    placeholder="010-xxxx-xxxx 형식"
+                    placeholder="010xxxxxxxx 형식"
                 />
             </div>
 

@@ -19,7 +19,10 @@ public class GlobalException {
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
 
-        log.error("CustomException 핸들링", ex.getError().getDetail());
+        log.error("CustomException 핸들링. HttpStatus: {}, Detail: {}",
+                ex.getError().getHttpStatus(),
+                ex.getError().getDetail()
+        );
 
         ErrorResponse response = ErrorResponse.toErrorResponse(ex.getError());
 
@@ -34,7 +37,6 @@ public class GlobalException {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String detailMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
 
-        // ⭐️ @Builder 패턴으로 변경
         ErrorResponse response = ErrorResponse.builder()
                 .status(status.value())
                 .message(status.getReasonPhrase())
@@ -48,7 +50,6 @@ public class GlobalException {
                 .body(response);
     }
 
-    // @valid 실패처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
 
