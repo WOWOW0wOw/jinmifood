@@ -162,6 +162,10 @@ public class JwtTokenProvider {
         }
     }
 
+    public String getUserIdentifier(String token) {
+        return parseClaims(token).getSubject();
+    }
+
     // 토큰의 남은 유효 기간을 반환 (블랙리스트용)
     public long getExpireTime(String token) {
         try{
@@ -184,5 +188,6 @@ public class JwtTokenProvider {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
     }
+
 
 }

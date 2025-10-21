@@ -95,7 +95,7 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 // 회원가입/로그인/토큰 재발급
-                                "/users/join", "/users/login", "/auth/reissue","/users/checkNickname",
+                                "/users/join", "/users/login", "/auth/reissue","/users/checkNickname","/api/v1/users/checkPassword",
 
                                 // 이메일 인증
                                 "/email/send","/email/verify",

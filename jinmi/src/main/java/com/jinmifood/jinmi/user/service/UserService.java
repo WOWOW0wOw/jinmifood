@@ -146,6 +146,21 @@ public class UserService {
         return new TokenResponse(accessToken, refreshToken);
     }
 
+    @Transactional(readOnly = true)
+    public void checkPassword(String email, String rawPassword) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(email, rawPassword);
+
+        try{
+            authenticationManager.authenticate(authenticationToken);
+            log.info("비밀번호 확인 성공: Email={}", email);
+
+        } catch(Exception e){
+            log.error("비밀번호 불일치: Email={}", email);
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
     @Transactional
     public void logout(String accessToken, String userIdentifier) {
 
@@ -231,6 +246,7 @@ public class UserService {
             log.warn("현재 비밀번호 불일치: userId={}", userId);
             throw new CustomException(ErrorException.PASSWORD_MISMATCH);
         }
+
         String newDisplayName = request.getDisplayName();
         if (newDisplayName != null && !newDisplayName.equals(user.getDisplayName())) {
 
@@ -246,18 +262,32 @@ public class UserService {
         }
 
         String newPhoneNumber = request.getPhoneNumber();
+        String finalPhoneNumberToUpdate = user.getPhoneNumber();
+
         if (newPhoneNumber != null && !newPhoneNumber.equals(user.getPhoneNumber())) {
-            Optional<User> existingUser = userRepository.findByPhoneNumber(newPhoneNumber);
+
+            String cleanedPhoneNumber = newPhoneNumber.replaceAll("-", "");
+            String phonePattern = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$";
+
+            if (!cleanedPhoneNumber.matches(phonePattern)) {
+                log.warn("전화번호 패턴 불일치: userId={}, newPhoneNumber={}", userId, newPhoneNumber);
+                throw new CustomException(ErrorException.PHONENUMBER_MISPATTERN);
+            }
+
+            Optional<User> existingUser = userRepository.findByPhoneNumber(cleanedPhoneNumber);
 
             if (existingUser.isPresent()) {
-                log.warn("전화번호 중복: userId={}, newPhoneNumber={}", userId, newPhoneNumber);
+                log.warn("전화번호 중복: userId={}, cleanedPhoneNumber={}", userId, cleanedPhoneNumber);
                 throw new CustomException(ErrorException.DUPLICATE_PHONENUMBER);
             }
+
+            finalPhoneNumberToUpdate = cleanedPhoneNumber;
         }
 
         if (request.isPasswordChangeRequested()){
             String newPassword = request.getNewPassword();
             String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$";
+
             if(!newPassword.matches(passwordPattern)){
                 log.warn("새 비밀번호 패턴 불일치: userId={}", userId);
                 throw new CustomException(ErrorException.PASSWORD_MISPATTERN);
@@ -266,11 +296,13 @@ public class UserService {
             user.updatePassword(encodedNewPassword);
             log.info("비밀번호 변경완료: userId={}", userId);
         }
+
         user.updateDetails(
                 request.getDisplayName(),
-                request.getPhoneNumber(),
+                finalPhoneNumberToUpdate,
                 request.getAddress()
         );
+
         log.info("기타 정보 수정완료: userId={}", userId);
     }
 }

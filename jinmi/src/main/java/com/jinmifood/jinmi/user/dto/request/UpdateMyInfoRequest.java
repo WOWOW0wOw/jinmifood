@@ -20,8 +20,8 @@ public class UpdateMyInfoRequest {
     @Size(min = 2, max = 15,
             message = "표시 이름을 2자 이상 15자 이하로 입력해 주세요.")
     private String displayName; // 닉네임
-    @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
-            message = "유효한 휴대폰 번호 형식이 아닙니다.")
+//    @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
+//            message = "유효한 휴대폰 번호 형식이 아닙니다.")
     private String phoneNumber;
 
     private String address;

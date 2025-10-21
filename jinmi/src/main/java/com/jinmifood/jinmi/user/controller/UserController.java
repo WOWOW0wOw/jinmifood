@@ -52,6 +52,23 @@ public class UserController {
                 .body(token);
     }
 
+    @PostMapping("/checkPassword")
+    public StatusResponseDTO checkPassword(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody LoginUserRequest request) {
+
+        if (userDetails == null) {
+            log.error("@AuthenticationPrincipal userDetails is NULL. 인증 정보가 SecurityContext에 없습니다.");
+            throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
+        }
+
+        String email = userDetails.getUsername();
+
+        userService.checkPassword(email, request.getPassword());
+
+        return StatusResponseDTO.ok("비밀번호 확인 완료");
+    }
+
     // 로그아웃
     @PostMapping("/logout")
     public StatusResponseDTO logout(HttpServletRequest request, Authentication authentication) {

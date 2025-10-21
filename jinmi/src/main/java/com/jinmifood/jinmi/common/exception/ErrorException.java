@@ -38,7 +38,8 @@ public enum ErrorException {
     DUPLICATE_ITEM_NAME(HttpStatus.CONFLICT, "이미 존재하는 아이템 이름입니다."),
     DUPLICATE_CATEGORY_NAME(HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다."),
 
-    CANCEL_FAIL(HttpStatus.BAD_REQUEST, "주문 취소가 실패하였습니다.");
+    CANCEL_FAIL(HttpStatus.BAD_REQUEST, "주문 취소가 실패하였습니다."),
+    PHONENUMBER_MISPATTERN(HttpStatus.CONFLICT,"새 전화번호 패턴 불일치" );
 
     private final HttpStatus httpStatus;
     private final String detail;
