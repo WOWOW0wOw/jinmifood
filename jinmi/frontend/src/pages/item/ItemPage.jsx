@@ -153,13 +153,13 @@ export default function ItemPage() {
                                 <div className={styles.itemActions}>
                                     <button
                                         className={styles.detailButton}
-                                        onClick={() => alert(`상세보기: ${item.itemName}`)} // 실제 상세 페이지로 이동 로직 필요
+                                        onClick={() => navigate(`/item/${item.itemId}`)}
                                     >
                                         상세보기
                                     </button>
                                     <button
                                         className={styles.cartButton}
-                                        onClick={() => alert(`장바구니 추가: ${item.itemName}`)} // 실제 장바구니 추가 로직 필요
+                                        onClick={() => alert(`장바구니 추가: ${item.itemName}`)}
                                         disabled={item.status !== 'SALE'}
                                     >
                                         장바구니 담기
