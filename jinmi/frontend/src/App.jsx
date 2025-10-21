@@ -10,6 +10,7 @@ import PaymentSuccessPage from "./pages/Payments/PaymentSuccessPage.jsx";
 import PaymentFailPage from "./pages/Payments/PaymentFailPage.jsx";
 import MyPage from "./pages/User/MyPage.jsx";
 import { fetchCartCountFast } from "./api/itemCart.js";
+import ItemDetailPage from "./pages/item/ItemDetailPage.jsx";
 
 
 const Home     = () => <div className="page">메인</div>
@@ -30,6 +31,7 @@ export default function App() {
                 <Route path="/payments/success" element={<PaymentSuccessPage />} />
                 <Route path="/payments/fail" element={<PaymentFailPage />} />
                 <Route path="/mypage" element={<MyPage />} />
+                <Route path="/item/:itemId" element={<ItemDetailPage />} />
 
             </Routes>
         </AuthProvider>
