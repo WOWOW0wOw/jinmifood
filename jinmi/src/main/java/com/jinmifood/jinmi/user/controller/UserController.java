@@ -6,8 +6,11 @@ import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.common.security.CustomUserDetails;
 import com.jinmifood.jinmi.common.security.JwtTokenProvider;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
+import com.jinmifood.jinmi.email.dto.request.EmailRequest;
+import com.jinmifood.jinmi.email.dto.request.VerificationRequest;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
+import com.jinmifood.jinmi.user.dto.request.PasswordResetRequest;
 import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
 import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
 import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
@@ -144,5 +147,35 @@ public class UserController {
         log.info("닉네임 중복 확인: {} 닉네임 사용 가능", nickname);
         return StatusResponseDTO.ok("사용 가능한 닉네임 입니다.");
 
+    }
+
+    @PostMapping("/findId/sendCode")
+        public StatusResponseDTO sendIdCode(@Valid @RequestBody EmailRequest request) {
+            userService.sendIdVerificationCode(request.email());
+            return StatusResponseDTO.ok("인증 코드가 이메일로 발송되었습니다. (유효시간 5분)");
+        }
+
+    @PostMapping("/findId/verifyCode")
+    public StatusResponseDTO verifyIdCodeAndFindId(@Valid @RequestBody VerificationRequest request) {
+        String foundEmail = userService.verifyIdCodeAndFindId(request.email(), request.code());
+        return StatusResponseDTO.ok(foundEmail);
+    }
+
+    @PostMapping("/findPassword/sendCode")
+    public StatusResponseDTO sendPasswordCode(@Valid @RequestBody EmailRequest request) {
+        userService.sendPasswordVerificationCode(request.email());
+        return StatusResponseDTO.ok("인증 코드가 이메일로 발송되었습니다. (유효시간 5분)");
+    }
+
+    @PostMapping("/findPassword/verifyCode")
+    public StatusResponseDTO verifyPasswordCode(@Valid @RequestBody VerificationRequest request) {
+        userService.verifyPasswordCode(request.email(), request.code());
+        return StatusResponseDTO.ok("인증 코드 확인 완료");
+    }
+
+    @PostMapping("/findPassword/reset")
+    public StatusResponseDTO resetPassword(@Valid @RequestBody PasswordResetRequest request) {
+        userService.resetPassword(request.getEmail(), request.getCode(), request.getNewPassword());
+        return StatusResponseDTO.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 }

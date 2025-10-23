@@ -67,3 +67,25 @@
     font-weight: bold;
     text-decoration: underline;
 }
+.findCredentials {
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.findCredentials .link {
+    cursor: pointer;
+    color: #8c5f21;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.findCredentials .link:hover {
+    color: #a07d4b;
+    text-decoration: underline;
+}
+
+.separator {
+    margin: 0 10px;
+    color: #ccc;
+}

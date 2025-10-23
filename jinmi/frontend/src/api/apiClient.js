@@ -23,6 +23,10 @@ const processQueue = (error, token = null) => {
     });
     failedQueue = [];
 };
+const shouldRedirectToMyPage = () => {
+    const pathname = window.location.pathname;
+    return pathname.startsWith('/mypage') || pathname.startsWith('/users');
+};
 
 apiClient.interceptors.request.use(
     (config) => {
@@ -45,7 +49,13 @@ apiClient.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        const isAlreadyLoggedOut = !localStorage.getItem('accessToken') && !localStorage.getItem('refreshToken');
 
+
+        if (isAlreadyLoggedOut && (error.response?.status === 401 || error.response?.status === 403 || error.response?.status === 404)) {
+            console.warn("Clean-up 상태 감지: 인터셉터의 자동 리다이렉트를 무시하고 상위 컴포넌트의 navigate('/')를 따름");
+            return Promise.reject(error);
+        }
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
 
             if (!originalRequest.url.includes('/auth/reissue')) {
@@ -92,15 +102,23 @@ apiClient.interceptors.response.use(
 
                         localStorage.removeItem('accessToken');
                         localStorage.removeItem('refreshToken');
+                        let redirectPath = '/login';
+
+                        if (shouldRedirectToMyPage()) {
+                            redirectPath = '/mypage';
+                        }
 
                         let errorMessage = "토큰 재발급 실패. 보안상의 이유로 로그아웃됩니다.";
                         if (err.response?.status === 401) {
                             errorMessage = "보안 위험(비정상적 토큰) 감지로 인해 자동 로그아웃됩니다.";
                         } else if (err.response?.status === 404) {
                             errorMessage = "세션이 만료되었습니다. 다시 로그인해주세요.";
+                            if (shouldRedirectToMyPage()) {
+                                redirectPath = '/mypage';
+                            }
                         }
                         console.error(errorMessage, err.response?.data);
-                        window.location.href = '/login';
+                        window.location.href = redirectPath;
                         return Promise.reject(err);
                     }
                 } else {

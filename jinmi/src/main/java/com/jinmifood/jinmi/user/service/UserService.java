@@ -7,6 +7,7 @@ import com.jinmifood.jinmi.common.security.refreshToken.domain.BlacklistToken;
 import com.jinmifood.jinmi.common.security.refreshToken.domain.RefreshToken;
 import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
 import com.jinmifood.jinmi.common.security.refreshToken.repository.RefreshTokenRepository;
+import com.jinmifood.jinmi.email.service.MailService;
 import com.jinmifood.jinmi.user.domain.User;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
@@ -41,6 +42,7 @@ public class UserService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
+    private final MailService mailService;
 
 
     private boolean isReservedKeywordUsed(String text) {
@@ -160,6 +162,8 @@ public class UserService {
             throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
         }
     }
+
+
 
     @Transactional
     public void logout(String accessToken, String userIdentifier) {
@@ -305,4 +309,58 @@ public class UserService {
 
         log.info("기타 정보 수정완료: userId={}", userId);
     }
+
+    @Transactional
+    public void sendIdVerificationCode(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorException.USER_NOT_FOUND);
+        }
+
+        mailService.sendFindIdMail(email);
+    }
+    @Transactional
+    public String verifyIdCodeAndFindId(String email, String code) {
+        if (mailService.verifyFindIdCode(email, code)) {
+            return email;
+        }
+        throw new CustomException(ErrorException.INVALID_AUTH_CODE);
+    }
+
+    @Transactional
+    public void sendPasswordVerificationCode(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new CustomException(ErrorException.USER_NOT_FOUND);
+        }
+
+        mailService.sendFindPasswordMail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public void verifyPasswordCode(String email, String code) {
+        if (!mailService.verifyFindPasswordCode(email, code)) {
+            throw new CustomException(ErrorException.INVALID_AUTH_CODE);
+        }
+    }
+
+    @Transactional
+    public void resetPassword(String email, String code, String newPassword) {
+        if (!mailService.verifyFindPasswordCode(email, code)) {
+            throw new CustomException(ErrorException.INVALID_AUTH_CODE);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$";
+        if(!newPassword.matches(passwordPattern)){
+            throw new CustomException(ErrorException.PASSWORD_MISPATTERN);
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(newPassword);
+        user.updatePassword(encodedNewPassword);
+        userRepository.save(user);
+
+        log.info("비밀번호 재설정 성공: Email={}", email);
+    }
+
 }

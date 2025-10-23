@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient.js";
 import { useAuth } from "../../context/AuthContext.jsx"
 import axios from 'axios';
+import styles from './css/MyPage.module.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
@@ -265,9 +266,9 @@ export default function MyPage() {
     }
     if (error && step === STEPS.INFO_DISPLAY) {
         return (
-            <div className="my-page-container">
+            <div className={styles['my-page-container']}>
                 <h2>마이 페이지</h2>
-                <div className="status-message error">
+                <div className={`${styles['status-message']} ${styles.error}`}>
                     <p>내 정보를 불러오는 데 실패했습니다.</p>
                     <p>오류: {error}</p>
                 </div>
@@ -282,7 +283,7 @@ export default function MyPage() {
             <InfoDisplay
                 myInfo={myInfo}
                 onEditClick={handleEditClick}
-                onDelete={() => navigate("/delete-account")}
+                onDelete={() => navigate("/deleteAccount")}
             />
         );
     } else if (step === STEPS.PASSWORD_CHECK) {
@@ -313,7 +314,7 @@ export default function MyPage() {
 
 
     return (
-        <div className="my-page-container">
+        <div className={styles['my-page-container']}>
             <h2>마이 페이지</h2>
             {content}
         </div>
@@ -322,17 +323,17 @@ export default function MyPage() {
 
 
 const InfoDisplay = ({ myInfo, onEditClick, onDelete }) => (
-    <div className="info-display">
-        <div className="info-item"><strong>이메일:</strong> <span>{myInfo.email}</span></div>
-        <div className="info-item"><strong>닉네임:</strong> <span>{myInfo.displayName}</span></div>
-        <div className="info-item"><strong>휴대폰 번호:</strong> <span>{myInfo.phoneNumber || "미입력"}</span></div>
-        <div className="info-item"><strong>주소:</strong> <span>{myInfo.address || "미입력"}</span></div>
+    <div className={styles['info-display']}>
+        <div className={styles['info-item']}><strong>이메일:</strong> <span>{myInfo.email}</span></div>
+        <div className={styles['info-item']}><strong>닉네임:</strong> <span>{myInfo.displayName}</span></div>
+        <div className={styles['info-item']}><strong>휴대폰 번호:</strong> <span>{myInfo.phoneNumber || "미입력"}</span></div>
+        <div className={styles['info-item']}><strong>주소:</strong> <span>{myInfo.address || "미입력"}</span></div>
 
-        <div className="button-group">
-            <button className="primary-btn" onClick={onEditClick}>
+        <div className={styles['button-group']}>
+            <button className={styles['primary-btn']} onClick={onEditClick}>
                 회원 정보 수정
             </button>
-            <button className="danger-btn" onClick={onDelete}>
+            <button className={styles['danger-btn']} onClick={onDelete}>
                 회원 탈퇴
             </button>
         </div>
@@ -359,16 +360,16 @@ const PasswordCheckForm = ({ email, onConfirm, onCancel, errorMessage, clearErro
     };
 
     return (
-        <div className="password-check-form">
+        <div className={styles['password-check-form']}>
             <h3>회원 정보 수정을 위해 비밀번호를 다시 한 번 확인해 주세요.</h3>
 
             <form onSubmit={handleConfirm}>
-                <div className="form-group">
+                <div className={styles['form-group']}>
                     <label>이메일:</label>
                     <input type="text" value={email} readOnly disabled />
                 </div>
 
-                <div className="form-group required">
+                <div className={`${styles['form-group']} ${styles.required}`}>
                     <label htmlFor="check-password">현재 비밀번호*</label>
                     <input
                         type="password"
@@ -381,13 +382,13 @@ const PasswordCheckForm = ({ email, onConfirm, onCancel, errorMessage, clearErro
                     />
                 </div>
 
-                {errorMessage && <p className="error-text">{errorMessage}</p>}
+                {errorMessage && <p className={styles['error-text']}>{errorMessage}</p>}
 
-                <div className="button-group">
-                    <button type="submit" className="primary-btn" disabled={isSubmitting || !password}>
+                <div className={styles['button-group']}>
+                    <button type="submit" className={styles['primary-btn']} disabled={isSubmitting || !password}>
                         {isSubmitting ? "확인 중..." : "확인"}
                     </button>
-                    <button type="button" className="secondary-btn" onClick={onCancel} disabled={isSubmitting}>
+                    <button type="button" className={styles['secondary-btn']} onClick={onCancel} disabled={isSubmitting}>
                         취소
                     </button>
                 </div>
@@ -458,19 +459,19 @@ const UpdateForm = ({
     };
 
     return (
-        <form onSubmit={handleFormSubmit} className="update-form">
+        <form onSubmit={handleFormSubmit} className={styles['update-form']}>
             <h3>내 정보 수정</h3>
 
-            <div className="form-group">
+            <div className={styles['form-group']}>
                 <label>이메일</label>
                 <input type="text" value={myInfo.email} readOnly disabled />
             </div>
 
-            <div className="form-group">
+            <div className={styles['form-group']}>
                 <label>비밀번호 변경</label>
                 <button
                     type="button"
-                    className="secondary-btn"
+                    className={styles['secondary-btn']}
                     onClick={handlePasswordToggle}
                     style={{ marginLeft: '10px' }}
                 >
@@ -480,7 +481,7 @@ const UpdateForm = ({
 
             {isPasswordChanging && (
                 <>
-                    <div className="form-group required">
+                    <div className={`${styles['form-group']} ${styles.required}`}>
                         <label htmlFor="newPassword">새 비밀번호*</label>
                         <input
                             type="password"
@@ -493,7 +494,7 @@ const UpdateForm = ({
                         />
                     </div>
 
-                    <div className="form-group required">
+                    <div className={`${styles['form-group']} ${styles.required}`}>
                         <label htmlFor="confirmNewPassword">새 비밀번호 확인*</label>
                         <input
                             type="password"
@@ -504,13 +505,13 @@ const UpdateForm = ({
                             required={isPasswordChanging}
                             placeholder="새 비밀번호를 다시 한번 입력해주세요"
                         />
-                        {passwordError && <small className="error-text">{passwordError}</small>}
+                        {passwordError && <small className={styles['error-text']}>{passwordError}</small>}
                     </div>
                 </>
             )}
 
 
-            <div className="form-group required">
+            <div className={`${styles['form-group']} ${styles.required}`}>
                 <label htmlFor="displayName">닉네임*</label>
                 <input
                     type="text"
@@ -522,7 +523,7 @@ const UpdateForm = ({
                 />
             </div>
 
-            <div className="form-group">
+            <div className={styles['form-group']}>
                 <label htmlFor="phoneNumber">휴대폰 번호</label>
                 <input
                     type="text"
@@ -534,10 +535,10 @@ const UpdateForm = ({
                 />
             </div>
 
-            <div className="address-group">
-                <div className="form-group required" style={{ marginBottom: '10px' }}>
+            <div className={styles['address-group']}>
+                <div className={`${styles['form-group']} ${styles.required}`} style={{ marginBottom: '10px' }}>
                     <label>주소*</label>
-                    <div className="input-group">
+                    <div className={styles['input-group']}>
                         <input
                             type="text"
                             name="baseAddressDisplay"
@@ -545,13 +546,13 @@ const UpdateForm = ({
                             value={addressParts.base}
                             readOnly
                             onClick={handleAddressSearch}
-                            className="input"
+                            className={styles.input}
                             disabled={!isApiLoaded}
                         />
                         <button
                             type="button"
                             onClick={handleAddressSearch}
-                            className="secondary-btn"
+                            className={styles['secondary-btn']}
                             disabled={!isApiLoaded}
                         >
                             주소 검색
@@ -559,28 +560,28 @@ const UpdateForm = ({
                     </div>
                 </div>
 
-                <div className="form-group">
+                <div className={styles['form-group']}>
                     <input
                         type="text"
                         name="detailAddress"
                         placeholder="나머지 상세 주소 입력 (선택 사항)"
                         value={addressParts.detail}
                         onChange={handleDetailAddressChange}
-                        className="input"
+                        className={styles.input}
                         disabled={!isApiLoaded || addressParts.base.length === 0}
                         id="detailAddressUpdateInput"
                     />
                 </div>
             </div>
 
-            {errorMessage && <p className="error-text">{errorMessage}</p>}
+            {errorMessage && <p className={styles['error-text']}>{errorMessage}</p>}
 
 
-            <div className="button-group">
-                <button type="submit" className="primary-btn">수정 완료</button>
+            <div className={styles['button-group']}>
+                <button type="submit" className={styles['primary-btn']}>수정 완료</button>
                 <button
                     type="button"
-                    className="secondary-btn"
+                    className={styles['secondary-btn']}
                     onClick={onCancel}
                 >
                     취소

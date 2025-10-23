@@ -11,7 +11,9 @@ import PaymentFailPage from "./pages/Payments/PaymentFailPage.jsx";
 import MyPage from "./pages/User/MyPage.jsx";
 import { fetchCartCountFast } from "./api/itemCart.js";
 import ItemDetailPage from "./pages/item/ItemDetailPage.jsx";
-
+import DeleteAccount from "./pages/User/DeleteAccount.jsx";
+import FindId from "./pages/User/FindId.jsx";
+import FindPassword from "./pages/User/FindPassword.jsx";
 
 const Home     = () => <div className="page">메인</div>
 const About    = () => <div className="page">회사소개</div>
@@ -32,6 +34,9 @@ export default function App() {
                 <Route path="/payments/fail" element={<PaymentFailPage />} />
                 <Route path="/mypage" element={<MyPage />} />
                 <Route path="/item/:itemId" element={<ItemDetailPage />} />
+                <Route path="/deleteAccount" element={<DeleteAccount />} />
+                <Route path="/findId" element={<FindId />} />
+                <Route path="/findPassword" element={<FindPassword />} />
 
             </Routes>
         </AuthProvider>

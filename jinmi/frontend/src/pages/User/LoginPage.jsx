@@ -38,11 +38,11 @@ export default function LoginPage() {
         try {
 
             const response = await apiClient.post(
-                `/users/login`, // apiClient의 baseURL이 이미 설정되어 있으므로 경로만 명시
+                `/users/login`,
                 credentials
             );
 
-            const { accessToken, refreshToken } = response.data; // 백엔드 응답 확인
+            const { accessToken, refreshToken } = response.data;
 
             handleLogin(accessToken,refreshToken);
             window.location.replace("/");
@@ -93,6 +93,12 @@ export default function LoginPage() {
                 {error && <p className={styles.error}>{error}</p>}
 
                 <button type="submit" className={styles.button}>로그인</button>
+
+                <div className={styles.findCredentials}>
+                    <span onClick={() => navigate('/findId')} className={styles.link}>아이디 찾기</span>
+                    <span className={styles.separator}>|</span>
+                    <span onClick={() => navigate('/findPassword')} className={styles.link}>비밀번호 찾기</span>
+                </div>
 
                 <p className={styles.signupLink}>
                     계정이 없으신가요? <span onClick={() => navigate('/signup')} className={styles.link}>회원가입</span>

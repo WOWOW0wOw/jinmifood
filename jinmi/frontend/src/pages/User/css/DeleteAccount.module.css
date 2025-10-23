@@ -1,0 +1,133 @@
+.delete-account-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.delete-account-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 700;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.warning-box {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-left: 5px solid #ffc107;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.warning-box .title {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.warning-box .content {
+    font-size: 0.95em;
+    color: #856404;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.warning-box .final_check {
+    font-weight: 600;
+    color: #dc3545;
+    margin-top: 10px;
+    border-top: 1px dashed #ffc107;
+    padding-top: 10px;
+}
+
+.password-form {
+    padding: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.password-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+.password-form input[type="password"]:focus {
+    border-color: #8c5f21;
+    box-shadow: 0 0 5px rgba(140, 95, 33, 0.3);
+    outline: none;
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.danger-btn {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    background-color: #dc3545;
+    color: white;
+}
+
+.danger-btn:hover:not(:disabled) {
+    background-color: #c82333;
+}
+
+.secondary-btn {
+    padding: 12px 25px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s, opacity 0.3s;
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.secondary-btn:hover:not(:disabled) {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+.danger-btn:disabled, .secondary-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+}

@@ -98,7 +98,7 @@ public class SecurityConfig {
                                 "/users/join", "/users/login", "/auth/reissue","/users/checkNickname","/api/v1/users/checkPassword",
 
                                 // 이메일 인증
-                                "/email/send","/email/verify",
+                                "/email/send","/email/verify","/users/findId/sendCode","/users/findPassword/reset","/users/findId/verifyCode","/users/findPassword/sendCode","/users/findPassword/verifyCode",
                                 
                                 // 장바구니 리스트 조회는 비회원도 가능하다고 가정
                                 "/itemCart/list",

@@ -46,21 +46,27 @@ export function AuthProvider({ children }){
     const handleLogout = async () => {
         const accessToken = localStorage.getItem('accessToken');
 
-        if (accessToken){
-           try{
-               await apiClient.post('/users/logout');
-               console.log("백엔드에서 로그아웃 요청 성공: 토큰 블랙리스트 등록 완료");
-           }catch (error){
-               console.error("백엔드 로그아웃 요청 실패 ",error);
-           }
+        if (accessToken) {
+            try {
+                await apiClient.post('/users/logout');
+                console.log("백엔드에서 로그아웃 요청 성공: 토큰 블랙리스트 등록 완료");
+            } catch (error) {
+                console.error("백엔드 로그아웃 요청 실패 ", error);
+            }
         }
-
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setIsLoggedIn(false);
-        setUser(null);
-        navigate('/'); // 로그아웃 후 메인 페이지로 이동
+        clearAuthDataAndRedirect();
     };
+        const clearAuthDataAndRedirect = () => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            setIsLoggedIn(false);
+            setUser(null);
+            navigate('/'); // 로그아웃 후 메인 페이지로 이동
+        };
+
+        const handleLocalLogout = () => {
+            clearAuthDataAndRedirect();
+        };
 
     useEffect(() => {
         loadUserFromStorage();
@@ -72,6 +78,7 @@ export function AuthProvider({ children }){
         isLoading,
         handleLogin,
         handleLogout,
+        handleLocalLogout,
     };
 
     return (

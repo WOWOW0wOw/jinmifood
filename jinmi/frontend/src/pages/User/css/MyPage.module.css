@@ -1,0 +1,252 @@
+
+.my-page-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.my-page-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-group.required label:after {
+    content: '*';
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+.form-group input:not([type="checkbox"]) {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #8c5f21;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    outline: none;
+}
+
+.form-group input[disabled],
+.form-group input[readonly] {
+    background-color: #f7f7f7;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.address-group {
+    margin-bottom: 20px;
+}
+
+.address-group .input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.address-group .input-group input {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.address-group .input-group button {
+    flex-shrink: 0;
+    padding: 12px 15px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.primary-btn {
+    background-color: #8c5f21;
+    color: white;
+}
+
+.primary-btn:hover:not([disabled]) {
+    background-color: #e3b979;
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background-color: #ecf0f1;
+    color: #555;
+    border: 1px solid #bdc3c7;
+}
+
+.secondary-btn:hover:not([disabled]) {
+    background-color: #dfe6e9;
+    color: #333;
+    transform: translateY(-1px);
+}
+
+.danger-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.danger-btn:hover:not([disabled]) {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.status-message,
+.error-text {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.error-text, small.error-text {
+    color: #e74c3c;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+
+.info-display {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1em;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item strong {
+    color: #34495e;
+    font-weight: 700;
+    min-width: 120px;
+}
+
+.info-item span {
+    color: #666;
+    text-align: right;
+    flex-grow: 1;
+    word-break: break-all;
+}
+
+.password-check-form, .update-form {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fefefe;
+}
+
+.update-form .form-group button.secondary-btn {
+    margin-left: 15px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+    .my-page-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .button-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .button-group button {
+        width: 100%;
+        padding: 15px 10px;
+    }
+
+    .address-group .input-group {
+        flex-direction: column;
+    }
+
+    .address-group .input-group button {
+        width: 100%;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 0;
+    }
+
+    .info-item strong {
+        margin-bottom: 5px;
+    }
+
+    .info-item span {
+        text-align: left;
+    }
+}
