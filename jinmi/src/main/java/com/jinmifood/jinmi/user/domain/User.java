@@ -49,6 +49,21 @@ public class User {
     @Column(nullable = false)
     private Role role; // 회원구분
 
+    @Column(nullable = true)
+    private String provider;
+
+    // 이 토큰을 회원 탈퇴 시 Revoke api에 사용
+    @Column(length = 512, nullable = true)
+    private String googleRefreshToken;
+
+    public void updateGoogleRefreshToken(String googleRefreshToken) {
+        this.googleRefreshToken = googleRefreshToken;
+    }
+
+    // Google Refresh Token 삭제 메서드 (탈퇴 시 사용)
+    public void clearGoogleRefreshToken() {
+        this.googleRefreshToken = null;
+    }
     @Column
     private LocalDateTime createAt; // 가입날짜
 
@@ -65,7 +80,10 @@ public class User {
             this.address = address;
         }
     }
-
+    public User update(String displayName) {
+        this.displayName = displayName;
+        return this;
+    }
     public enum Role {
         USER, ADMIN
     }

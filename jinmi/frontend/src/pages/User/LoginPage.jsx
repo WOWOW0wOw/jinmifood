@@ -4,8 +4,11 @@ import apiClient from "../../api/apiClient.js";
 import { useAuth} from "../../context/AuthContext.jsx";
 import axios from 'axios';
 import styles from './css/Login.module.css';
+import GoogleIcon from './google-icon.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+
+const GOOGLE_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 
 export default function LoginPage() {
 
@@ -65,7 +68,9 @@ export default function LoginPage() {
             alert(`${errorMessage}`);
         }
     };
-
+    const handleGoogleLogin = () => {
+        window.location.href = GOOGLE_AUTH_URL;
+    };
 
 
     return (
@@ -103,6 +108,18 @@ export default function LoginPage() {
                 <p className={styles.signupLink}>
                     계정이 없으신가요? <span onClick={() => navigate('/signup')} className={styles.link}>회원가입</span>
                 </p>
+                <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className={styles.googleButton}
+                >
+                    <img
+                        src={GoogleIcon}
+                        alt="Google Icon"
+                        style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
+                    />
+                    Google로 로그인
+                </button>
             </form>
         </div>
     );

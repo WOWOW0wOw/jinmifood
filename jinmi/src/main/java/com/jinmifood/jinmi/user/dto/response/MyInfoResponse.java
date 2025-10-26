@@ -14,6 +14,7 @@ public class MyInfoResponse {
     private String displayName;
     private String phoneNumber;
     private String address;
+    private String provider;
 
     public static MyInfoResponse from(User user){
         return new MyInfoResponse(
@@ -21,7 +22,8 @@ public class MyInfoResponse {
                 user.getEmail(),
                 user.getDisplayName(),
                 user.getPhoneNumber(),
-                user.getAddress()
+                user.getAddress(),
+                user.getProvider()
         );
     }
 }

@@ -32,6 +32,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    //OAuth 소셜로그인
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //jwt 토큰
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'

@@ -1,6 +1,5 @@
 package com.jinmifood.jinmi.user.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateMyInfoRequest {
 
-    @NotBlank(message = "현재 비밀번호는 필수 입력 항목입니다.")
     private String currentPassword;
 
 //    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",

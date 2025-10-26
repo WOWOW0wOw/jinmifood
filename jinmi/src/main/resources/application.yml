@@ -44,8 +44,10 @@ spring:
         format_sql: true
         use_sql_comments: true
 
+
+
 jwt:
-  access-token-expiration-time: 10000
+  access-token-expiration-time: 1800000
   refresh-token-expiration-time: 604800000
 
 logging:

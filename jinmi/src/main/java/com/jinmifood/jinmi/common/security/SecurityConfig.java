@@ -1,6 +1,7 @@
 package com.jinmifood.jinmi.common.security;
 
 import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
+import com.jinmifood.jinmi.user.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,9 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final BlacklistTokenRepository blacklistTokenRepository;
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -87,6 +91,15 @@ public class SecurityConfig {
                 // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
+                .oauth2Login(oauth2 -> oauth2
+                        // 사용자 정보 로드 서비스 지정 (DB 연동 및 회원가입 처리)
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        // 인증 성공 시 처리할 핸들러 지정 (JWT 발급 및 프론트로 리다이렉트)
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                )
+
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
 
@@ -96,7 +109,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 // 회원가입/로그인/토큰 재발급
                                 "/users/join", "/users/login", "/auth/reissue","/users/checkNickname","/api/v1/users/checkPassword",
-
+                                // 소셜
+                                "/oauth2/**",
                                 // 이메일 인증
                                 "/email/send","/email/verify","/users/findId/sendCode","/users/findPassword/reset","/users/findId/verifyCode","/users/findPassword/sendCode","/users/findPassword/verifyCode",
                                 

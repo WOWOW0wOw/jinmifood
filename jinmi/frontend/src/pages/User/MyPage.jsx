@@ -21,6 +21,7 @@ export default function MyPage() {
     const navigate = useNavigate();
     const { handleLogout } = useAuth();
     const [myInfo, setMyInfo] = useState(initialMyInfo);
+    const [isSocialUser, setIsSocialUser] = useState(false);
     const [formData, setFormData] = useState({
         currentPassword: "",
         newPassword: "",
@@ -118,6 +119,9 @@ export default function MyPage() {
             const data = response.data.data;
             setMyInfo(data);
 
+            const isSocial = !!data.provider && data.provider !== 'NONE' && data.provider !== 'LOCAL';
+            setIsSocialUser(isSocial);
+
             setFormData(prev => ({
                 ...prev,
                 displayName: data.displayName,
@@ -130,6 +134,8 @@ export default function MyPage() {
             const errorMessage = err.response?.data?.message || "정보를 불러오는데 실패했습니다.";
             setError(errorMessage);
             setMessage(errorMessage);
+
+            setIsSocialUser(false);
 
             if (!localStorage.getItem('accessToken')) {
                 handleLogout();
@@ -172,7 +178,12 @@ export default function MyPage() {
     const handleEditClick = () => {
         setError(null);
         setMessage("");
-        setStep(STEPS.PASSWORD_CHECK);
+        if (isSocialUser) {
+            setStep(STEPS.INFO_EDIT);
+            setMessage("소셜 로그인 사용자입니다. 바로 정보를 수정할 수 있습니다.");
+        } else {
+            setStep(STEPS.PASSWORD_CHECK);
+        }
     };
 
     const handlePasswordCheck = async (password) => {
@@ -284,6 +295,7 @@ export default function MyPage() {
                 myInfo={myInfo}
                 onEditClick={handleEditClick}
                 onDelete={() => navigate("/deleteAccount")}
+                isLoading={loading}
             />
         );
     } else if (step === STEPS.PASSWORD_CHECK) {
@@ -308,6 +320,7 @@ export default function MyPage() {
                 getAddressParts={getAddressParts}
                 handleAddressSearch={handleAddressSearch}
                 isApiLoaded={isApiLoaded}
+                isSocialUser={isSocialUser}
             />
         );
     }
@@ -322,7 +335,7 @@ export default function MyPage() {
 }
 
 
-const InfoDisplay = ({ myInfo, onEditClick, onDelete }) => (
+const InfoDisplay = ({ myInfo, onEditClick, onDelete, isLoading }) => (
     <div className={styles['info-display']}>
         <div className={styles['info-item']}><strong>이메일:</strong> <span>{myInfo.email}</span></div>
         <div className={styles['info-item']}><strong>닉네임:</strong> <span>{myInfo.displayName}</span></div>
@@ -330,10 +343,11 @@ const InfoDisplay = ({ myInfo, onEditClick, onDelete }) => (
         <div className={styles['info-item']}><strong>주소:</strong> <span>{myInfo.address || "미입력"}</span></div>
 
         <div className={styles['button-group']}>
-            <button className={styles['primary-btn']} onClick={onEditClick}>
+            <button className={styles['primary-btn']} onClick={onEditClick} disabled={isLoading}>
+
                 회원 정보 수정
             </button>
-            <button className={styles['danger-btn']} onClick={onDelete}>
+            <button className={styles['danger-btn']} onClick={onDelete} disabled={isLoading}>
                 회원 탈퇴
             </button>
         </div>
@@ -408,7 +422,8 @@ const UpdateForm = ({
                         errorMessage,
                         getAddressParts,
                         handleAddressSearch,
-                        isApiLoaded
+                        isApiLoaded,
+                        isSocialUser
                     }) => {
 
     const [isPasswordChanging, setIsPasswordChanging] = useState(false);
@@ -466,47 +481,50 @@ const UpdateForm = ({
                 <label>이메일</label>
                 <input type="text" value={myInfo.email} readOnly disabled />
             </div>
-
-            <div className={styles['form-group']}>
-                <label>비밀번호 변경</label>
-                <button
-                    type="button"
-                    className={styles['secondary-btn']}
-                    onClick={handlePasswordToggle}
-                    style={{ marginLeft: '10px' }}
-                >
-                    {isPasswordChanging ? '변경 취소' : '비밀번호 변경'}
-                </button>
-            </div>
-
-            {isPasswordChanging && (
+            {!isSocialUser && (
                 <>
-                    <div className={`${styles['form-group']} ${styles.required}`}>
-                        <label htmlFor="newPassword">새 비밀번호*</label>
-                        <input
-                            type="password"
-                            id="newPassword"
-                            name="newPassword"
-                            value={formData.newPassword}
-                            onChange={handleChange}
-                            required={isPasswordChanging}
-                            placeholder="영문 대소문자, 숫자 포함 8~20자"
-                        />
+                    <div className={styles['form-group']}>
+                        <label>비밀번호 변경</label>
+                        <button
+                            type="button"
+                            className={styles['secondary-btn']}
+                            onClick={handlePasswordToggle}
+                            style={{ marginLeft: '10px' }}
+                        >
+                            {isPasswordChanging ? '변경 취소' : '비밀번호 변경'}
+                        </button>
                     </div>
 
-                    <div className={`${styles['form-group']} ${styles.required}`}>
-                        <label htmlFor="confirmNewPassword">새 비밀번호 확인*</label>
-                        <input
-                            type="password"
-                            id="confirmNewPassword"
-                            name="confirmNewPassword"
-                            value={confirmNewPassword}
-                            onChange={handleConfirmNewPasswordChange}
-                            required={isPasswordChanging}
-                            placeholder="새 비밀번호를 다시 한번 입력해주세요"
-                        />
-                        {passwordError && <small className={styles['error-text']}>{passwordError}</small>}
-                    </div>
+                    {isPasswordChanging && (
+                        <>
+                            <div className={`${styles['form-group']} ${styles.required}`}>
+                                <label htmlFor="newPassword">새 비밀번호*</label>
+                                <input
+                                    type="password"
+                                    id="newPassword"
+                                    name="newPassword"
+                                    value={formData.newPassword}
+                                    onChange={handleChange}
+                                    required={isPasswordChanging}
+                                    placeholder="영문 대소문자, 숫자 포함 8~20자"
+                                />
+                            </div>
+
+                            <div className={`${styles['form-group']} ${styles.required}`}>
+                                <label htmlFor="confirmNewPassword">새 비밀번호 확인*</label>
+                                <input
+                                    type="password"
+                                    id="confirmNewPassword"
+                                    name="confirmNewPassword"
+                                    value={confirmNewPassword}
+                                    onChange={handleConfirmNewPasswordChange}
+                                    required={isPasswordChanging}
+                                    placeholder="새 비밀번호를 다시 한번 입력해주세요"
+                                />
+                                {passwordError && <small className={styles['error-text']}>{passwordError}</small>}
+                            </div>
+                        </>
+                    )}
                 </>
             )}
 

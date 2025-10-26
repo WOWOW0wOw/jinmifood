@@ -89,3 +89,23 @@
     margin: 0 10px;
     color: #ccc;
 }
+.googleButton {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #4285F4;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.googleButton:hover {
+    background-color: #357ae8;
+}
