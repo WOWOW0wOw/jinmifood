@@ -1,0 +1,241 @@
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    color: #333;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+}
+
+.itemDetail {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.itemImageContainer {
+    flex: 1;
+    max-width: 500px;
+}
+
+.mainImage {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.mainImage:hover {
+    transform: scale(1.02);
+}
+
+.itemInfoContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.itemName {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.itemPrice {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #d9534f;
+    margin-bottom: 25px;
+}
+
+.itemPrice::after {
+    content: '원';
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 20px 0;
+}
+
+.itemStats {
+    display: flex;
+    gap: 20px;
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.itemStats span {
+    font-weight: 500;
+}
+
+.separator {
+    color: #ccc;
+}
+
+.actionsContainer {
+    display: flex;
+    gap: 15px;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.cartButton, .buyButton {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.cartButton {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.cartButton:hover {
+    background-color: #4a9b4a;
+    transform: translateY(-2px);
+}
+
+.buyButton {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+.buyButton:hover {
+    background-color: #e39b37;
+    transform: translateY(-2px);
+}
+
+
+.itemContent {
+    padding: 20px;
+    border-top: 2px solid #eee;
+}
+
+.contentTitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.detailImage {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+.loadingText, .errorText {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 100px 20px;
+    color: #666;
+}
+
+.quantitySelector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    margin-top: auto;
+}
+
+.quantityLabel {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.quantityControls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.quantityButton {
+    background-color: white;
+    border: none;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 38px;
+    height: 38px;
+    transition: background-color 0.2s;
+}
+
+.quantityButton:hover {
+    background-color: #f0f0f0;
+}
+
+.quantityButton:first-child {
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    border-right: 1px solid #ccc;
+}
+
+.quantityButton:last-child {
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    border-left: 1px solid #ccc;
+}
+
+.quantityDisplay {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    width: 45px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    height: 38px;
+    line-height: 38px;
+    background-color: white;
+}
+
+.itemContent {
+    padding: 20px;
+    border-top: 2px solid #eee;
+}
+
+
+
+/* 반응형 웹 디자인 (모바일 기기 대응) */
+@media (max-width: 768px) {
+    .itemDetail {
+        flex-direction: column; /* 세로로 쌓기 */
+    }
+
+    .itemName, .itemPrice {
+        text-align: center;
+    }
+
+    .itemStats {
+        justify-content: center;
+    }
+}

@@ -7,7 +7,7 @@ import apiClient from './apiClient';
 export const fetchAllItems = async () => {
     try {
         const response = await apiClient.get('/items/list');
-        return response.data.data; // StatusResponseDTO의 'data' 필드
+        return response.data.data;
     } catch (error) {
         console.error('Error fetching all items:', error);
         throw error;
@@ -34,16 +34,28 @@ export const fetchItemsByCategoryId = async (categoryId) => {
 
 /**
  * 모든 카테고리 목록을 가져옵니다.
- * @returns {Promise<Array>} 카테고리 객체 배열 (예: [{ categoryId: 1, categoryName: '의류' }])
  */
 export const fetchAllCategories = async () => {
     try {
-        // 실제 백엔드 API 엔드포인트에 맞게 수정해야 합니다.
-        // 예: /categories/list 또는 /items/categories
-        const response = await apiClient.get('/categories/list'); // 가정: 카테고리 목록을 가져오는 API 엔드포인트
+        const response = await apiClient.get('/categories/list');
         return response.data.data;
     } catch (error) {
         console.error('Error fetching all categories:', error);
+        throw error;
+    }
+};
+
+/**
+ * 아이템 상세정보를 가져옵니다.
+ * @param {string | number} itemId - 조회할 아이템의 ID
+ */
+export const fetchItem = async (itemId) => {
+    try {
+        const response = await apiClient.get(`/items/itemDetail/${itemId}`);
+        return response.data.data;
+    } catch (error) {
+        // 에러 로그는 그대로 두어 나중에 다른 문제가 생겼을 때 확인하기 좋습니다.
+        console.error(`Error fetching item with ID ${itemId}:`, error);
         throw error;
     }
 };

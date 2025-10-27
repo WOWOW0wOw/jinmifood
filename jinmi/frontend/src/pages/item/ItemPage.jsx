@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllItems, fetchItemsByCategoryId, fetchAllCategories } from '../../api/itemApi'; // fetchAllCategories 추가
+import { fetchAllItems, fetchItemsByCategoryId, fetchAllCategories } from '../../api/itemApi';
 import styles from './css/ItemPage.module.css';
 
 export default function ItemPage() {

@@ -10,17 +10,21 @@ server:
       timeout: 15m
 
 spring:
-  config:
-    import: optional:application-secret.yml
+  application:
+    name: jinmifood
   profiles:
     active: dev
     include: secret
-  application:
-    name: jinmifood
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      stack:
+        auto: false
   mail:
     host: smtp.gmail.com
     port: 587
@@ -32,7 +36,6 @@ spring:
             enable: true
             required: true
         charset: UTF-8
-
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     database: mysql
@@ -44,20 +47,24 @@ spring:
         format_sql: true
         use_sql_comments: true
 
+# S3 버킷 이름 (사용자 정의 속성)
+# spring.cloud.aws 블록과 별개로 두어 혼동을 방지합니다.
+cloud:
+  aws:
+    s3:
+      bucket: jinmiawsbucket
+
+# JWT 설정
 jwt:
   access-token-expiration-time: 10000
   refresh-token-expiration-time: 604800000
 
+# 로깅 레벨 설정
 logging:
   level:
     com.jinmifood.jinmi: debug
     org.springframework.security: debug
 
-
-
 summarization:
   chunk:
     size: 1500
-
-
-

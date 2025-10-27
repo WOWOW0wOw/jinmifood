@@ -40,7 +40,6 @@ public class Item {
 
     private LocalDateTime updateAt;
 
-    @Column(nullable = false)
     private String itemImg;
 
     private String itemInfImg;
