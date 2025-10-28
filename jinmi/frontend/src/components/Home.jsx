@@ -1,4 +1,5 @@
 import React from "react";
+import HeroCarousel from "../components/HeroCarousel.jsx";
 import "./home.css";
 
 export default function HomePage() {
@@ -36,6 +37,7 @@ export default function HomePage() {
 
     return (
         <main className="home">
+            <HeroCarousel />
             {/* 2) 카테고리 바로가기 */}
             <section className="cats">
                 <div className="cats__inner">

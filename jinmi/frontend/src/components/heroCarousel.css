@@ -1,0 +1,191 @@
+.heroCarousel {
+    position: relative;
+    width: 100%;
+    min-height: 360px;
+    background-color: #000;
+    overflow: hidden;
+    border-radius: 12px;
+    margin: 16px auto;
+    max-width: 1280px; /* 살짝 카드처럼 가운데 */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* 배경 이미지 */
+.heroCarousel__bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.8);
+}
+
+/* 좌우 화살표 */
+.heroCarousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(20, 24, 32, 0.8);
+    color: #fff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.heroCarousel__nav--left {
+    left: 16px;
+}
+.heroCarousel__nav--right {
+    right: 16px;
+}
+
+.heroCarousel__nav:hover {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+}
+
+/* 텍스트/버튼 영역을 감싸는 컨테이너 */
+.heroCarousel__inner {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    min-height: 360px;
+
+    /* 안쪽 여백 + 가운데 정렬 느낌 */
+    padding: 32px 24px 48px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .heroCarousel__inner {
+        min-height: 400px;
+        padding: 48px 56px 64px;
+    }
+}
+
+/* 실제 텍스트 컬럼 */
+.heroCarousel__content {
+    max-width: 600px;
+    color: #111;
+    text-shadow: none;
+}
+
+/* 어두운 배경 위에서 밝은 글씨 버전 */
+.heroCarousel__content--light {
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+/* 상단 라벨 */
+.heroCarousel__badge {
+    display: inline-block;
+    background: #00a8ff;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 6px 12px;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+/* 큰 제목 */
+.heroCarousel__title {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 20px;
+    white-space: pre-line; /* \n 줄바꿈 반영 */
+}
+
+@media (min-width: 768px) {
+    .heroCarousel__title {
+        font-size: 36px;
+    }
+}
+
+/* 설명 */
+.heroCarousel__desc {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 28px;
+    white-space: pre-line;
+    opacity: 0.9;
+}
+
+/* 버튼 영역 */
+.heroCarousel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.heroCarousel__btn {
+    display: inline-block;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 20px;
+    text-decoration: none;
+    line-height: 1.2;
+    border: 2px solid transparent;
+}
+
+.heroCarousel__btn--main {
+    background-color: #1a73e8;
+    color: #fff;
+    border-color: #1a73e8;
+}
+.heroCarousel__btn--main:hover {
+    background-color: #2a82ef;
+    border-color: #2a82ef;
+}
+
+.heroCarousel__btn--ghost {
+    background-color: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+}
+.heroCarousel__content:not(.heroCarousel__content--light) .heroCarousel__btn--ghost {
+    /* 밝은 배경일 때 대체 스타일 */
+    background-color: #2b2f36;
+    border-color: #2b2f36;
+    color: #fff;
+}
+.heroCarousel__btn--ghost:hover {
+    filter: brightness(1.1);
+}
+
+/* 인디케이터 점들 */
+.heroCarousel__dots {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.heroCarousel__dot {
+    width: 48px;
+    height: 6px;
+    border-radius: 999px;
+    background-color: rgba(255,255,255,0.3);
+    border: 0;
+    cursor: pointer;
+}
+
+.heroCarousel__dot--active {
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.9);
+}
+
+/* 라운드 카드 느낌을 살리고 싶으면 heroCarousel 전체 wrapper를
+   상위 섹션 배경 위에 띄우면 됨 (HomePage에서 margin/padding으로 정렬) */
