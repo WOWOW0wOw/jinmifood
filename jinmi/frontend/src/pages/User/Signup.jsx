@@ -3,14 +3,16 @@ import {useNavigate} from "react-router-dom";
 import apiClient from "../../api/apiClient.js";
 import styles from './css/Signup.module.css';
 
+import { MdOutlineEmail, MdLockOutline, MdPersonOutline, MdOutlineSmartphone, MdOutlineLocationOn } from 'react-icons/md';
+
 const Signup = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        confirmPassword: '', // 비밀번호 확인
-        displayName: '', // 닉네임
+        confirmPassword: '',
+        displayName: '',
         phoneNumber: '',
         address: '',
     });
@@ -23,12 +25,11 @@ const Signup = () => {
     const [isApiLoaded, setIsApiLoaded] = useState(false);
 
     const [authCode, setAuthCode] = useState('');
-    const [isEmailSent, setIsEmailSent] = useState(false); // 인증 코드를 발송했는지 여부
-    const [isEmailVerified, setIsEmailVerified] = useState(false); // 최종 인증이 완료되었는지 여부
+    const [isEmailSent, setIsEmailSent] = useState(false);
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
     const [emailAuthMessage, setEmailAuthMessage] = useState('');
-    const [emailTimer, setEmailTimer] = useState(0); // 인증 시간 타이머 (초)
+    const [emailTimer, setEmailTimer] = useState(0);
 
-    // 다음 주소 api
     useEffect(() => {
         let attempts = 0;
         const maxAttempts = 50;
@@ -43,12 +44,11 @@ const Signup = () => {
                 clearInterval(checkApi);
                 console.error("Daum Postcode API 로드 시간 초과. 네트워크 상태를 확인하세요.");
             }
-        }, 100); // 0.1초마다 확인
+        }, 100);
 
         return () => clearInterval(checkApi);
     }, []);
 
-    //이메일 인증 타이머 관리
     useEffect(() => {
         let timerId;
         if (isEmailSent && !isEmailVerified && emailTimer > 0) {
@@ -56,7 +56,6 @@ const Signup = () => {
                 setEmailTimer(prev => prev - 1);
             }, 1000);
         } else if (emailTimer === 0 && isEmailSent) {
-            // 타이머가 0이 되면 만료 처리
             setIsEmailSent(false);
             setEmailAuthMessage('인증 시간이 만료되었습니다. 다시 요청해 주세요.');
         }
@@ -80,7 +79,7 @@ const Signup = () => {
         if (name === 'detailAddress'){
             if (formData.address.includes('상세:')){
                 const baseAddress = formData.address.split('상세:')[0].trim();
-                const fullAddress = `${baseAddress} 상세: ${value.trim()}`; // 'baseAddress' 사용
+                const fullAddress = `${baseAddress} 상세: ${value.trim()}`;
 
                 setFormData(prev =>({
                     ...prev,
@@ -93,9 +92,9 @@ const Signup = () => {
                 }
             }
 
-        } else if (name === 'authCode'){ // 인증 코드 입력 처리
-            setAuthCode(value.slice(0,6)); // 6자리 제한
-            setEmailAuthMessage(''); // 코드 입력하면 메시지 초기화
+        } else if (name === 'authCode'){
+            setAuthCode(value.slice(0,6));
+            setEmailAuthMessage('');
         } else {
             setFormData(prev =>({
                 ...prev,
@@ -127,7 +126,7 @@ const Signup = () => {
 
         new window.daum.Postcode({
             oncomplete: (data) => {
-                let baseAddress = data.address; // 기본 주소
+                let baseAddress = data.address;
                 let extraAddress = '';
 
                 if (data.userSelectedType === 'R') {
@@ -140,7 +139,6 @@ const Signup = () => {
                     baseAddress += (extraAddress !== '' ? ' (' + extraAddress + ')' : '');
                 }
 
-                // 기존 상세 주소 유지 로직
                 const existingDetail = formData.address.includes('상세:') ?
                     formData.address.split('상세:')[1].trim() : '';
 
@@ -181,7 +179,6 @@ const Signup = () => {
 
         try{
             const response = await apiClient.post('/email/send',{ email });
-            // 성공 시 상태 업데이트
             setIsEmailSent(true);
             setIsEmailVerified(false);
             setAuthCode('');
@@ -203,12 +200,11 @@ const Signup = () => {
             }
 
             setEmailAuthMessage(displayError);
-            setIsEmailSent(false); // 재발송 가능하도록
+            setIsEmailSent(false);
         } finally {
             setIsSubmitting(false);
         }
     };
-    // 인증 코드 검증 확인
     const handleEmailVerify = async () => {
         const email = formData.email.trim();
         const code = authCode.trim();
@@ -229,7 +225,6 @@ const Signup = () => {
 
         try{
             const response = await apiClient.post('/email/verify',{ email, code });
-            // 성공 시 상태 업데이트
             setIsEmailVerified(true);
             setIsEmailSent(false); // 타이머 중지
             setEmailTimer(0);
@@ -250,7 +245,6 @@ const Signup = () => {
             }
 
             setIsEmailVerified(false);
-            // 만료 등의 오류 메시지는 유지
             setEmailAuthMessage(displayError);
         } finally {
             setIsSubmitting(false);
@@ -363,7 +357,7 @@ const Signup = () => {
         if (!isNicknameChecked){
             return "닉네임 중복 확인을 완료해야 합니다.";
         }
-        return null; // 모든검사 포함
+        return null;
     };
 
     const handleSubmit = async (e) => {
@@ -382,7 +376,7 @@ const Signup = () => {
             const response = await apiClient.post('/users/join', {
                 email: formData.email,
                 password: formData.password,
-                address: formData.address.trim(), // 마지막에 trim()으로 공백 제거
+                address: formData.address.trim(),
                 displayName: formData.displayName,
                 phoneNumber: formData.phoneNumber,
             });
@@ -390,7 +384,6 @@ const Signup = () => {
             console.log('회원가입 성공:', response.data);
             alert('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.');
 
-            // 로그인 페이지로 리디렉션
             navigate('/login');
 
         } catch (err) {
@@ -421,190 +414,197 @@ const Signup = () => {
 
     return (
         <div className={styles.container}>
-            <h2>회원가입</h2>
+            <h1 className={styles.greetingHeader}>
+                Jinmi Food
+                <span className={styles.subHeader}>회원가입</span>
+            </h1>
+
             <form onSubmit={handleSubmit} className={styles.form}>
 
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>사이트 이용 정보 입력</h3>
-
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>* 이메일 주소 (아이디)</label>
-                        <div className={styles.inputGroup}>
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="예: example@email.com"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className={styles.input}
-                                disabled={isSubmitting || isEmailVerified}
-                            />
-                            <button
-                                type="button"
-                                onClick={handleEmailSend}
-                                className={isEmailVerified ? styles.verifiedButton : styles.checkButton}
-                                disabled={isSubmitting || isEmailVerified}
-                            >
-                                {isEmailVerified ? '인증 완료' : (isEmailSent ? '재요청' : '인증 요청')}
-                            </button>
-                        </div>
-                    </div>
-
-                    {isEmailSent && !isEmailVerified && (
-                        <div className={styles.inputGroupBlock} style={{marginTop: '-10px'}}>
-                            <label className={styles.label}>* 이메일 인증 코드</label>
-                            <div className={styles.inputGroup}>
-                                <input
-                                    type="text"
-                                    name="authCode"
-                                    placeholder="발송된 6자리 인증 코드를 입력하세요"
-                                    value={authCode}
-                                    onChange={handleChange}
-                                    className={styles.input}
-                                    disabled={isSubmitting}
-                                    maxLength={6}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleEmailVerify}
-                                    className={styles.checkButton}
-                                    disabled={isSubmitting}
-                                >
-                                    확인
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                    {(emailAuthMessage || isEmailVerified || (isEmailSent && emailTimer > 0)) && (
-                        <p className={isEmailVerified ? styles.successMessage : styles.errorMessage}
-                           style={{
-                               marginTop: isEmailSent && !isEmailVerified ? '0px' : '-5px',
-                               marginBottom: isEmailVerified ? '20px' : '10px'
-                           }}>
-                            {emailAuthMessage}
-                            {isEmailSent && emailTimer > 0 && !isEmailVerified && (
-                                <span className={styles.timer}> ({Math.floor(emailTimer / 60)}:{('0' + emailTimer % 60).slice(-2)})</span>
-                            )}
-                        </p>
-                    )}
-
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>* 비밀번호</label>
+                <div className={styles.inputGroupBlock}>
+                    <label className={styles.label}></label>
+                    <div className={styles.inputGroup}>
+                        <MdOutlineEmail className={styles.inputIcon} />
                         <input
-                            type="password"
-                            name="password"
-                            placeholder="영문 대소문자, 숫자 포함 8~20자"
-                            value={formData.password}
+                            type="email"
+                            name="email"
+                            placeholder="이메일 (예: example@email.com)"
+                            value={formData.email}
                             onChange={handleChange}
                             className={styles.input}
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || isEmailVerified}
                         />
-                    </div>
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>* 비밀번호 확인</label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="비밀번호를 다시 한번 입력해주세요"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className={styles.input}
-                            disabled={isSubmitting}
-                        />
+                        <button
+                            type="button"
+                            onClick={handleEmailSend}
+                            className={isEmailVerified ? styles.verifiedButton : styles.checkButton}
+                            disabled={isSubmitting || isEmailVerified}
+                        >
+                            {isEmailVerified ? '인증 완료' : '인증 요청'}
+                        </button>
                     </div>
                 </div>
 
-
-                <div className={styles.formSection}>
-                    <h3 className={styles.sectionTitle}>개인 정보 입력</h3>
-
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>* 닉네임</label>
+                {isEmailSent && !isEmailVerified && (
+                    <div className={styles.inputGroupBlock} style={{marginTop: '-10px'}}>
+                        <label className={styles.label}>* 이메일 인증 코드</label>
                         <div className={styles.inputGroup}>
                             <input
                                 type="text"
-                                name="displayName"
-                                placeholder="회원님을 나타낼 2자 이상 15자 이하 닉네임"
-                                value={formData.displayName}
+                                name="authCode"
+                                placeholder="발송된 6자리 인증 코드를 입력하세요"
+                                value={authCode}
                                 onChange={handleChange}
                                 className={styles.input}
                                 disabled={isSubmitting}
+                                maxLength={6}
                             />
                             <button
                                 type="button"
-                                onClick={handleNicknameCheck}
+                                onClick={handleEmailVerify}
                                 className={styles.checkButton}
                                 disabled={isSubmitting}
                             >
-                                중복 확인
+                                확인
                             </button>
                         </div>
-                        {nicknameCheckMessage && (
-                            <p className={isNicknameChecked ? styles.successMessage : styles.errorMessage}>
-                                {nicknameCheckMessage}
-                            </p>
-                        )}
                     </div>
+                )}
+                {(emailAuthMessage || isEmailVerified || (isEmailSent && emailTimer > 0)) && (
+                    <p className={isEmailVerified ? styles.successMessage : styles.errorMessage}
+                       style={{
+                           marginTop: isEmailSent && !isEmailVerified ? '0px' : '0',
+                           marginBottom: isEmailVerified ? '20px' : '10px'
+                       }}>
+                        {emailAuthMessage}
+                        {isEmailSent && emailTimer > 0 && !isEmailVerified && (
+                            <span className={styles.timer}> ({Math.floor(emailTimer / 60)}:{('0' + emailTimer % 60).slice(-2)})</span>
+                        )}
+                    </p>
+                )}
 
-                    <div className={styles.inputGroupBlock}>
-                        <label className={styles.label}>* 휴대폰 번호</label>
+                <div className={styles.inputGroupBlock}>
+                    <label className={styles.label}></label>
+                    <div className={styles.inputGroup}>
+                    <MdLockOutline className={styles.inputIcon} />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="비밀번호 영문 대소문자, 숫자 포함 8~20자"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className={styles.input}
+                        disabled={isSubmitting}
+                    />
+                    </div>
+                </div>
+                <div className={styles.inputGroupBlock}>
+                    <label className={styles.label}></label>
+                    <div className={styles.inputGroup}>
+                    <MdLockOutline className={styles.inputIcon} />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="비밀번호를 다시 한번 입력해주세요"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className={styles.input}
+                        disabled={isSubmitting}
+                    />
+                    </div>
+                </div>
+                <div className={styles.divider}></div>
+
+                <div className={styles.inputGroupBlock}>
+                    <label className={styles.label}></label>
+                    <div className={styles.inputGroup}>
+                        <MdPersonOutline className={styles.inputIcon} />
                         <input
-                            type="tel"
-                            name="phoneNumber"
-                            placeholder="'-' 없이 숫자만 입력 (예: 01012345678)"
-                            value={formData.phoneNumber}
+                            type="text"
+                            name="displayName"
+                            placeholder="회원님을 나타낼 2자 이상 15자 이하 닉네임"
+                            value={formData.displayName}
                             onChange={handleChange}
                             className={styles.input}
                             disabled={isSubmitting}
                         />
+                        <button
+                            type="button"
+                            onClick={handleNicknameCheck}
+                            className={styles.checkButton}
+                            disabled={isSubmitting}
+                        >
+                            중복 확인
+                        </button>
                     </div>
+                    {nicknameCheckMessage && (
+                        <p className={isNicknameChecked ? styles.successMessage : styles.errorMessage}>
+                            {nicknameCheckMessage}
+                        </p>
+                    )}
+                </div>
 
-                    <div className={styles.addressGroup}>
-                        <div className={styles.inputGroupBlock} style={{ marginBottom: '10px' }}>
-                            <label className={styles.label}>* 주소</label>
-                            <div className={styles.inputGroup}>
-                                <input
-                                    type="text"
-                                    name="baseAddressDisplay"
-                                    placeholder={isApiLoaded ? "주소 검색 버튼을 클릭하여 기본 주소 입력" : "주소 검색 시스템 로딩 중..."}
-                                    value={addressParts.base}
-                                    readOnly
-                                    onClick={handleAddressSearch}
-                                    className={styles.input}
-                                    disabled={isSubmitting || !isApiLoaded}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleAddressSearch}
-                                    className={styles.checkButton}
-                                    disabled={isSubmitting || !isApiLoaded}
-                                >
-                                    주소 검색
-                                </button>
-                            </div>
-                        </div>
+                <div className={styles.inputGroupBlock}>
+                    <label className={styles.label}></label>
+                    <div className={styles.inputGroup}>
+                    <MdOutlineSmartphone className={styles.inputIcon} />
+                    <input
+                        type="tel"
+                        name="phoneNumber"
+                        placeholder="'-' 없이 숫자만 입력 (예: 01012345678)"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                        className={styles.input}
+                        disabled={isSubmitting}
+                    />
+                    </div>
+                </div>
 
-                        <div style={{ padding: '0 0 10px 0' }}>
+                <div className={styles.addressGroup}>
+                    <div className={styles.inputGroupBlock} style={{ marginBottom: '10px' }}>
+                        <label className={styles.label}></label>
+                        <div className={styles.inputGroup}>
+                            <MdOutlineLocationOn className={styles.inputIcon} />
                             <input
                                 type="text"
-                                name="detailAddress"
-                                placeholder="나머지 상세 주소 입력 (선택 사항)"
-                                value={addressParts.detail}
-                                onChange={handleChange}
-                                className={`${styles.input} ${styles.detailAddressInput}`}
-                                disabled={isSubmitting || !isApiLoaded || addressParts.base.length === 0}
-                                id="detailAddressInput"
+                                name="baseAddressDisplay"
+                                placeholder={isApiLoaded ? "주소 검색 버튼을 클릭하여 기본 주소 입력" : "주소 검색 시스템 로딩 중..."}
+                                value={addressParts.base}
+                                readOnly
+                                onClick={handleAddressSearch}
+                                className={styles.input}
+                                disabled={isSubmitting || !isApiLoaded}
                             />
+                            <button
+                                type="button"
+                                onClick={handleAddressSearch}
+                                className={styles.checkButton}
+                                disabled={isSubmitting || !isApiLoaded}
+                            >
+                                주소 검색
+                            </button>
                         </div>
                     </div>
 
+                    <div style={{ padding: '0 0 10px 0' }}>
+                        <input
+                            type="text"
+                            name="detailAddress"
+                            placeholder="나머지 상세 주소 입력 (선택 사항)"
+                            value={addressParts.detail}
+                            onChange={handleChange}
+                            className={`${styles.input} ${styles.detailAddressInput}`}
+                            disabled={isSubmitting || !isApiLoaded || addressParts.base.length === 0}
+                            id="detailAddressInput"
+                        />
+                    </div>
                 </div>
 
                 {error && <p className={styles.error}>{error}</p>}
 
                 <button
                     type="submit"
-                    className={styles.button}
+                    className={styles.submitButton}
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? '회원가입 처리 중...' : '회원가입 완료'}

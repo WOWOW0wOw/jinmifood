@@ -1,120 +1,114 @@
-
 .container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 30px 40px;
-    background-color: #ffffff;
-    border: 1px solid #dcdcdc;
-    border-radius: 12px;
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 0 20px;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    font-size: 2.2em;
-    font-weight: 800;
-    color: #2c3e50;
-    margin-bottom: 40px;
-    position: relative;
-}
-h2::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -15px;
-    width: 60px;
-    height: 4px;
-    background-color: #8c5f21;
-    border-radius: 2px;
+.greetingHeader {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 5px;
+    color: #000;
 }
 
+.subHeader {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* 폼 스타일 */
 .form {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 20px;
+    margin-top: 30px;
 }
 
-.formSection {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 25px;
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.sectionTitle {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: #34495e;
-    margin-top: 0;
-    margin-bottom: 25px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #ced4da;
+.divider {
+    border-bottom: 1px solid #eee;
+    margin: 10px 0;
 }
 
 .inputGroupBlock {
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .addressGroup {
-
     padding: 0;
 }
 
-
 .label {
     display: block;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #495057;
+    color: #333;
     text-align: left;
 }
 
+
 .input {
-    padding: 12px;
-    height: 44px;
-    border-radius: 4px;
+    padding: 14px 10px 14px 40px;
+    height: auto;
+    border-radius: 0;
     border: 1px solid #ddd;
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
     background-color: #ffffff;
+    transition: border-color 0.2s;
 }
 
 .input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #000;
+    box-shadow: none;
     outline: none;
 }
 .input[disabled] {
-    background-color: #e9ecef;
+    background-color: #f8f8f8;
     cursor: not-allowed;
     color: #6c757d;
+    padding-left: 40px;
 }
 
 .detailAddressInput {
     margin-top: 0;
-    background-color: #ededed;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 14px 10px;
 }
 .detailAddressInput:focus {
     background-color: #ffffff;
 }
 
-
 .inputGroup {
     display: flex;
     gap: 10px;
     align-items: center;
+    position: relative;
 }
 
+.iconInputGroup {
+}
 
 .inputGroup .input {
     flex-grow: 1;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 10px;
+    color: #666;
+    font-size: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 2;
 }
 
 .checkButton,
@@ -122,14 +116,14 @@ h2::after {
     padding: 0 15px;
     height: 44px;
     min-width: 90px;
-    background-color: #6c757d;
+    background-color: #333;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -137,39 +131,41 @@ h2::after {
 }
 
 .checkButton:hover:not(:disabled) {
-    background-color: #5a6268;
-    transform: translateY(-1px);
+    background-color: #000;
+    transform: none;
 }
 .checkButton:disabled {
     opacity: 0.6;
+    background-color: #888;
     cursor: not-allowed;
     box-shadow: none;
 }
 
 .verifiedButton {
-    background-color: #28a745;
-    opacity: 0.8;
+    background-color: #000;
+    opacity: 1;
+    color: #fff;
 }
 
-.button {
+.submitButton {
     padding: 18px;
-    margin-top: 30px;
-    background-color: #8c5f21;
+    margin-top: 20px;
+    background-color: #000;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 19px;
+    font-size: 18px;
     font-weight: bold;
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-    box-shadow: 0 4px 10px rgb(139, 94, 33);
+    transition: background-color 0.2s, box-shadow 0.2s;
+    box-shadow: none;
 }
-.button:hover:not(:disabled) {
-    background-color: #e3b979;
-    box-shadow: 0 6px 15px rgb(225, 184, 120);
+.submitButton:hover:not(:disabled) {
+    background-color: #333;
+    box-shadow: none;
 }
-.button:disabled {
-    background-color: #a0c4ff;
+.submitButton:disabled {
+    background-color: #ccc;
     cursor: not-allowed;
     box-shadow: none;
 }
@@ -181,21 +177,21 @@ h2::after {
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 4px;
     margin-top: 15px;
     margin-bottom: 25px;
     text-align: left;
 }
 .successMessage,
 .errorMessage {
-    font-size: 14px;
+    font-size: 13px;
     margin-top: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-align: left;
     padding-left: 5px;
 }
 .successMessage {
-    color: #28a745;
+    color: #008000;
     font-weight: 500;
 }
 .errorMessage {
@@ -205,17 +201,17 @@ h2::after {
 
 .timer {
     font-weight: 600;
-    color: #007bff;
+    color: #000;
     margin-left: 5px;
 }
 
 .loginLink {
     margin-top: 35px;
-    font-size: 15px;
+    font-size: 14px;
     color: #6c757d;
 }
 .link {
-    color: #007bff;
+    color: #000;
     cursor: pointer;
     font-weight: bold;
     text-decoration: none;

@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/apiClient.js";
 import { useAuth} from "../../context/AuthContext.jsx";
-import axios from 'axios';
 import styles from './css/Login.module.css';
 import GoogleIcon from './google-icon.png';
 import KakaoIcon from './KakaoTalk_logo.png';
@@ -80,11 +79,19 @@ export default function LoginPage() {
 
     return (
         <div className={styles.container}>
-            <h2>로그인</h2>
+            <h1 className={styles.greetingHeader}>
+                안녕하세요
+                <br />
+                <span className={styles.brandName}>진미푸드입니다.</span>
+            </h1>
+            <p className={styles.description}>
+                진미푸드 통합회원으로 로그인이 가능합니다.
+            </p>
+
             <form className={styles.form} onSubmit={handleSubmit}>
                 <input type="email"
                        name="email"
-                       placeholder="이메일"
+                       placeholder="아이디 입력"
                        value={credentials.email}
                        onChange={handleChange}
                        required
@@ -93,7 +100,7 @@ export default function LoginPage() {
 
                 <input type="password"
                        name="password"
-                       placeholder="비밀번호"
+                       placeholder="비밀번호 입력"
                        value={credentials.password}
                        onChange={handleChange}
                        required
@@ -102,43 +109,34 @@ export default function LoginPage() {
 
                 {error && <p className={styles.error}>{error}</p>}
 
-                <button type="submit" className={styles.button}>로그인</button>
-
-                <div className={styles.findCredentials}>
-                    <span onClick={() => navigate('/findId')} className={styles.link}>아이디 찾기</span>
-                    <span className={styles.separator}>|</span>
-                    <span onClick={() => navigate('/findPassword')} className={styles.link}>비밀번호 찾기</span>
-                </div>
-
-                <p className={styles.signupLink}>
-                    계정이 없으신가요? <span onClick={() => navigate('/signup')} className={styles.link}>회원가입</span>
-                </p>
-                <button
-                    type="button"
-                    onClick={handleGoogleLogin}
-                    className={styles.googleButton}
-                >
-                    <img
-                        src={GoogleIcon}
-                        alt="Google Icon"
-                        style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
-                    />
-                    Google로 로그인
-                </button>
-                <button
-                    type="button"
-                    onClick={handleKakaoLogin}
-                    // 카카오 고유 스타일을 위해 별도 클래스 사용 (또는 인라인 스타일)
-                    className={styles.kakaoButton}
-                >
-                    <img
-                        src={KakaoIcon}
-                        alt="Kakao Icon"
-                        style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
-                    />
-                    카카오로 로그인
-                </button>
+                <button type="submit" className={styles.loginButton}>로그인</button>
             </form>
+
+            <div className={styles.utilityLinks}>
+                <span onClick={() => navigate('/findId')} className={styles.link}>아이디 찾기</span>
+                <span className={styles.separator}>|</span>
+                <span onClick={() => navigate('/findPassword')} className={styles.link}>비밀번호 찾기</span>
+                <span className={styles.separator}>|</span>
+                <span onClick={() => navigate('/signup')} className={styles.link}>회원가입</span>
+            </div>
+
+            <div className={styles.snsSection}>
+                <div className={styles.snsDivider}>
+                    <span className={styles.snsText}>SNS 계정으로 로그인</span>
+                </div>
+                <div className={styles.snsIcons}>
+
+                    <div className={`${styles.snsIconWrapper} ${styles.kakao}`}
+                         onClick={handleKakaoLogin}>
+                        <img src={KakaoIcon} alt="Kakao Logo" className={styles.snsImage} />
+                    </div>
+
+                    <div className={`${styles.snsIconWrapper} ${styles.google}`}
+                         onClick={handleGoogleLogin}>
+                        <img src={GoogleIcon} alt="Google Icon" className={styles.snsImage} />
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
