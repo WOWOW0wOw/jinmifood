@@ -29,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import com.jinmifood.jinmi.common.constant.ReservedKeywords;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Service
@@ -43,6 +45,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistTokenRepository blacklistTokenRepository;
     private final MailService mailService;
+    private final WebClient webClient;
 
 
     private boolean isReservedKeywordUsed(String text) {
@@ -107,12 +110,7 @@ public class UserService {
     }
 
     // 로그인
-    /**
-     * 사용자 로그인 인증을 수행하고 JWT Access Token을 생성합니다.
-     * @param request 로그인 요청 정보 (이메일, 비밀번호)
-     * @return 생성된 JWT Access Token
-     * @throws CustomException 인증 실패 시 (이메일 또는 비밀번호 불일치)
-     */
+
     @Transactional(readOnly = false)
     public TokenResponse login(LoginUserRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -189,6 +187,25 @@ public class UserService {
         log.info("로그아웃 성공: 사용자 ID = {}", userIdentifier);
     }
 
+    private void revokeGoogleToken(String tokenValue) {
+        final String GOOGLE_REVOKE_URL_TEMPLATE = "https://oauth2.googleapis.com/revoke?token={token}";
+
+        try {
+            webClient.post()
+                    .uri(GOOGLE_REVOKE_URL_TEMPLATE, tokenValue)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            log.info("Google Revoke 요청 전송 완료: Token={}", tokenValue);
+
+        } catch (WebClientResponseException e) {
+            log.error("Google Revoke API 호출 실패. 상태코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Google Revoke 처리 중 알 수 없는 오류 발생: {}", e.getMessage());
+        }
+    }
+
     // 회원탈퇴 로직
     @Transactional
     public void deleteUser(Long userId, String userIdentifier, String accessToken) {
@@ -200,7 +217,25 @@ public class UserService {
                     return new CustomException(ErrorException.NOT_FOUND);
                 });
 
+        boolean isSocialUser = user.getProvider() != null &&
+                !user.getProvider().equals("NONE") &&
+                !user.getProvider().equals("LOCAL");
+
         log.info("사용자 정보 확인 완료: Email={}", user.getEmail());
+
+        if (isSocialUser && user.getProvider() != null && user.getProvider().equals("google")) {
+            log.info("소셜 로그인 사용자입니다. Google 연결 해제를 시도합니다: userId={}", userId);
+
+            String googleTokenToRevoke = user.getGoogleRefreshToken();
+
+            if (googleTokenToRevoke != null) {
+                revokeGoogleToken(googleTokenToRevoke);
+                user.clearGoogleRefreshToken(); // 💡
+                log.info("Google 연결 해제(Revoke) 완료: userId={}", userId);
+            } else {
+                log.warn("Google Refresh/Access Token을 찾을 수 없습니다. Google Revoke를 건너뜁니다: userId={}", userId);
+            }
+        }
 
         refreshTokenRepository.deleteById(userIdentifier);
         log.info("Refresh Token 삭제 완료 : 사용자 ID = {}", userIdentifier);
@@ -246,9 +281,20 @@ public class UserService {
                     return new CustomException(ErrorException.NOT_FOUND);
                 });
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            log.warn("현재 비밀번호 불일치: userId={}", userId);
-            throw new CustomException(ErrorException.PASSWORD_MISMATCH);
+        boolean isSocialUser = user.getProvider() != null &&
+                !user.getProvider().equals("NONE") &&
+                !user.getProvider().equals("LOCAL");
+
+        if (!isSocialUser) {
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().trim().isEmpty()) {
+                log.warn("null이 들어옴");
+            }
+
+            // 현재 비밀번호 일치 여부 확인
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                log.warn("현재 비밀번호 불일치: userId={}", userId);
+                throw new CustomException(ErrorException.PASSWORD_MISMATCH);
+            }
         }
 
         String newDisplayName = request.getDisplayName();
@@ -362,5 +408,7 @@ public class UserService {
 
         log.info("비밀번호 재설정 성공: Email={}", email);
     }
+
+
 
 }

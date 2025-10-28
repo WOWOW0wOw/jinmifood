@@ -14,6 +14,7 @@ import ItemDetailPage from "./pages/item/ItemDetailPage.jsx";
 import DeleteAccount from "./pages/User/DeleteAccount.jsx";
 import FindId from "./pages/User/FindId.jsx";
 import FindPassword from "./pages/User/FindPassword.jsx";
+import OAuth2RedirectHandler from "./pages/User/OAuth2RedirectHandler.jsx";
 
 const Home     = () => <div className="page">메인</div>
 const About    = () => <div className="page">회사소개</div>
@@ -37,6 +38,7 @@ export default function App() {
                 <Route path="/deleteAccount" element={<DeleteAccount />} />
                 <Route path="/findId" element={<FindId />} />
                 <Route path="/findPassword" element={<FindPassword />} />
+                <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
             </Routes>
         </AuthProvider>

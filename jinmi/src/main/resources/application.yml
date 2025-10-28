@@ -47,16 +47,14 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-# S3 버킷 이름 (사용자 정의 속성)
-# spring.cloud.aws 블록과 별개로 두어 혼동을 방지합니다.
 cloud:
   aws:
     s3:
       bucket: jinmiawsbucket
 
-# JWT 설정
+
 jwt:
-  access-token-expiration-time: 10000
+  access-token-expiration-time: 1800000
   refresh-token-expiration-time: 604800000
 
 # 로깅 레벨 설정
