@@ -14,8 +14,6 @@ public class AddItemRequest {
     private String itemName;
     private Long categoryId;
     private int itemPrice;
-    private String itemImg;
-    private String itemInfImg;
     private int itemWeight;
     private int count;
 
@@ -25,8 +23,6 @@ public Item toEntity() {
             .itemName(this.itemName)
             .categoryId(this.categoryId)
             .itemPrice(this.itemPrice)
-            .itemImg(this.itemImg)
-            .itemInfImg(this.itemInfImg)
             .itemWeight(this.itemWeight)
             .count(this.count)
             .build();

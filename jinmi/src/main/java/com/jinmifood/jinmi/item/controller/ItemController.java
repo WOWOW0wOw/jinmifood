@@ -8,8 +8,11 @@ import com.jinmifood.jinmi.item.service.ItemService;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -22,10 +25,13 @@ public class ItemController {
 
 
 
-    @PostMapping("/add")
-    public StatusResponseDTO addItem(@RequestBody AddItemRequest addItem) {
-
-        Item item = itemService.AddItem(addItem);
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public StatusResponseDTO addItem(@RequestPart("addItem") AddItemRequest addItem,
+                                     @RequestPart(value = "itemImgFile", required = false) MultipartFile itemImgFile,
+                                     @RequestPart(value = "itemInfImgFile", required = false) MultipartFile itemInfImgFile
+    ) throws IOException {
+        System.out.println("컨트롤러부분");
+        Item item = itemService.AddItem(addItem, itemImgFile, itemInfImgFile);
         return StatusResponseDTO.ok(item);
 
     }
@@ -60,6 +66,12 @@ public class ItemController {
     public StatusResponseDTO viewItemListByCategory(@RequestParam Long categoryId) {
         List<ViewItemResponse> list = itemService.getItemListByCategoryId(categoryId);
         return StatusResponseDTO.ok(list);
+    }
+
+    @GetMapping("/itemDetail/{itemId}")
+    public StatusResponseDTO viewItemDetail(@PathVariable Long itemId) {
+        Item item = itemService.getItem(itemId);
+        return StatusResponseDTO.ok(item);
     }
 
 

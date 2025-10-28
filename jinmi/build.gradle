@@ -14,6 +14,13 @@ java {
     }
 }
 
+// 1. Spring Cloud 버전 관리를 위한 BOM 설정 추가
+dependencyManagement {
+    imports {
+        mavenBom "io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1"
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -42,6 +49,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebClient 포함
+
+    // AWS S3
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 
 }
 

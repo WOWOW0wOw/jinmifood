@@ -1,5 +1,6 @@
 package com.jinmifood.jinmi.item.service;
 
+import com.jinmifood.jinmi.common.S3.S3UploaderService;
 import com.jinmifood.jinmi.common.exception.CustomException;
 import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.item.domain.Category;
@@ -14,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
+    private final S3UploaderService s3UploaderService;
 
     public List<ViewItemResponse> list(Long itemId) {
         List<Item> itemList = itemRepository.findAllByItemId(itemId);
@@ -36,7 +40,7 @@ public class ItemService {
 
 
     @Transactional
-    public Item AddItem(AddItemRequest request) {
+    public Item AddItem(AddItemRequest request,MultipartFile itemImgFile, MultipartFile itemInfImgFile) throws IOException {
         List<Item> itemList = itemRepository.findAllByItemName(request.getItemName());
         log.info("아이템 이름 중복 검사 itemNameList: {}", itemList);
         if(!itemList.isEmpty()) { // 아이템이름 중복 검사
@@ -51,7 +55,26 @@ public class ItemService {
             throw new CustomException(ErrorException.NOT_FOUND);
         }
         log.info("아이템 이름 중복 검사 완료");
+
+        String itemImgUrl = null;
+        if (itemImgFile != null && !itemImgFile.isEmpty()) {
+            itemImgUrl = s3UploaderService.upload(itemImgFile, "images");
+        }
+
+        String itemInfImgUrl = null;
+        if (itemInfImgFile != null && !itemInfImgFile.isEmpty()) {
+            itemInfImgUrl = s3UploaderService.upload(itemInfImgFile, "images");
+        }
+
+
         Item item = request.toEntity();
+
+        // 엔티티에 이미지 URL 설정
+        item.setItemImg(itemImgUrl);
+        item.setItemInfImg(itemInfImgUrl);
+        log.info("itemIngUrl: {}", itemInfImgUrl);
+        log.info("itemInfImgUrl: {}", itemInfImgUrl);
+
         log.info("아이템 저장 준비 Item: {}", item);
         itemRepository.save(item);
         log.info("아이템 저장 완료 Item: {}", item);
@@ -92,6 +115,12 @@ public class ItemService {
         item.updateItemDetails(request);
 
         log.info("아이템 수정 완료 item: {}", item);
+        return item;
+    }
+
+    public Item getItem(Long itemId) {
+        Item item = itemRepository.findItemByItemId(itemId);
+        log.info("item: {}", item);
         return item;
     }
 
