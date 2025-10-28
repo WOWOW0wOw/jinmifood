@@ -12,12 +12,12 @@ import com.jinmifood.jinmi.user.domain.User;
 import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
 import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
-import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
-import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
-import com.jinmifood.jinmi.user.dto.response.TokenResponse;
+import com.jinmifood.jinmi.user.dto.response.*;
 import com.jinmifood.jinmi.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,6 +46,13 @@ public class UserService {
     private final BlacklistTokenRepository blacklistTokenRepository;
     private final MailService mailService;
     private final WebClient webClient;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    private String kakaoClientId;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String kakaoClientSecret;
+
 
 
     private boolean isReservedKeywordUsed(String text) {
@@ -205,6 +212,56 @@ public class UserService {
             log.error("Google Revoke 처리 중 알 수 없는 오류 발생: {}", e.getMessage());
         }
     }
+    private String getNewKakaoAccessToken(String kakaoRefreshToken) {
+        final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+
+        try {
+            String requestBody = "grant_type=refresh_token" +
+                    "&client_id=" + kakaoClientId +
+                    "&client_secret=" + kakaoClientSecret +
+                    "&refresh_token=" + kakaoRefreshToken;
+
+            KakaoTokenRefreshResponse response = webClient.post()
+                    .uri(KAKAO_TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(KakaoTokenRefreshResponse.class)
+                    .block();
+
+            if (response != null && response.getAccessToken() != null) {
+                log.info("Kakao Access Token 재발급 성공.");
+                return response.getAccessToken();
+            }
+            return null;
+
+        } catch (WebClientResponseException e) {
+            log.error("Kakao Token 재발급 실패. 상태코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            return null;
+        } catch (Exception e) {
+            log.error("Kakao Token 재발급 중 오류 발생: {}", e.getMessage());
+            return null;
+        }
+    }
+    private void unlinkKakao(String kakaoAccessToken) {
+        final String KAKAO_UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
+
+        try {
+            webClient.post()
+                    .uri(KAKAO_UNLINK_URL)
+                    .header("Authorization", "Bearer " + kakaoAccessToken)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            log.info("Kakao 연결 끊기(Unlink) 요청 전송 완료.");
+
+        } catch (WebClientResponseException e) {
+            log.error("Kakao Unlink API 호출 실패. 상태코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Kakao Unlink 처리 중 알 수 없는 오류 발생: {}", e.getMessage());
+        }
+    }
 
     // 회원탈퇴 로직
     @Transactional
@@ -230,10 +287,32 @@ public class UserService {
 
             if (googleTokenToRevoke != null) {
                 revokeGoogleToken(googleTokenToRevoke);
-                user.clearGoogleRefreshToken(); // 💡
+                user.clearGoogleRefreshToken();
                 log.info("Google 연결 해제(Revoke) 완료: userId={}", userId);
             } else {
                 log.warn("Google Refresh/Access Token을 찾을 수 없습니다. Google Revoke를 건너뜁니다: userId={}", userId);
+            }
+        }else if (isSocialUser && user.getProvider() != null && user.getProvider().equals("kakao")) {
+            log.info("소셜 로그인 사용자입니다. Kakao 연결 해제를 시도합니다: userId={}", userId);
+
+            String kakaoRefreshToken = user.getKakaoRefreshToken();
+
+            if (kakaoRefreshToken != null) {
+                String newAccessToken = getNewKakaoAccessToken(kakaoRefreshToken);
+
+                if (newAccessToken != null) {
+                    unlinkKakao(newAccessToken);
+                } else {
+                    log.warn("Kakao Access Token 재발급 실패. Unlink를 건너뜁니다.");
+                }
+
+                user.clearKakaoRefreshToken();
+                user.clearKakaoId();
+
+                log.info("Kakao 연결 해제(Unlink) 완료 및 DB 토큰/ID 삭제: userId={}", userId);
+
+            } else {
+                log.warn("Kakao Refresh Token을 찾을 수 없습니다. Kakao Unlink를 건너뜁니다: userId={}", userId);
             }
         }
 
@@ -364,12 +443,22 @@ public class UserService {
 
         mailService.sendFindIdMail(email);
     }
-    @Transactional
-    public String verifyIdCodeAndFindId(String email, String code) {
-        if (mailService.verifyFindIdCode(email, code)) {
-            return email;
+    @Transactional(readOnly = true)
+    public FindIdResponse verifyIdCodeAndFindId(String email, String code) {
+        if (!mailService.verifyFindIdCode(email, code)) {
+            throw new CustomException(ErrorException.INVALID_AUTH_CODE);
         }
-        throw new CustomException(ErrorException.INVALID_AUTH_CODE);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        String provider = user.getProvider();
+
+        if (provider == null || provider.isEmpty()) {
+            provider = "local";
+        }
+
+        return new FindIdResponse(user.getEmail(), provider.toLowerCase());
     }
 
     @Transactional

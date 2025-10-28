@@ -109,3 +109,18 @@
 .googleButton:hover {
     background-color: #357ae8;
 }
+
+.kakaoButton {
+    background-color: #FEE500;
+    color: #3C1E1E;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

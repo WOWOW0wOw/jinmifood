@@ -5,10 +5,12 @@ import { useAuth} from "../../context/AuthContext.jsx";
 import axios from 'axios';
 import styles from './css/Login.module.css';
 import GoogleIcon from './google-icon.png';
+import KakaoIcon from './KakaoTalk_logo.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/google`;
+const KAKAO_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/kakao`;
 
 export default function LoginPage() {
 
@@ -71,6 +73,9 @@ export default function LoginPage() {
     const handleGoogleLogin = () => {
         window.location.href = GOOGLE_AUTH_URL;
     };
+    const handleKakaoLogin = () => {
+        window.location.href = KAKAO_AUTH_URL;
+    };
 
 
     return (
@@ -119,6 +124,19 @@ export default function LoginPage() {
                         style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
                     />
                     Google로 로그인
+                </button>
+                <button
+                    type="button"
+                    onClick={handleKakaoLogin}
+                    // 카카오 고유 스타일을 위해 별도 클래스 사용 (또는 인라인 스타일)
+                    className={styles.kakaoButton}
+                >
+                    <img
+                        src={KakaoIcon}
+                        alt="Kakao Icon"
+                        style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
+                    />
+                    카카오로 로그인
                 </button>
             </form>
         </div>

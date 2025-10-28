@@ -9,7 +9,7 @@ const FindId = () => {
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
-    const [foundId, setFoundId] = useState('');
+    const [foundAccount, setFoundAccount] = useState({ email: '', provider: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -52,7 +52,7 @@ const FindId = () => {
         try {
             const response = await apiClient.post('/users/findId/verifyCode', { email, code });
 
-            setFoundId(response.data.data);
+            setFoundAccount(response.data.data);
             setStep(3);
         } catch (err) {
             setError(err.response?.data?.message || '인증 코드 확인에 실패했습니다.');
@@ -65,6 +65,19 @@ const FindId = () => {
         navigate('/login');
     };
 
+    const getAccountMessage = (provider, email) => {
+        switch (provider) {
+            case 'kakao':
+                return '카카오톡으로 가입한 계정입니다.';
+            case 'google':
+                return 'Google로 가입한 계정입니다.';
+            case 'local': // 로컬 가입 계정
+                return `회원님의 아이디는 다음과 같습니다.`;
+            default:
+                return `회원님의 아이디는 다음과 같습니다.`;
+        }
+    };
+    const isSocialAccount = foundAccount.provider !== 'local' && foundAccount.provider !== '';
     return (
         <div className={styles.findIdContainer}>
             <h2>아이디 찾기</h2>
@@ -108,8 +121,13 @@ const FindId = () => {
 
             {step === 3 && (
                 <div className={`${styles.formGroup} ${styles.successBox}`}>
-                    <p className={styles.successText}>회원님의 아이디는 다음과 같습니다.</p>
-                    <h2 className={styles.foundId}>{foundId}</h2>
+                    <p className={styles.successText}>
+                        {getAccountMessage(foundAccount.provider, foundAccount.email)}
+                    </p>
+
+                    <h2 className={styles.foundId}>
+                        {foundAccount.email}
+                    </h2>
                     <button onClick={handleGoToLogin} className={styles.submitButton}>
                         로그인으로 이동
                     </button>

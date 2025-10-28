@@ -12,6 +12,7 @@ import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
 import com.jinmifood.jinmi.user.dto.request.PasswordResetRequest;
 import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
+import com.jinmifood.jinmi.user.dto.response.FindIdResponse;
 import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
 import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
 import com.jinmifood.jinmi.user.dto.response.TokenResponse;
@@ -157,8 +158,9 @@ public class UserController {
 
     @PostMapping("/findId/verifyCode")
     public StatusResponseDTO verifyIdCodeAndFindId(@Valid @RequestBody VerificationRequest request) {
-        String foundEmail = userService.verifyIdCodeAndFindId(request.email(), request.code());
-        return StatusResponseDTO.ok(foundEmail);
+        FindIdResponse foundAccount = userService.verifyIdCodeAndFindId(request.email(), request.code());
+
+        return StatusResponseDTO.ok(foundAccount);
     }
 
     @PostMapping("/findPassword/sendCode")

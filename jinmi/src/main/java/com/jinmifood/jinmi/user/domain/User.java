@@ -39,7 +39,7 @@ public class User {
     @Column
     private Long totalOrderCnt; // 누적 주문 수
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String phoneNumber; // 전화번호
 
     @Column
@@ -52,7 +52,13 @@ public class User {
     @Column(nullable = true)
     private String provider;
 
-    // 이 토큰을 회원 탈퇴 시 Revoke api에 사용
+
+    @Column(nullable = true, unique = true)
+    private Long kakaoId; // 카카오 고유 ID (카카오 로그인 전용)
+
+    @Column(length = 512, nullable = true)
+    private String kakaoRefreshToken; // 카카오 리프레시 토큰
+
     @Column(length = 512, nullable = true)
     private String googleRefreshToken;
 
@@ -63,6 +69,17 @@ public class User {
     // Google Refresh Token 삭제 메서드 (탈퇴 시 사용)
     public void clearGoogleRefreshToken() {
         this.googleRefreshToken = null;
+    }
+
+    public void updateKakaoRefreshToken(String kakaoRefreshToken) {
+        this.kakaoRefreshToken = kakaoRefreshToken;
+    }
+
+    public void clearKakaoRefreshToken() {
+        this.kakaoRefreshToken = null;
+    }
+    public void clearKakaoId() {
+        this.kakaoId = null;
     }
     @Column
     private LocalDateTime createAt; // 가입날짜
@@ -98,6 +115,7 @@ public class User {
         this.lastLoginAt = this.lastLoginAt == null? LocalDateTime.now() : this.lastLoginAt;
         this.role = this.role == null? Role.USER : this.role;
         this.totalOrderCnt = this.totalOrderCnt == null? 0 : this.totalOrderCnt;
+        this.provider = this.provider == null ? "local" : this.provider;
 
     }
 

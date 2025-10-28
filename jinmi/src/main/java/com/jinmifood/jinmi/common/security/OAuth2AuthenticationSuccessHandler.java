@@ -38,20 +38,28 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
-        String googleAccessToken = null;
+        String provider = oauthToken.getAuthorizedClientRegistrationId();
+        String providerTokenToSave = null;
 
-        if (oauthToken.getAuthorizedClientRegistrationId().equals("google")) {
-            OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
-                    oauthToken.getAuthorizedClientRegistrationId(),
-                    oauthToken.getName()
-            );
+        OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
+                provider,
+                oauthToken.getName()
+        );
 
-            if (authorizedClient != null) {
-                googleAccessToken = authorizedClient.getAccessToken().getTokenValue();
-                log.info("Google Access Token 추출 완료 (Revoke 대상): {}", googleAccessToken);
-            } else {
-                log.warn("OAuth2AuthorizedClient를 찾을 수 없습니다. Google Access Token 추출 실패.");
+        if (authorizedClient != null) {
+            if (provider.equals("google")) {
+                providerTokenToSave = authorizedClient.getAccessToken().getTokenValue();
+                log.info("Google Access Token 추출 완료 (Revoke 대상): {}", providerTokenToSave);
+            } else if (provider.equals("kakao")) {
+                if (authorizedClient.getRefreshToken() != null) {
+                    providerTokenToSave = authorizedClient.getRefreshToken().getTokenValue();
+                    log.info("Kakao Refresh Token 추출 완료 (저장 대상): {}", providerTokenToSave);
+                } else {
+                    log.warn("Kakao Refresh Token이 AuthorizedClientService에 저장되어 있지 않습니다.");
+                }
             }
+        } else {
+            log.warn("OAuth2AuthorizedClient를 찾을 수 없습니다. 외부 토큰 추출 실패.");
         }
 
         // 1. JWT 토큰 생성
@@ -73,22 +81,25 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 );
         log.info("OAuth2 로그인 성공: JWT 발행 및 Refresh Token 저장 완료 (사용자: {})", userIdentifier);
 
-        if (googleAccessToken != null) {
+        if (providerTokenToSave != null) {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new IllegalStateException("User not found after OAuth2 login"));
 
-            user.updateGoogleRefreshToken(googleAccessToken); // 메서드 이름을 googleAccessToken으로 변경하는 것도 고려
-            userRepository.save(user); // DB에 Google 토큰 저장
-            log.info("Google Access Token 저장 완료: {}", googleAccessToken);
+            if (provider.equals("google")) {
+                user.updateGoogleRefreshToken(providerTokenToSave);
+                log.info("Google Access Token 저장 완료: {}", providerTokenToSave);
+            } else if (provider.equals("kakao")) {
+                user.updateKakaoRefreshToken(providerTokenToSave);
+                log.info("Kakao Refresh Token 저장 완료: {}", providerTokenToSave);
+            }
+            userRepository.save(user); // DB에 토큰 저장
         }
 
-        // 3. 프론트엔드로 리다이렉트할 URI 빌드 (토큰 전달)
         String targetUrl = UriComponentsBuilder.fromUriString(REDIRECT_URI)
                 .queryParam("token", accessToken)
                 .queryParam("refreshToken", refreshToken)
                 .build().toUriString();
 
-        // 4. 최종 리다이렉션 수행
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
