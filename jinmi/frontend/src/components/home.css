@@ -1,0 +1,331 @@
+/* 전체 공통 여백/폰트 느낌은 필요하면 global에 빼도 돼 */
+.home {
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", sans-serif;
+    color: #222;
+    background-color: #fff;
+    line-height: 1.4;
+}
+
+/* 1) 히어로 배너 */
+.hero {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding: 40px 16px;
+}
+
+.hero__bg {
+    position: absolute;
+    inset: 0;
+    background: url("/images/hero_sample.jpg") center/cover no-repeat;
+    filter: brightness(0.4);
+}
+
+.hero__content {
+    position: relative;
+    max-width: 1200px;
+    width: 100%;
+    z-index: 1;
+}
+
+.hero__badge {
+    display: inline-block;
+    background: #ff4545;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 6px 12px;
+    margin-bottom: 12px;
+}
+
+.hero__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: #fff;
+}
+
+@media (min-width: 768px) {
+    .hero__title {
+        font-size: 32px;
+        line-height: 1.3;
+    }
+}
+
+.hero__text {
+    font-size: 14px;
+    color: #eee;
+    margin-bottom: 20px;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hero__btn {
+    display: inline-block;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 14px;
+    text-decoration: none;
+}
+
+.hero__btn--main {
+    background-color: #ffd54f;
+    color: #222;
+}
+
+.hero__btn--ghost {
+    background-color: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* 2) 카테고리 영역 */
+.cats {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 16px 0;
+}
+
+.cats__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px;
+}
+
+@media (min-width: 600px) {
+    .cats__inner {
+        grid-template-columns: repeat(4, minmax(0,1fr));
+    }
+}
+
+.cats__card {
+    display: block;
+    background-color: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 16px;
+    text-decoration: none;
+    color: #222;
+    transition: all .15s;
+}
+
+.cats__card:hover {
+    background-color: #fff8e1;
+    border-color: #f5d24a;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+}
+
+.cats__title {
+    display: block;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+    color: #333;
+}
+.cats__desc {
+    font-size: 13px;
+    color: #777;
+}
+
+/* 3) 베스트 상품 */
+.best {
+    max-width: 1200px;
+    margin: 24px auto 40px;
+    padding: 0 16px;
+}
+
+.best__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.best__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #222;
+    margin: 0;
+}
+
+.best__more {
+    font-size: 13px;
+    color: #999;
+    text-decoration: none;
+}
+.best__more:hover {
+    color: #222;
+}
+
+.best__grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .best__grid {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+    }
+}
+
+/* 상품 카드 */
+.prodCard {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .15s, transform .15s;
+    overflow: hidden;
+}
+
+.prodCard:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+.prodCard__thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f7f7f7;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prodCard__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.prodCard__body {
+    padding: 12px 14px 16px;
+}
+
+.prodCard__name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.prodCard__desc {
+    font-size: 13px;
+    line-height: 1.4;
+    color: #777;
+    min-height: 2.6em; /* 줄 두 줄 확보해서 높이 맞추기 */
+    margin-bottom: 8px;
+}
+
+.prodCard__price {
+    font-size: 15px;
+    font-weight: 700;
+    color: #d32f2f;
+}
+
+/* 4) 도매 CTA */
+.b2b {
+    background-color: #fffbea;
+    border-top: 1px solid #f5e7a5;
+    border-bottom: 1px solid #f5e7a5;
+    padding: 24px 16px 32px;
+}
+
+.b2b__box {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fffef5;
+    border: 1px solid #f5e7a5;
+    border-radius: 12px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 768px) {
+    .b2b__box {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 28px;
+    }
+}
+
+.b2b__text {
+    flex: 1;
+}
+
+.b2b__label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8a6d00;
+    background-color: #fff3b0;
+    border-radius: 999px;
+    padding: 4px 8px;
+    margin-bottom: 8px;
+}
+
+.b2b__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4a3c00;
+    margin-bottom: 8px;
+}
+
+.b2b__desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6b5a00;
+}
+
+.b2b__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.b2b__btn {
+    background-color: #ffcc00;
+    color: #000;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d4aa00;
+}
+
+.b2b__btn:hover {
+    background-color: #ffe066;
+}
+
+.b2b__sub {
+    font-size: 13px;
+    color: #4a3c00;
+    text-decoration: none;
+    text-align: center;
+}

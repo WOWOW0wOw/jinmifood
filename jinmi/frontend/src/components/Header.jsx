@@ -2,6 +2,7 @@ import React from "react";
 import {Link} from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import "./header.css";
+import logo from "../assets/진미푸드 로고.png";
 
 export default function Header({ cartCnt = 0 }) {
 
@@ -47,7 +48,9 @@ export default function Header({ cartCnt = 0 }) {
             <div className="hd__sub">
                 <div className="hd__sub__container">
                     <div className="hd__left">
-                        <a href="/" className="logo">JINMI<span>FOOD</span></a>
+                        <a href="/" className="logo">
+                            <img src={logo} alt={"로고"} className="logo"/>
+                        </a>
                     </div>
 
                     <nav className="hd__center" aria-label="주요 메뉴">
