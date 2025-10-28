@@ -61,7 +61,9 @@ export function AuthProvider({ children }){
             localStorage.removeItem('refreshToken');
             setIsLoggedIn(false);
             setUser(null);
-            navigate('/'); // 로그아웃 후 메인 페이지로 이동
+            window.location.replace("/"); // 로그아웃 후 메인 페이지로 이동
+            alert('로그아웃에 성공하였습니다.');
+            navigate('/');
         };
 
         const handleLocalLogout = () => {
