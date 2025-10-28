@@ -80,10 +80,11 @@ const FindId = () => {
     const isSocialAccount = foundAccount.provider !== 'local' && foundAccount.provider !== '';
     return (
         <div className={styles.findIdContainer}>
-            <h2>아이디 찾기</h2>
+            <h2 className={styles.greetingHeader}>아이디 찾기</h2>
 
             {step === 1 && (
                 <div className={styles.formGroup}>
+                    <p className={styles.description}>가입 시 등록한 이메일로 인증을 진행합니다.</p>
                     <input
                         type="email"
                         placeholder="가입 시 사용한 이메일 주소"
@@ -110,7 +111,7 @@ const FindId = () => {
                     <button
                         onClick={handleVerifyCode}
                         disabled={isLoading}
-                        className={`${styles.submitButton} ${styles.verifyButton}`}>
+                        className={styles.submitButton}> {/* verifyButton 대신 submitButton 사용 */}
                         {isLoading ? '확인 중...' : '확인'}
                     </button>
                     <button onClick={handleSendCode} disabled={isLoading} className={styles.linkButton}>
@@ -131,6 +132,9 @@ const FindId = () => {
                     <button onClick={handleGoToLogin} className={styles.submitButton}>
                         로그인으로 이동
                     </button>
+                    <p className={styles.utilLink}>
+                        <span onClick={() => navigate('/findPassword')} className={styles.link}>비밀번호 찾기</span>
+                    </p>
                 </div>
             )}
 
