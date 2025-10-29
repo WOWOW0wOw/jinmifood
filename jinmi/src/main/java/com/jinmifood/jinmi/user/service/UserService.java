@@ -443,7 +443,7 @@ public class UserService {
 
         mailService.sendFindIdMail(email);
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public FindIdResponse verifyIdCodeAndFindId(String email, String code) {
         if (!mailService.verifyFindIdCode(email, code)) {
             throw new CustomException(ErrorException.INVALID_AUTH_CODE);
@@ -470,21 +470,31 @@ public class UserService {
         mailService.sendFindPasswordMail(email);
     }
 
-    @Transactional(readOnly = true)
-    public void verifyPasswordCode(String email, String code) {
-        if (!mailService.verifyFindPasswordCode(email, code)) {
-            throw new CustomException(ErrorException.INVALID_AUTH_CODE);
-        }
-    }
-
     @Transactional
-    public void resetPassword(String email, String code, String newPassword) {
+    public FindIdResponse verifyPasswordCodeAndGetProvider(String email, String code) {
         if (!mailService.verifyFindPasswordCode(email, code)) {
             throw new CustomException(ErrorException.INVALID_AUTH_CODE);
         }
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        String provider = user.getProvider();
+        if (provider == null || provider.isEmpty() || provider.equalsIgnoreCase("NONE")) {
+            provider = "local";
+        }
+
+        return new FindIdResponse(user.getEmail(), provider.toLowerCase());
+    }
+
+    @Transactional
+    public void resetPassword(String email, String code, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        if (user.getProvider() != null && !user.getProvider().equalsIgnoreCase("LOCAL") && !user.getProvider().equalsIgnoreCase("NONE")) {
+            throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
+        }
 
         String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$";
         if(!newPassword.matches(passwordPattern)){
@@ -493,7 +503,6 @@ public class UserService {
 
         String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedNewPassword);
-        userRepository.save(user);
 
         log.info("비밀번호 재설정 성공: Email={}", email);
     }

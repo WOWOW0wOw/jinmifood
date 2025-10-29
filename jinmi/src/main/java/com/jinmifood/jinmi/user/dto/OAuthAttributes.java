@@ -88,4 +88,28 @@ public class OAuthAttributes {
 
         return userBuilder.build();
     }
+
+    // CustomOAuth2UserService에서 사용
+    public User toEntity(String role, String uniqueDisplayName) {
+
+        User.Role userRole = User.Role.valueOf(role.toUpperCase());
+        String finalEmail = email != null ? email : this.registrationId + "_user_" + this.id + "@social.com";
+
+        User.UserBuilder userBuilder = User.builder()
+                .email(finalEmail)
+                .displayName(uniqueDisplayName) //  인자로 받은 중복 없는 닉네임 사용
+                .password("")
+                .provider(registrationId)
+                .role(userRole)
+                .address("미입력")
+                .phoneNumber(null)
+                .pointId(0L)
+                .totalOrderCnt(0L);
+
+        if ("kakao".equals(registrationId)) {
+            userBuilder.kakaoId(this.id);
+        }
+
+        return userBuilder.build();
+    }
 }

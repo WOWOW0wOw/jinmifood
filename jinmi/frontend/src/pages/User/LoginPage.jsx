@@ -85,7 +85,7 @@ export default function LoginPage() {
                 <span className={styles.brandName}>진미푸드입니다.</span>
             </h1>
             <p className={styles.description}>
-                진미푸드 통합회원으로 로그인이 가능합니다.
+                좋은 품질로 고객님과 함께하겠습니다.
             </p>
 
             <form className={styles.form} onSubmit={handleSubmit}>

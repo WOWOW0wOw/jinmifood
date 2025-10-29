@@ -39,12 +39,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         User user = saveOrUpdateWithProviderCheck(attributes);
 
-        if (user.getProvider().equals(attributes.getRegistrationId())) {
-            String uniqueName = generateUniqueDisplayName(attributes.getName());
-            user.update(uniqueName);
-        } else {
-            user.update(attributes.getName());
-        }
         user.updateLastLoginAt();
         userRepository.save(user);
 
@@ -79,10 +73,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         return userOptional
                 .map(entity -> {
-                    return entity.update(attributes.getName());
+                    return entity;
                 })
-                .orElseGet(() -> attributes.toEntity("USER"));
+                .orElseGet(() -> {
+                    String baseName = attributes.getName();
+                    String uniqueDisplayName = generateUniqueDisplayName(baseName);
 
+                    return attributes.toEntity("USER", uniqueDisplayName);
+                });
     }
 
     @Deprecated

@@ -97,10 +97,10 @@ public class User {
             this.address = address;
         }
     }
-    public User update(String displayName) {
-        this.displayName = displayName;
-        return this;
-    }
+//    public User update(String displayName) {
+//        this.displayName = displayName;
+//        return this;
+//    }
     public enum Role {
         USER, ADMIN
     }

@@ -171,8 +171,8 @@ public class UserController {
 
     @PostMapping("/findPassword/verifyCode")
     public StatusResponseDTO verifyPasswordCode(@Valid @RequestBody VerificationRequest request) {
-        userService.verifyPasswordCode(request.email(), request.code());
-        return StatusResponseDTO.ok("인증 코드 확인 완료");
+        FindIdResponse response = userService.verifyPasswordCodeAndGetProvider(request.email(), request.code());
+        return StatusResponseDTO.ok(response);
     }
 
     @PostMapping("/findPassword/reset")
