@@ -22,14 +22,12 @@ export default function ItemPage() {
             }
         };
 
-        // document에 이벤트 리스너 추가
         document.addEventListener('mousedown', handleClickOutside);
 
-        // 컴포넌트 언마운트 시 이벤트 리스너 제거
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isDropdownOpen]); // isDropdownOpen이 변경될 때만 리스너를 다시 설정 (최적화)
+    }, [isDropdownOpen]);
 
 
 
@@ -70,6 +68,11 @@ export default function ItemPage() {
 
     const toggleDropdown = () => {
         setIsDropdownOpen(prev => !prev);
+    };
+
+    const handleCartClick = (e, itemName) => {
+        e.stopPropagation(); // 이벤트 전파 중단!
+        alert(`장바구니 추가: ${itemName}`);
     };
 
     if (loading) {
@@ -140,34 +143,43 @@ export default function ItemPage() {
                 <p>등록된 상품이 없습니다.</p>
             ) : (
                 <div className={styles.itemList}>
-                    {items.map((item) => (
-                        <div key={item.itemId} className={styles.itemCard}>
-                            <img src={item.itemImg} alt={item.itemName} className={styles.itemImage} />
-                            <div className={styles.itemInfo}>
-                                <h3 className={styles.itemName}>{item.itemName}</h3>
-                                <p className={styles.itemPrice}>{item.itemPrice.toLocaleString()} 원</p>
-                                <p className={styles.itemStatus}>
-                                    {item.status === 'SALE' ? '판매 중' : '품절'}
-                                    {item.status === 'SALE' && ` (재고: ${item.count})`}
-                                </p>
-                                <div className={styles.itemActions}>
-                                    <button
-                                        className={styles.detailButton}
-                                        onClick={() => navigate(`/item/${item.itemId}`)}
-                                    >
-                                        상세보기
-                                    </button>
-                                    <button
-                                        className={styles.cartButton}
-                                        onClick={() => alert(`장바구니 추가: ${item.itemName}`)}
-                                        disabled={item.status !== 'SALE'}
-                                    >
-                                        장바구니 담기
-                                    </button>
+                    {items.map((item) => {
+
+                        const thumbnailUrl = item.mainImageUrl;
+
+                        return (
+
+                            <div
+                                key={item.itemId}
+                                className={styles.itemCard}
+                                onClick={() => navigate(`/item/${item.itemId}`)}
+                            >
+                                {thumbnailUrl ? (
+                                    <img src={thumbnailUrl} alt={item.itemName} className={styles.itemImage} />
+                                ) : (
+                                    <div className={styles.noImagePlaceholder}>이미지 없음</div>
+                                )}
+
+                                <div className={styles.itemInfo}>
+                                    <h3 className={styles.itemName}>{item.itemName}</h3>
+                                    <p className={styles.itemPrice}>{item.itemPrice.toLocaleString()} 원</p>
+                                    <p className={styles.itemStatus}>
+                                        {item.status === 'SALE' ? '판매 중' : '품절'}
+                                    </p>
+                                    <div className={styles.itemActions}>
+
+                                        <button
+                                            className={styles.cartButton}
+                                            onClick={(e) => handleCartClick(e, item.itemName)} // 수정된 핸들러 연결
+                                            disabled={item.status !== 'SALE'}
+                                        >
+                                            장바구니 담기
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

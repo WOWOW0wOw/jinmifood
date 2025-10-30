@@ -1,49 +1,35 @@
 package com.jinmifood.jinmi.item.dto.response;
 
 import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.domain.ItemImage;
 import com.jinmifood.jinmi.item.domain.ItemStatus;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.util.Optional; // Optional을 사용하기 위해 import
 
 @Getter
-@Setter
-@ToString
 public class ViewItemResponse {
 
     private Long itemId;
     private String itemName;
-    private Long categoryId;
     private int itemPrice;
-    private int orderCnt;
-    private int likeCnt;
-    private int reviewCnt;
-    private String itemImg;
-    private String itemInfImg;
-    private int itemWeight;
     private ItemStatus status;
     private int count;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
+    private String mainImageUrl;
 
     public ViewItemResponse(Item item) {
         this.itemId = item.getItemId();
         this.itemName = item.getItemName();
-        this.categoryId = item.getCategoryId();
         this.itemPrice = item.getItemPrice();
-        this.orderCnt = item.getOrderCnt();
-        this.likeCnt = item.getLikeCnt();
-        this.reviewCnt = item.getReviewCnt();
-        this.itemImg = item.getItemImg();
-        this.itemInfImg = item.getItemInfImg();
-        this.itemWeight = item.getItemWeight();
         this.status = item.getStatus();
         this.count = item.getCount();
-        this.createAt = item.getCreateAt();
-        this.updateAt = item.getUpdateAt();
+
+
+        Optional<String> firstMainImageUrl = item.getImages().stream()
+                .filter(image -> image.getImageType() == ItemImage.ImageType.MAIN)
+                .map(ItemImage::getImageUrl)
+                .findFirst();
+
+        this.mainImageUrl = firstMainImageUrl.orElse(null);
     }
-
-
 }

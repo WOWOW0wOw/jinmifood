@@ -27,13 +27,12 @@ public class ItemController {
 
     @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public StatusResponseDTO addItem(@RequestPart("addItem") AddItemRequest addItem,
-                                     @RequestPart(value = "itemImgFile", required = false) MultipartFile itemImgFile,
-                                     @RequestPart(value = "itemInfImgFile", required = false) MultipartFile itemInfImgFile
+                                     @RequestPart(value = "itemImgFiles", required = false) List<MultipartFile> itemImgFiles,
+                                     @RequestPart(value = "itemInfImgFiles", required = false) List<MultipartFile> itemInfImgFiles
     ) throws IOException {
         System.out.println("컨트롤러부분");
-        Item item = itemService.AddItem(addItem, itemImgFile, itemInfImgFile);
+        Item item = itemService.AddItem(addItem, itemImgFiles, itemInfImgFiles);
         return StatusResponseDTO.ok(item);
-
     }
 
     @PostMapping("/remove")

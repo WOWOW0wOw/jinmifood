@@ -1,10 +1,13 @@
 package com.jinmifood.jinmi.item.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jinmifood.jinmi.item.dto.request.UpdateItemRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,10 +43,6 @@ public class Item {
 
     private LocalDateTime updateAt;
 
-    private String itemImg;
-
-    private String itemInfImg;
-
     private int itemWeight;
 
     @Enumerated(EnumType.STRING)
@@ -53,11 +52,21 @@ public class Item {
     @Column(nullable = false)
     private int count;
 
+    @JsonManagedReference  // 정방향 참조: 정상적으로 직렬화
+    @Builder.Default
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval = true: Item의 images 리스트에서 ItemImage가 제거되면 데이터베이스에서도 삭제됨
+    private List<ItemImage> images = new ArrayList<>();
+
     @PrePersist
     public void prePersist() {
         this.createAt = this.createAt == null ? LocalDateTime.now() : this.createAt;
         this.updateAt = this.updateAt == null ? LocalDateTime.now() : this.updateAt;
         this.status = this.count == 0 ? ItemStatus.SOLDOUT : ItemStatus.SALE;
+    }
+
+    public void addImage(ItemImage image) {
+        images.add(image);
+        image.setItem(this);
     }
 
     public void updateItemDetails(UpdateItemRequest request) {
@@ -66,12 +75,6 @@ public class Item {
         }
         if (request.getItemPrice() != null) {
             this.itemPrice = request.getItemPrice();
-        }
-        if (request.getItemImg() != null) {
-            this.itemImg = request.getItemImg();
-        }
-        if (request.getItemInfImg() != null) {
-            this.itemInfImg = request.getItemInfImg();
         }
         if (request.getItemWeight() != null) {
             this.itemWeight = request.getItemWeight();
@@ -92,6 +95,8 @@ public class Item {
             this.likeCnt--;
         }
     }
+
+
 
     public void updateItemReviewCnt(){
         this.reviewCnt++;

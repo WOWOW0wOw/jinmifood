@@ -5,6 +5,7 @@ import com.jinmifood.jinmi.common.exception.CustomException;
 import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.item.domain.Category;
 import com.jinmifood.jinmi.item.domain.Item;
+import com.jinmifood.jinmi.item.domain.ItemImage;
 import com.jinmifood.jinmi.item.dto.request.AddItemRequest;
 import com.jinmifood.jinmi.item.dto.request.UpdateItemRequest;
 import com.jinmifood.jinmi.item.dto.response.ViewItemResponse;
@@ -40,7 +41,7 @@ public class ItemService {
 
 
     @Transactional
-    public Item AddItem(AddItemRequest request,MultipartFile itemImgFile, MultipartFile itemInfImgFile) throws IOException {
+    public Item AddItem(AddItemRequest request, List<MultipartFile> itemImgFiles, List<MultipartFile> itemInfImgFiles) throws IOException {
         List<Item> itemList = itemRepository.findAllByItemName(request.getItemName());
         log.info("아이템 이름 중복 검사 itemNameList: {}", itemList);
         if(!itemList.isEmpty()) { // 아이템이름 중복 검사
@@ -56,24 +57,35 @@ public class ItemService {
         }
         log.info("아이템 이름 중복 검사 완료");
 
-        String itemImgUrl = null;
-        if (itemImgFile != null && !itemImgFile.isEmpty()) {
-            itemImgUrl = s3UploaderService.upload(itemImgFile, "images");
-        }
-
-        String itemInfImgUrl = null;
-        if (itemInfImgFile != null && !itemInfImgFile.isEmpty()) {
-            itemInfImgUrl = s3UploaderService.upload(itemInfImgFile, "images");
-        }
-
-
         Item item = request.toEntity();
 
-        // 엔티티에 이미지 URL 설정
-        item.setItemImg(itemImgUrl);
-        item.setItemInfImg(itemInfImgUrl);
-        log.info("itemIngUrl: {}", itemInfImgUrl);
-        log.info("itemInfImgUrl: {}", itemInfImgUrl);
+        // 대표 이미지들(Main Images) 업로드 및 저장
+        if (itemImgFiles != null && !itemImgFiles.isEmpty()) {
+            for (MultipartFile file : itemImgFiles) {
+                if (!file.isEmpty()) {
+                    String imageUrl = s3UploaderService.upload(file, "images");
+                    ItemImage itemImage = ItemImage.builder()
+                            .imageUrl(imageUrl)
+                            .imageType(ItemImage.ImageType.MAIN)
+                            .build();
+                    item.addImage(itemImage);
+                }
+            }
+        }
+
+        // 상세 정보 이미지들(Info Images) 업로드 및 저장
+        if (itemInfImgFiles != null && !itemInfImgFiles.isEmpty()) {
+            for (MultipartFile file : itemInfImgFiles) {
+                if (!file.isEmpty()) {
+                    String imageUrl = s3UploaderService.upload(file, "images");
+                    ItemImage itemImage = ItemImage.builder()
+                            .imageUrl(imageUrl)
+                            .imageType(ItemImage.ImageType.INFO)
+                            .build();
+                    item.addImage(itemImage);
+                }
+            }
+        }
 
         log.info("아이템 저장 준비 Item: {}", item);
         itemRepository.save(item);
