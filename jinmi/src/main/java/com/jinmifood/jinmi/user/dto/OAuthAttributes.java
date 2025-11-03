@@ -13,11 +13,12 @@ public class OAuthAttributes {
     private final String nameAttributeKey;
     private final String name;
     private final String email;
-    private final String registrationId; // 'google'
-    private final Long id;
+    private final String registrationId; // 'google', 'kakao', 'naver'
+    private final Long id; // 카카오 id용 (Long)
+    private final String oAuth2Id; // 네이버 id용 (String)
+
 
     public static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        // Google은 name, email, picture 속성을 최상위에서 제공합니다.
         return OAuthAttributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
@@ -26,6 +27,22 @@ public class OAuthAttributes {
                 .registrationId("google")
                 .build();
     }
+
+    private static OAuthAttributes ofNaver(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
+        String naverId = (String) response.get("id");
+
+        return OAuthAttributes.builder()
+                .name((String) response.get("name"))
+                .email((String) response.get("email"))
+                .attributes(attributes)
+                .nameAttributeKey(userNameAttributeName)
+                .registrationId(registrationId)
+                .oAuth2Id(naverId) // 네이버 고유 ID
+                .build();
+    }
+
     private static OAuthAttributes ofKakao(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
 
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
@@ -36,7 +53,6 @@ public class OAuthAttributes {
             name = (String) kakaoProfile.get("nickname");
         }
 
-        // 💡 [핵심]: 이메일 널 체크 로직
         String email = null;
         if (kakaoAccount != null) {
             Boolean hasEmail = (Boolean) kakaoAccount.get("has_email");
@@ -49,9 +65,9 @@ public class OAuthAttributes {
                 .name(name)
                 .email(email)
                 .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName) // "id"
-                .registrationId(registrationId) // "kakao"
-                .id((Long) attributes.get(userNameAttributeName)) // 카카오 고유 ID (Long)
+                .nameAttributeKey(userNameAttributeName)
+                .registrationId(registrationId)
+                .id((Long) attributes.get(userNameAttributeName))
                 .build();
     }
 
@@ -62,7 +78,9 @@ public class OAuthAttributes {
         if ("kakao".equals(registrationId)) {
             return ofKakao(registrationId, "id", attributes);
         }
-        // 향후 Kakao, Naver 추가 시 여기에 로직을 확장합니다.
+        if ("naver".equals(registrationId)) {
+            return ofNaver(registrationId, "response", attributes);
+        }
         return null;
     }
 
@@ -74,8 +92,35 @@ public class OAuthAttributes {
         User.UserBuilder userBuilder = User.builder()
                 .email(finalEmail)
                 .displayName(name)
-                .password("") // 소셜 사용자는 비밀번호 없음
-                .provider(registrationId)
+                .password("")
+                .provider(registrationId.toUpperCase())
+                .role(userRole)
+                .address("미입력")
+                .phoneNumber(null)
+                .pointId(0L)
+                .totalOrderCnt(0L);
+
+        if ("kakao".equals(registrationId)) {
+            userBuilder.kakaoId(this.id);
+        }
+        if ("naver".equals(registrationId)) {
+            userBuilder.naverId(this.oAuth2Id);
+        }
+
+        return userBuilder.build();
+    }
+
+
+    public User toEntity(String role, String uniqueDisplayName) {
+
+        User.Role userRole = User.Role.valueOf(role.toUpperCase());
+        String finalEmail = email != null ? email : this.registrationId + "_user_" + this.id + "@social.com";
+
+        User.UserBuilder userBuilder = User.builder()
+                .email(finalEmail)
+                .displayName(uniqueDisplayName)
+                .password("")
+                .provider(registrationId.toUpperCase())
                 .role(userRole)
                 .address("미입력")
                 .phoneNumber(null)
@@ -86,28 +131,8 @@ public class OAuthAttributes {
             userBuilder.kakaoId(this.id);
         }
 
-        return userBuilder.build();
-    }
-
-    // CustomOAuth2UserService에서 사용
-    public User toEntity(String role, String uniqueDisplayName) {
-
-        User.Role userRole = User.Role.valueOf(role.toUpperCase());
-        String finalEmail = email != null ? email : this.registrationId + "_user_" + this.id + "@social.com";
-
-        User.UserBuilder userBuilder = User.builder()
-                .email(finalEmail)
-                .displayName(uniqueDisplayName) //  인자로 받은 중복 없는 닉네임 사용
-                .password("")
-                .provider(registrationId)
-                .role(userRole)
-                .address("미입력")
-                .phoneNumber(null)
-                .pointId(0L)
-                .totalOrderCnt(0L);
-
-        if ("kakao".equals(registrationId)) {
-            userBuilder.kakaoId(this.id);
+        if ("naver".equals(registrationId)) {
+            userBuilder.naverId(this.oAuth2Id);
         }
 
         return userBuilder.build();

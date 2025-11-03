@@ -32,6 +32,7 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final CustomOAuth2AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -98,6 +99,8 @@ public class SecurityConfig {
                         )
                         // 인증 성공 시 처리할 핸들러 지정 (JWT 발급 및 프론트로 리다이렉트)
                         .successHandler(oAuth2AuthenticationSuccessHandler)
+                        //인증 실패 시 처리할 핸들러 지정 (이메일 충돌 시 리다이렉트 담당)
+                        .failureHandler(customOAuth2AuthenticationFailureHandler)
                 )
 
                 // 인가 규칙
@@ -110,7 +113,7 @@ public class SecurityConfig {
                                 // 회원가입/로그인/토큰 재발급
                                 "/users/join", "/users/login", "/auth/reissue","/users/checkNickname","/api/v1/users/checkPassword",
                                 // 소셜
-                                "/oauth2/**",
+                                "/oauth2/**","/users/checkEmail",
                                 // 이메일 인증
                                 "/email/send","/email/verify","/users/findId/sendCode","/users/findPassword/reset","/users/findId/verifyCode","/users/findPassword/sendCode","/users/findPassword/verifyCode",
                                 

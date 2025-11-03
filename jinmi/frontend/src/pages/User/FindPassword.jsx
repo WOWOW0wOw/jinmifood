@@ -25,6 +25,8 @@ const FindPassword = () => {
                 return '카카오톡으로 가입한 계정입니다.';
             case 'google':
                 return 'Google로 가입한 계정입니다.';
+            case 'naver':
+                return 'Naver로 가입한 계정입니다.';
             default:
                 return '소셜 로그인으로 가입된 계정입니다.';
         }

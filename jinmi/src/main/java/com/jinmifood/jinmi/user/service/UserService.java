@@ -280,7 +280,7 @@ public class UserService {
 
         log.info("사용자 정보 확인 완료: Email={}", user.getEmail());
 
-        if (isSocialUser && user.getProvider() != null && user.getProvider().equals("google")) {
+        if (isSocialUser && user.getProvider() != null && user.getProvider().equals("GOOGLE")) {
             log.info("소셜 로그인 사용자입니다. Google 연결 해제를 시도합니다: userId={}", userId);
 
             String googleTokenToRevoke = user.getGoogleRefreshToken();
@@ -292,7 +292,7 @@ public class UserService {
             } else {
                 log.warn("Google Refresh/Access Token을 찾을 수 없습니다. Google Revoke를 건너뜁니다: userId={}", userId);
             }
-        }else if (isSocialUser && user.getProvider() != null && user.getProvider().equals("kakao")) {
+        }else if (isSocialUser && user.getProvider() != null && user.getProvider().equals("KAKAO")) {
             log.info("소셜 로그인 사용자입니다. Kakao 연결 해제를 시도합니다: userId={}", userId);
 
             String kakaoRefreshToken = user.getKakaoRefreshToken();
@@ -506,7 +506,9 @@ public class UserService {
 
         log.info("비밀번호 재설정 성공: Email={}", email);
     }
-
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
 
 }

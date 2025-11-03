@@ -150,14 +150,23 @@
 }
 
 .kakao {
-    background-color: #FEE500; /* 카카오 노랑 */
+    background-color: #FEE500;
     border: 1px solid #ccc;
 }
 .google {
-    background-color: #fff; /* 구글 흰색 */
+    background-color: #fff;
     border: 1px solid #ccc;
 }
 
+.naver {
+    background-color: #03c559;
+    border: 1px solid #ccc;
+}
+
+.naver .snsImage {
+    width: 32px;
+    height: 32px;
+}
 
 .error {
     color: #dc3545;

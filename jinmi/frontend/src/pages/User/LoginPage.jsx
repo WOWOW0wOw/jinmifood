@@ -1,19 +1,22 @@
-import React, {useState} from 'react';
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from "react-router-dom";
 import apiClient from "../../api/apiClient.js";
 import { useAuth} from "../../context/AuthContext.jsx";
 import styles from './css/Login.module.css';
 import GoogleIcon from './google-icon.png';
 import KakaoIcon from './KakaoTalk_logo.png';
+import NaverIcon from './btnG_아이콘원형.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
 const GOOGLE_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 const KAKAO_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/kakao`;
+const NAVER_AUTH_URL = `${API_BASE_URL}/oauth2/authorization/naver`;
 
 export default function LoginPage() {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { handleLogin } = useAuth();
 
     const [error, setError] = useState(null);
@@ -22,6 +25,33 @@ export default function LoginPage() {
         email: '',
         password: '',
     });
+
+    useEffect(() => {
+        const query = new URLSearchParams(location.search);
+        const socialLoginError = query.get('error');
+
+        if(socialLoginError){
+            let displayMessage = '소셜 로그인 중 알 수 없는 오류가 발생했습니다.';
+
+            if (socialLoginError.includes('DUPLICATE_EMAIL_DIFFERENT_PROVIDER')) {
+                displayMessage = '이메일 충돌! 해당 이메일은 이미 다른 방법(일반 로그인)으로 가입되어 있습니다. 기존 계정으로 로그인해주세요.';
+
+            } else if (socialLoginError.includes('EmailAlreadyInUse') || socialLoginError.includes('DUPLICATE_EMAIL')) {
+                displayMessage = '이 계정은 이미 다른 방법으로 가입된 계정입니다. 해당 이메일로 일반 로그인을 시도해주세요.';
+
+            } else if (socialLoginError.includes('UserNotFound')) {
+                displayMessage = '해당 소셜 계정으로 등록된 정보가 없습니다. 회원가입을 진행해주세요.';
+
+            } else {
+                displayMessage = socialLoginError;
+            }
+
+            alert(`소셜 로그인 오류: ${displayMessage}`);
+
+            navigate(location.pathname, { replace: true });
+        }
+
+    },[location.search, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -75,7 +105,9 @@ export default function LoginPage() {
     const handleKakaoLogin = () => {
         window.location.href = KAKAO_AUTH_URL;
     };
-
+    const handleNaverLogin = () => {
+        window.location.href = NAVER_AUTH_URL;
+    }
 
     return (
         <div className={styles.container}>
@@ -134,6 +166,11 @@ export default function LoginPage() {
                     <div className={`${styles.snsIconWrapper} ${styles.google}`}
                          onClick={handleGoogleLogin}>
                         <img src={GoogleIcon} alt="Google Icon" className={styles.snsImage} />
+                    </div>
+
+                    <div className={`${styles.snsIconWrapper} ${styles.naver}`}
+                         onClick={handleNaverLogin}>
+                        <img src={NaverIcon} alt="Naver Logo" className={styles.snsImage} />
                     </div>
                 </div>
             </div>

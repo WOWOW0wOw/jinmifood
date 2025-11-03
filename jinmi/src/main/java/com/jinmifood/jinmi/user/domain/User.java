@@ -56,11 +56,17 @@ public class User {
     @Column(nullable = true, unique = true)
     private Long kakaoId; // 카카오 고유 ID (카카오 로그인 전용)
 
+    @Column(nullable = true, unique = true)
+    private String naverId;
+
     @Column(length = 512, nullable = true)
     private String kakaoRefreshToken; // 카카오 리프레시 토큰
 
     @Column(length = 512, nullable = true)
     private String googleRefreshToken;
+
+    @Column(length = 512, nullable = true)
+    private String naverRefreshToken;
 
     public void updateGoogleRefreshToken(String googleRefreshToken) {
         this.googleRefreshToken = googleRefreshToken;
@@ -75,12 +81,17 @@ public class User {
         this.kakaoRefreshToken = kakaoRefreshToken;
     }
 
+    public void updateNaverRefreshToken(String naverRefreshToken) { this.naverRefreshToken = naverRefreshToken; }
+
     public void clearKakaoRefreshToken() {
         this.kakaoRefreshToken = null;
     }
     public void clearKakaoId() {
         this.kakaoId = null;
     }
+
+    public void clearNaverRefreshToken() { this.naverRefreshToken = null; }
+    public void clearNaverId() { this.naverId = null; }
     @Column
     private LocalDateTime createAt; // 가입날짜
 

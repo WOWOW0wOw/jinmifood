@@ -71,7 +71,9 @@ const FindId = () => {
                 return '카카오톡으로 가입한 계정입니다.';
             case 'google':
                 return 'Google로 가입한 계정입니다.';
-            case 'local': // 로컬 가입 계정
+            case 'naver':
+                return 'Naver로 가입한 계정입니다.';
+            case 'local':
                 return `회원님의 아이디는 다음과 같습니다.`;
             default:
                 return `회원님의 아이디는 다음과 같습니다.`;

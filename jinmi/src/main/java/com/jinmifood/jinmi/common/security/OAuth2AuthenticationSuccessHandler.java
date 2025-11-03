@@ -57,6 +57,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 } else {
                     log.warn("Kakao Refresh Token이 AuthorizedClientService에 저장되어 있지 않습니다.");
                 }
+            } else if (provider.equals("naver")) {
+                if (authorizedClient.getRefreshToken() != null) {
+                    providerTokenToSave = authorizedClient.getRefreshToken().getTokenValue();
+                    log.info("Naver Refresh Token 추출 완료 (저장 대상): {}", providerTokenToSave);
+                } else {
+                    providerTokenToSave = authorizedClient.getAccessToken().getTokenValue();
+                    log.warn("Naver Refresh Token이 AuthorizedClientService에 저장되어 있지 않습니다. Access Token을 대신 저장합니다.");
+                }
             }
         } else {
             log.warn("OAuth2AuthorizedClient를 찾을 수 없습니다. 외부 토큰 추출 실패.");
@@ -91,6 +99,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             } else if (provider.equals("kakao")) {
                 user.updateKakaoRefreshToken(providerTokenToSave);
                 log.info("Kakao Refresh Token 저장 완료: {}", providerTokenToSave);
+            } else if (provider.equals("naver")) {
+                user.updateNaverRefreshToken(providerTokenToSave);
+                log.info("Naver Refresh/Access Token 저장 완료: {}", providerTokenToSave);
             }
             userRepository.save(user); // DB에 토큰 저장
         }
