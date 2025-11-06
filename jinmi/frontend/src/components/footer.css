@@ -1,0 +1,67 @@
+.site-footer {
+    background: #0f172a;           /* 짙은 남색(다크) */
+    color: #cbd5e1;                /* 약한 회색 텍스트 */
+    padding: 28px 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+    line-height: 1.7;
+    display:flex;                /* 내부 컨테이너를 가운데로 보내기 위해 */
+    justify-content:center;      /* 수평 가운데 */
+}
+
+.footer__container {
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;               /* 가운데 배치 */
+    padding:0 16px;              /* 좌우 여백 조금 */
+}
+
+.footer__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;                 /* 줄바꿈/간격 */
+    align-items: center;
+    justify-content:center;
+    text-align:center;
+}
+
+.footer__row--info {
+    font-weight: 500;
+    color: #e5e7eb;
+}
+
+.footer__row--biz {
+    color: #cbd5e1;
+}
+
+.footer__copy {
+    display:block;
+    margin-top:10px;
+    color:#94a3b8;
+    text-align:center;           /* ⬇ 복붙 시 확실하게 */
+}
+
+.sep {
+    opacity: 0.6;
+}
+
+/* 링크(전화) */
+.footer__link {
+    color: #e5e7eb;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.footer__link:hover {
+    color: #ffffff;
+}
+
+/* 작은 화면에서 줄바꿈 자연스럽게 */
+@media (max-width: 640px) {
+    .site-footer {
+        font-size: 13px;
+        padding: 22px 14px;
+    }
+    .footer__row {
+        gap: 6px 10px;
+    }
+}

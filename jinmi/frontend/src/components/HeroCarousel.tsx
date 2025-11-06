@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
 import "./heroCarousel.css";
+// @ts-ignore
+import main1 from "../assets/main1.jpg";
+// @ts-ignore
+import main2 from "../assets/main2.jpg";
+// @ts-ignore
+import main3 from "../assets/main3.jpg";
 
 /**
  * slides: 배너 데이터 배열
@@ -10,19 +16,20 @@ import "./heroCarousel.css";
  *  - desc: 설명 문구 (2~3줄)
  *  - primary / secondary: 버튼 정보
  */
+
 const slidesData = [
     {
-        bg: "/images/banners/banner1.jpg", // 실제 배너 이미지 경로 (예: 인기 상품 콜라보 컷)
+        bg: main1, // 실제 배너 이미지 경로 (예: 인기 상품 콜라보 컷)
         badge: "LIMITED",
         title: "프리미엄 먹태\n지금이 제철",
         desc:
-            "당일 손질한 먹태를 도축 후 바로 건조.\n육즙 살아있는 부드러운 식감.\n업장/대량납품도 가능합니다.",
+            "당일 손질한 먹태를 도축 후 바로 건조.\n육즙 살아있는 부드러운 식감.",
         primary: { label: "자세히 보기", href: "/products/123" },
         secondary: { label: "구매하기", href: "/products/123" },
         dark: true, // 글자색을 밝게 처리할지 여부
     },
     {
-        bg: "/images/banners/banner2.jpg",
+        bg: main2,
         badge: "인기 상품",
         title: "술안주 준비 끝.\n안주 세트 특가",
         desc:
@@ -32,7 +39,7 @@ const slidesData = [
         dark: true,
     },
     {
-        bg: "/images/banners/banner3.jpg",
+        bg: main3,
         badge: "B2B",
         title: "식당 · 포차 사장님\n대량 단가 별도 상담",
         desc:

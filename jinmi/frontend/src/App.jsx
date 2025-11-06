@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header.jsx'
+import Footer from './components/Footer.jsx'
 import LoginPage from "./pages/User/LoginPage.jsx";
 import Signup from "./pages/User/Signup.jsx";
 import ItemPage from "./pages/item/ItemPage.jsx";
@@ -41,6 +42,7 @@ export default function App() {
                 <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
             </Routes>
+            <Footer />
         </AuthProvider>
     )
 }
