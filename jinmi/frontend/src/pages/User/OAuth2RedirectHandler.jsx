@@ -15,7 +15,7 @@ const OAuth2RedirectHandler = () => {
         if (error) {
             console.error("OAuth2 로그인 에러:", error);
             alert(`소셜 로그인에 실패했습니다: ${error}`);
-            navigate('/login');
+            navigate(`/login`, { replace: true });
             return;
         }
 
@@ -32,7 +32,7 @@ const OAuth2RedirectHandler = () => {
         } else {
             console.error("소셜 로그인 실패: 토큰이 URL에 포함되지 않았습니다.");
             alert("소셜 로그인 과정에서 오류가 발생했습니다.");
-            navigate('/login');
+            navigate('/login', { replace: true });
         }
     }, [navigate, handleLogin]);
 

@@ -280,7 +280,7 @@ public class UserService {
 
         log.info("사용자 정보 확인 완료: Email={}", user.getEmail());
 
-        if (isSocialUser && user.getProvider() != null && user.getProvider().equals("google")) {
+        if (isSocialUser && user.getProvider() != null && user.getProvider().equals("GOOGLE")) {
             log.info("소셜 로그인 사용자입니다. Google 연결 해제를 시도합니다: userId={}", userId);
 
             String googleTokenToRevoke = user.getGoogleRefreshToken();
@@ -292,7 +292,7 @@ public class UserService {
             } else {
                 log.warn("Google Refresh/Access Token을 찾을 수 없습니다. Google Revoke를 건너뜁니다: userId={}", userId);
             }
-        }else if (isSocialUser && user.getProvider() != null && user.getProvider().equals("kakao")) {
+        }else if (isSocialUser && user.getProvider() != null && user.getProvider().equals("KAKAO")) {
             log.info("소셜 로그인 사용자입니다. Kakao 연결 해제를 시도합니다: userId={}", userId);
 
             String kakaoRefreshToken = user.getKakaoRefreshToken();
@@ -443,7 +443,7 @@ public class UserService {
 
         mailService.sendFindIdMail(email);
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public FindIdResponse verifyIdCodeAndFindId(String email, String code) {
         if (!mailService.verifyFindIdCode(email, code)) {
             throw new CustomException(ErrorException.INVALID_AUTH_CODE);
@@ -470,21 +470,31 @@ public class UserService {
         mailService.sendFindPasswordMail(email);
     }
 
-    @Transactional(readOnly = true)
-    public void verifyPasswordCode(String email, String code) {
-        if (!mailService.verifyFindPasswordCode(email, code)) {
-            throw new CustomException(ErrorException.INVALID_AUTH_CODE);
-        }
-    }
-
     @Transactional
-    public void resetPassword(String email, String code, String newPassword) {
+    public FindIdResponse verifyPasswordCodeAndGetProvider(String email, String code) {
         if (!mailService.verifyFindPasswordCode(email, code)) {
             throw new CustomException(ErrorException.INVALID_AUTH_CODE);
         }
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        String provider = user.getProvider();
+        if (provider == null || provider.isEmpty() || provider.equalsIgnoreCase("NONE")) {
+            provider = "local";
+        }
+
+        return new FindIdResponse(user.getEmail(), provider.toLowerCase());
+    }
+
+    @Transactional
+    public void resetPassword(String email, String code, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        if (user.getProvider() != null && !user.getProvider().equalsIgnoreCase("LOCAL") && !user.getProvider().equalsIgnoreCase("NONE")) {
+            throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
+        }
 
         String passwordPattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$";
         if(!newPassword.matches(passwordPattern)){
@@ -493,11 +503,12 @@ public class UserService {
 
         String encodedNewPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedNewPassword);
-        userRepository.save(user);
 
         log.info("비밀번호 재설정 성공: Email={}", email);
     }
-
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
 
 }

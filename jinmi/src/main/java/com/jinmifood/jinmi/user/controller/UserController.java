@@ -171,13 +171,24 @@ public class UserController {
 
     @PostMapping("/findPassword/verifyCode")
     public StatusResponseDTO verifyPasswordCode(@Valid @RequestBody VerificationRequest request) {
-        userService.verifyPasswordCode(request.email(), request.code());
-        return StatusResponseDTO.ok("인증 코드 확인 완료");
+        FindIdResponse response = userService.verifyPasswordCodeAndGetProvider(request.email(), request.code());
+        return StatusResponseDTO.ok(response);
     }
 
     @PostMapping("/findPassword/reset")
     public StatusResponseDTO resetPassword(@Valid @RequestBody PasswordResetRequest request) {
         userService.resetPassword(request.getEmail(), request.getCode(), request.getNewPassword());
         return StatusResponseDTO.ok("비밀번호가 성공적으로 변경되었습니다.");
+    }
+
+    @GetMapping("/checkEmail")
+    public StatusResponseDTO checkEmail(@RequestParam("email") String email) {
+        if(userService.existsByEmail(email)){
+            log.warn("이메일 중복 확인: {} 이메일이 이미 존재합니다",email);
+            throw new CustomException(ErrorException.DUPLICATE_EMAIL);
+        }
+
+        log.info("이메일 중복 확인: {} 이메일 사용 가능", email);
+        return StatusResponseDTO.ok("사용가능한 이메일 입니다 ");
     }
 }
