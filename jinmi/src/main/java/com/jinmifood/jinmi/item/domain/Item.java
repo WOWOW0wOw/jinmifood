@@ -57,6 +57,7 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval = true: Item의 images 리스트에서 ItemImage가 제거되면 데이터베이스에서도 삭제됨
     private List<ItemImage> images = new ArrayList<>();
 
+
     @PrePersist
     public void prePersist() {
         this.createAt = this.createAt == null ? LocalDateTime.now() : this.createAt;

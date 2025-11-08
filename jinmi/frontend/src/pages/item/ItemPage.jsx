@@ -162,7 +162,7 @@ export default function ItemPage() {
 
                                 <div className={styles.itemInfo}>
                                     <h3 className={styles.itemName}>{item.itemName}</h3>
-                                    <p className={styles.itemPrice}>{item.itemPrice.toLocaleString()} 원</p>
+                                    <p className={styles.itemPrice}>{item.itemPrice.toLocaleString()}</p>
                                     <p className={styles.itemStatus}>
                                         {item.status === 'SALE' ? '판매 중' : '품절'}
                                     </p>
