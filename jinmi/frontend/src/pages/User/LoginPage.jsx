@@ -34,7 +34,7 @@ export default function LoginPage() {
             let displayMessage = '소셜 로그인 중 알 수 없는 오류가 발생했습니다.';
 
             if (socialLoginError.includes('DUPLICATE_EMAIL_DIFFERENT_PROVIDER')) {
-                displayMessage = '이메일 충돌! 해당 이메일은 이미 다른 방법(일반 로그인)으로 가입되어 있습니다. 기존 계정으로 로그인해주세요.';
+                displayMessage = '이메일 충돌! 해당 이메일은 이미 다른 방법(일반로그인 & 소셜 로그인)으로 가입되어 있습니다. 기존 계정으로 로그인해주세요.';
 
             } else if (socialLoginError.includes('EmailAlreadyInUse') || socialLoginError.includes('DUPLICATE_EMAIL')) {
                 displayMessage = '이 계정은 이미 다른 방법으로 가입된 계정입니다. 해당 이메일로 일반 로그인을 시도해주세요.';

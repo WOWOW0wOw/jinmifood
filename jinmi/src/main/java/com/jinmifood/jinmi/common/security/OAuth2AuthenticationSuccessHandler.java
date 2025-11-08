@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional; // Import 추가
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 
     @Override
+    @Transactional // @Transactional 추가
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -57,14 +59,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 } else {
                     log.warn("Kakao Refresh Token이 AuthorizedClientService에 저장되어 있지 않습니다.");
                 }
-            } else if (provider.equals("naver")) {
-                if (authorizedClient.getRefreshToken() != null) {
-                    providerTokenToSave = authorizedClient.getRefreshToken().getTokenValue();
-                    log.info("Naver Refresh Token 추출 완료 (저장 대상): {}", providerTokenToSave);
-                } else {
-                    providerTokenToSave = authorizedClient.getAccessToken().getTokenValue();
-                    log.warn("Naver Refresh Token이 AuthorizedClientService에 저장되어 있지 않습니다. Access Token을 대신 저장합니다.");
-                }
             }
         } else {
             log.warn("OAuth2AuthorizedClient를 찾을 수 없습니다. 외부 토큰 추출 실패.");
@@ -77,7 +71,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userIdentifier = userDetails.getUsername(); // 이메일
         LocalDateTime expiryDate = jwtTokenProvider.getExpiryDateTime(refreshToken);
 
-        // 2. Refresh Token DB 저장 또는 업데이트 (기존 로그인 로직 재활용)
         refreshTokenRepository.findById(userIdentifier)
                 .ifPresentOrElse(
                         token -> token.updateToken(refreshToken, expiryDate),
@@ -89,7 +82,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 );
         log.info("OAuth2 로그인 성공: JWT 발행 및 Refresh Token 저장 완료 (사용자: {})", userIdentifier);
 
-        if (providerTokenToSave != null) {
+
+
+        if (provider.equals("naver") || providerTokenToSave != null) {
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseThrow(() -> new IllegalStateException("User not found after OAuth2 login"));
 
@@ -100,11 +95,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 user.updateKakaoRefreshToken(providerTokenToSave);
                 log.info("Kakao Refresh Token 저장 완료: {}", providerTokenToSave);
             } else if (provider.equals("naver")) {
-                user.updateNaverRefreshToken(providerTokenToSave);
-                log.info("Naver Refresh/Access Token 저장 완료: {}", providerTokenToSave);
+                String naverAccessToken = authorizedClient.getAccessToken().getTokenValue();
+                user.updateNaverAccessToken(naverAccessToken);
+                log.info("Naver Access Token 저장 완료: User Email={}", user.getEmail());
+
+                if (authorizedClient.getRefreshToken() != null) {
+                    String naverRefreshToken = authorizedClient.getRefreshToken().getTokenValue();
+                    user.updateNaverRefreshToken(naverRefreshToken);
+                    log.info("Naver Refresh Token 저장 완료: User Email={}", user.getEmail());
+                }
             }
-            userRepository.save(user); // DB에 토큰 저장
         }
+
 
         String targetUrl = UriComponentsBuilder.fromUriString(REDIRECT_URI)
                 .queryParam("token", accessToken)

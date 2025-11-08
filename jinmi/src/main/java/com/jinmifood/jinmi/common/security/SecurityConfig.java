@@ -2,6 +2,7 @@ package com.jinmifood.jinmi.common.security;
 
 import com.jinmifood.jinmi.common.security.refreshToken.repository.BlacklistTokenRepository;
 import com.jinmifood.jinmi.user.service.CustomOAuth2UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +14,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -73,7 +81,10 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, InMemoryClientRegistrationRepository clientRegistrationRepository) throws Exception {
+        OAuth2AuthorizationRequestResolver customResolver =
+                new CustomNaverAuthorizationRequestResolver(clientRegistrationRepository);
+
         http
                 // 기본 보안 옵션
                 .csrf(csrf -> csrf.disable())
@@ -93,6 +104,10 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .oauth2Login(oauth2 -> oauth2
+
+                        .authorizationEndpoint(auth -> auth
+                                .authorizationRequestResolver(customResolver) // 여기에 넣어야 합니다.
+                        )
                         // 사용자 정보 로드 서비스 지정 (DB 연동 및 회원가입 처리)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)
@@ -105,7 +120,6 @@ public class SecurityConfig {
 
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers("/error").permitAll()
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
 
@@ -113,7 +127,7 @@ public class SecurityConfig {
                                 // 회원가입/로그인/토큰 재발급
                                 "/users/join", "/users/login", "/auth/reissue","/users/checkNickname","/api/v1/users/checkPassword",
                                 // 소셜
-                                "/oauth2/**","/users/checkEmail",
+                                "/oauth2/**","/users/checkEmail", "/naver/unlink",
                                 // 이메일 인증
                                 "/email/send","/email/verify","/users/findId/sendCode","/users/findPassword/reset","/users/findId/verifyCode","/users/findPassword/sendCode","/users/findPassword/verifyCode",
                                 
@@ -160,5 +174,43 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+    class CustomNaverAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
+
+        private final OAuth2AuthorizationRequestResolver defaultResolver;
+
+        public CustomNaverAuthorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
+            this.defaultResolver = new DefaultOAuth2AuthorizationRequestResolver(
+                    clientRegistrationRepository, "/oauth2/authorization"
+            );
+        }
+
+        @Override
+        public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
+            OAuth2AuthorizationRequest authorizationRequest = this.defaultResolver.resolve(request);
+            return customizeAuthorizationRequest(authorizationRequest);
+        }
+
+        @Override
+        public OAuth2AuthorizationRequest resolve(HttpServletRequest request, String clientRegistrationId) {
+            OAuth2AuthorizationRequest authorizationRequest = this.defaultResolver.resolve(request, clientRegistrationId);
+            return customizeAuthorizationRequest(authorizationRequest);
+        }
+
+        private OAuth2AuthorizationRequest customizeAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest) {
+            if (authorizationRequest != null && "naver".equalsIgnoreCase(authorizationRequest.getClientId())) {
+
+
+                Map<String, Object> additionalParameters = new HashMap<>(authorizationRequest.getAdditionalParameters());
+
+                additionalParameters.put("auth_type", "reprompt");
+                additionalParameters.put("reauthenticate", "true");
+
+                return OAuth2AuthorizationRequest.from(authorizationRequest)
+                        .additionalParameters(additionalParameters)
+                        .build();
+            }
+            return authorizationRequest;
+        }
     }
 }

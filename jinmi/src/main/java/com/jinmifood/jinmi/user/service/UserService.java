@@ -53,6 +53,14 @@ public class UserService {
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String kakaoClientSecret;
 
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    private String naverClientId;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
+
+
+
 
 
     private boolean isReservedKeywordUsed(String text) {
@@ -263,6 +271,44 @@ public class UserService {
         }
     }
 
+    private void unlinkNaver(String naverAccessToken) {
+        final String NAVER_TOKEN_URL = "https://nid.naver.com/oauth2.0/token";
+
+        try {
+            // 네이버는 Refresh Token 또는 Access Token을 'grant_type=delete'로 보내서 토큰을 삭제합니다.
+            String requestBody = "grant_type=delete" +
+                    "&client_id=" + naverClientId +
+                    "&client_secret=" + naverClientSecret +
+                    "&access_token=" + naverAccessToken +
+                    "&service_provider=NAVER";
+
+            webClient.post()
+                    .uri(NAVER_TOKEN_URL)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+            log.info("Naver 연결 해제(Token Delete) 요청 전송 완료.");
+
+        } catch (WebClientResponseException e) {
+            log.error("Naver Unlink API 호출 실패. 상태코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
+        } catch (Exception e) {
+            log.error("Naver Unlink 처리 중 알 수 없는 오류 발생: {}", e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void handleNaverExternalUnlink(String naverId) {
+        userRepository.findByNaverId(naverId)
+                .ifPresent(user -> {
+                    user.clearNaverRefreshToken();
+                    user.clearNaverId();
+                    log.info("네이버 외부 연동 해제 통보 처리 완료: naverId={}", naverId);
+                });
+    }
+
     // 회원탈퇴 로직
     @Transactional
     public void deleteUser(Long userId, String userIdentifier, String accessToken) {
@@ -313,6 +359,22 @@ public class UserService {
 
             } else {
                 log.warn("Kakao Refresh Token을 찾을 수 없습니다. Kakao Unlink를 건너뜁니다: userId={}", userId);
+            }
+        } else if (isSocialUser && user.getProvider() != null && user.getProvider().equalsIgnoreCase("NAVER")) {
+            log.info("소셜 로그인 사용자입니다. Naver 연결 해제를 시도합니다: userId={}", userId);
+
+            String naverAccessToken = user.getNaverAccessToken();
+
+            if (naverAccessToken != null) {
+                unlinkNaver(naverAccessToken);
+
+                user.clearNaverRefreshToken();
+                user.clearNaverAccessToken();
+                user.clearNaverId();
+
+                log.info("Naver 연결 해제(Unlink) 완료 및 DB 토큰/ID 삭제: userId={}", userId);
+            } else {
+                log.warn("Naver Refresh Token을 찾을 수 없습니다. Naver Unlink를 건너뜜니다: userId={}", userId);
             }
         }
 

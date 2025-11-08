@@ -68,6 +68,17 @@ public class User {
     @Column(length = 512, nullable = true)
     private String naverRefreshToken;
 
+    @Column(length = 512, nullable = true)
+    private String naverAccessToken; // 네이버 액세스 토큰
+
+    public void updateNaverAccessToken(String naverAccessToken) {
+        this.naverAccessToken = naverAccessToken;
+    }
+
+    public void clearNaverAccessToken() {
+        this.naverAccessToken = null;
+    }
+
     public void updateGoogleRefreshToken(String googleRefreshToken) {
         this.googleRefreshToken = googleRefreshToken;
     }
