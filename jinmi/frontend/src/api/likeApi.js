@@ -1,5 +1,4 @@
 import apiClient from './apiClient';
-
 /**
  * 아이템에 좋아요를 추가합니다.
  * @param {number} itemId - 좋아요를 추가할 아이템의 ID
@@ -26,6 +25,16 @@ export const removeLike = async (itemId) => {
         return response.data;
     } catch (error) {
         console.error('좋아요 취소 실패:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
+export const getLikeStatus = async (itemId) => {
+    try {
+        const response = await apiClient.get(`/likes/status/${itemId}`);
+        return response.data.data;  // boolean 값 반환
+    } catch (error) {
+        console.error('Failed to fetch like status:', error.response?.data || error.message);
         throw error;
     }
 };

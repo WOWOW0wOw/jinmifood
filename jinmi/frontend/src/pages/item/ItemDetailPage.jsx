@@ -5,6 +5,7 @@ import { fetchItem } from '../../api/itemApi';
 import { addLike, removeLike } from '../../api/likeApi'; // 새로 만든 likeApi 임포트
 import { useAuth } from '../../context/AuthContext'; // Header에서 사용하는 AuthContext 임포트
 import styles from './css/ItemDetailPage.module.css';
+import { getLikeStatus } from '../../api/likeApi';
 
 // 하트 아이콘 SVG 컴포넌트
 const HeartIcon = () => (
@@ -37,10 +38,17 @@ export default function ItemDetailPage() {
                 setItem(data);
                 setLikeCount(data.likeCnt);
 
-                if (data.likedByCurrentUser && isLoggedIn) {
-                    setIsLiked(true);
-                } else {
+                if (!isLoggedIn) {
                     setIsLiked(false);
+                    return;
+                }
+
+                try {
+                    const likedStatus = await getLikeStatus(itemId);
+                    setIsLiked(likedStatus);
+                } catch (statusErr) {
+                    console.error('Like status fetch failed, falling back to false:', statusErr);
+                    setIsLiked(false);  // 에러 시 false fallback
                 }
 
             } catch (err) {
@@ -85,8 +93,10 @@ export default function ItemDetailPage() {
             // 4. API 호출 실패 시, UI 상태를 원래대로 롤백
             console.error("'좋아요' 처리 실패:", err);
             alert("요청 처리 중 오류가 발생했습니다. 다시 시도해 주세요.");
-            setIsLiked(originalIsLiked);
-            setLikeCount(originalLikeCount);
+            const currentStatus = await getLikeStatus(itemId);  // 서버에서 최신 상태 가져옴
+            setIsLiked(currentStatus);
+            const updatedItem = await fetchItem(itemId);  // likeCnt도 재로드
+            setLikeCount(updatedItem.likeCnt);
         }
     };
 
