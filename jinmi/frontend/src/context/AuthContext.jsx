@@ -1,7 +1,5 @@
-// frontend/src/context/AuthContext.jsx
 
 import React, { createContext, useState, useEffect, useContext} from "react";
-// axios는 더 이상 필요 없으니 제거했습니다.
 import {useNavigate} from "react-router-dom";
 import apiClient from "../api/apiClient.js";
 

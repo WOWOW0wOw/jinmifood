@@ -122,6 +122,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/error").permitAll()
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
+                        .requestMatchers(
+                                // 내 정보 조회 및 수정
+                                "/users/myInfo", "/users/myUpdateInfo",
+
+                                // 로그아웃, 회원탈퇴
+                                "/users/logout", "/users/delete",
+
+                                "/likes/myList"
+                        ).authenticated()
 
                         .requestMatchers(
                                 // 회원가입/로그인/토큰 재발급
@@ -138,7 +147,7 @@ public class SecurityConfig {
                                 "/itemCart/**", "/order/**",
 
                                 // 상품 및 카테고리,좋아요,후기,문의 관련 API
-                                "/items/**", "/categories/**", "/likes/**",
+                                "/items/**", "/categories/**", "/likes/add", "/likes/remove",
 
                                 // 리뷰 리스트
                                 "/reviews/listByItem","/reviews/listAll",
@@ -157,13 +166,6 @@ public class SecurityConfig {
                         ).permitAll()
 
                         //  인증 필요 (authenticated) 경로를 URL 패턴으로 통합
-                        .requestMatchers(
-                                // 내 정보 조회 및 수정
-                                "/users/myInfo", "/users/myUpdateInfo",
-
-                                // 로그아웃, 회원탈퇴
-                                "/users/logout", "/users/delete"
-                        ).authenticated()
 
                         .requestMatchers("/", "/favicon.ico", "/assets/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

@@ -24,6 +24,9 @@ export default function Header({ cartCnt = 0 }) {
                                         <Link role="menuitem" to="/mypage">마이페이지</Link>
                                     </li>
                                     <li role="none">
+                                        <Link role="menuitem" to="/mypage/likes">찜 목록</Link>
+                                    </li>
+                                    <li role="none">
                                         <button
                                             role="menuitem"
                                             onClick={handleLogout}

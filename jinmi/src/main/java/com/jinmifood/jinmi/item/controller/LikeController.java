@@ -5,11 +5,14 @@ import com.jinmifood.jinmi.common.exception.ErrorException;
 import com.jinmifood.jinmi.common.security.CustomUserDetails;
 import com.jinmifood.jinmi.common.statusResponse.StatusResponseDTO;
 import com.jinmifood.jinmi.item.dto.request.AddLikeRequest;
+import com.jinmifood.jinmi.item.dto.response.MyLikeItemResponse;
 import com.jinmifood.jinmi.item.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,6 +53,21 @@ public class LikeController {
 
 
         return StatusResponseDTO.ok("좋아요가 성공적으로 취소되었습니다.");
+    }
+
+    @GetMapping("/myList")
+    public StatusResponseDTO getMyLikes(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        log.info("1");
+        if (userDetails == null) {
+            log.info("2");
+            throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
+        }
+        Long userId = userDetails.getId();
+        log.info("Request to view like list for user {}", userId);
+
+        List<MyLikeItemResponse> list = likeService.getMyLikeItems(userId);
+
+        return StatusResponseDTO.ok(list);
     }
 
 }
