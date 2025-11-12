@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import apiClient from "../../api/apiClient.js";
 
@@ -9,12 +8,11 @@ export default function LikeListPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // useAuth에서 상태를 가져옵니다.
     const { accessToken, isLoading: isAuthLoading } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
 
-        // 💡 1. 로컬 스토리지에서 Access Token을 직접 확인합니다. (useAuth 문제 우회)
         const localAccessToken = localStorage.getItem('accessToken');
         const tokenToUse = accessToken || localAccessToken;
 
@@ -74,12 +72,13 @@ export default function LikeListPage() {
                 <ul className="like-items-grid">
                     {likeItems.map(item => (
                         <li key={item.likeId || item.itemId} className="like-item-card">
-                            <Link to={`/items/${item.itemId}`}>
+
+                            <Link to={`/item/${item.itemId}`}>
                                 <img src={item.imageUrl} alt={item.name} className="item-image" />
 
                                 <div className="item-details">
                                     <p className="item-name">{item.name}</p>
-                                    <p className="item-price">{item.price.toLocaleString()}원</p>
+                                    <p className="item-price">{item.price ? item.price.toLocaleString() : '가격 정보 없음'}원</p>
                                 </div>
                             </Link>
                         </li>
