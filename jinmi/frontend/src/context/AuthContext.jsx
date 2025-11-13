@@ -77,6 +77,7 @@ export function AuthProvider({ children }){
     const contextValue = {
         isLoggedIn,
         user,
+        userNickname: user?.displayName || '',
         isLoading,
         handleLogin,
         handleLogout,
