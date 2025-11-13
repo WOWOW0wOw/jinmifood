@@ -1,0 +1,143 @@
+.hero {
+    position: relative;
+    min-height: 460px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #402e14 0%, #251b0b 100%);
+}
+
+/* 좌/우 배경 패널 */
+.side {
+    position: absolute;
+    top: 12%;
+    bottom: 12%;
+    width: 33%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 16px;
+    filter: brightness(0.72);
+}
+.left { left: 4%; }
+.right { right: 4%; }
+
+/* 중앙 카드 래퍼(화살표가 카드 바깥에 붙도록 기준점 제공) */
+.cardWrap {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    bottom: 14%;
+    transform: translateX(-50%);
+    width: min(720px, calc(100% - 120px));
+}
+
+/* 화살표 버튼(카드 바깥) */
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgb(140, 95, 33);
+    color: #fff;
+    font-size: 28px;
+    line-height: 44px;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+}
+.arrowLeft { left: -60px; }
+.arrowRight { right: -60px; }
+
+/* 중앙 카드 */
+.card {
+    height: 100%;
+    border-radius: 16px;
+    padding: 40px 44px;
+    background: rgb(113, 74, 31);
+    border: 1px solid rgb(44, 26, 1);
+    color: #eaf1ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 배지: 길이만큼만 */
+.badge {
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(227, 185, 121);
+    color: #000000;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .08em;
+    border: 1px solid rgb(85, 56, 16);
+    margin-bottom: 16px;
+}
+
+.title {
+    margin: 0 0 12px;
+    font-size: 40px;
+    line-height: 1.12;
+    color: #ffffff;
+}
+
+.desc {
+    margin: 0 0 22px;
+    color: #b9c7dc;
+}
+
+.actions { display: flex; gap: 10px; }
+
+.btnPrimary, .btnGhost {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 12px;
+    font-weight: 700;
+}
+.btnPrimary {
+    background: #2c1a01;
+    color: #ffffff;
+    border: none;
+}
+.btnGhost {
+    background: transparent;
+    color: #dbe7ff;
+    border: 1px solid rgba(255,255,255,.18);
+}
+
+/* 도트 */
+.dots {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+.dot {
+    width: 10px; height: 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.35);
+    border: none;
+    opacity: .7;
+    cursor: pointer;
+}
+.dot.active {
+    width: 22px;
+    background: #fff;
+    opacity: 1;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+    .cardWrap { width: min(680px, calc(100% - 80px)); }
+    .arrowLeft { left: -52px; }
+    .arrowRight { right: -52px; }
+}
+@media (max-width: 768px) {
+    .side { display: none; }       /* 모바일은 카드만 */
+    .cardWrap { top: 8%; bottom: 12%; width: calc(100% - 40px); }
+    .title { font-size: 30px; }
+}

@@ -1,177 +1,193 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fetchAllItems, fetchItemsByCategoryId, fetchAllCategories } from '../../api/itemApi';
-import styles from './css/ItemPage.module.css';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchAllItems, fetchItemsByCategoryId, fetchAllCategories } from "../../api/itemApi";
+import HeroCarousel from "../item/RecommendHero.js"; // 경로 프로젝트에 맞게 조정
+import s from "../item/css/ItemPage.module.css";
 
 export default function ItemPage() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [categories, setCategories] = useState([]); // 카테고리 목록 상태
-    const [selectedCategory, setSelectedCategory] = useState(null); // 선택된 카테고리 ID (null: 전체)
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 메뉴 가시성
-    const navigate = useNavigate();
-    const dropdownRef = useRef(null);
 
+    const [categories, setCategories] = useState([
+        { categoryId: null, categoryName: "전체 상품" },
+    ]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            // 드롭다운이 열려있고, 클릭된 요소가 드롭다운 내부에 포함되지 않는 경우
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleOut = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setIsDropdownOpen(false);
             }
         };
+        document.addEventListener("mousedown", handleOut);
+        return () => document.removeEventListener("mousedown", handleOut);
+    }, []);
 
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isDropdownOpen]);
-
-
-
-    // 상품 목록 및 카테고리 목록을 불러오는 useEffect
     useEffect(() => {
-        const loadPageData = async () => {
+        const load = async () => {
             setLoading(true);
             setError(null);
             try {
-                // 1. 카테고리 목록 불러오기
-                const fetchedCategories = await fetchAllCategories();
-                setCategories([{ categoryId: null, categoryName: '전체 상품' }, ...fetchedCategories]); // '전체 상품' 옵션 추가
+                const cats = await fetchAllCategories();
+                setCategories([{ categoryId: null, categoryName: "전체 상품" }, ...cats]);
 
-                // 2. 선택된 카테고리에 따라 상품 불러오기
-                let data;
-                if (selectedCategory === null) {
-                    data = await fetchAllItems();
-                } else {
-                    data = await fetchItemsByCategoryId(selectedCategory);
-                }
-                setItems(data);
-            } catch (err) {
-                setError('현재 판매하는 상품이 없습니다.');
-                console.error('Failed to load page data:', err);
+                const data =
+                    selectedCategory === null
+                        ? await fetchAllItems()
+                        : await fetchItemsByCategoryId(selectedCategory);
+
+                setItems(data || []);
+            } catch (e) {
+                setError("현재 판매하는 상품이 없습니다.");
+                console.error(e);
             } finally {
                 setLoading(false);
             }
         };
+        load();
+    }, [selectedCategory]);
 
-        loadPageData();
-    }, [selectedCategory]); // selectedCategory가 변경될 때마다 재실행
+    // 캐러셀 슬라이드 데이터
+    const slides = useMemo(() => {
+        const top = (items || []).slice(0, 5);
+        if (!top.length) return [];
+        return top.map((it) => ({
+            bg: it.mainImageUrl,
+            title: it.itemName,
+            desc: it.itemPrice
+                ? `${Number(it.itemPrice).toLocaleString()}원 · ${
+                    it.status === "SALE" ? "판매 중" : "품절"
+                }`
+                : "",
+            badge: it.categoryName || "추천",
+            ctaPrimary: { label: "자세히 보기", type: "detail", payload: it.itemId },
+            ctaGhost:
+                it.status === "SALE"
+                    ? { label: "바로 구매", type: "buy", payload: it.itemId }
+                    : null,
+        }));
+    }, [items]);
 
-
-    const handleCategorySelect = (categoryId) => {
-        setSelectedCategory(categoryId);
-        setIsDropdownOpen(false); // 카테고리 선택 후 드롭다운 닫기
+    // 캐러셀 CTA
+    const onHeroAction = (cta) => {
+        if (!cta) return;
+        if (cta.type === "detail") navigate(`/item/${cta.payload}`);
+        if (cta.type === "buy") navigate(`/item/${cta.payload}?buy=1`);
     };
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(prev => !prev);
+    const handleCategorySelect = (id) => {
+        setSelectedCategory(id);
+        setIsDropdownOpen(false);
     };
 
     const handleCartClick = (e, itemName) => {
-        e.stopPropagation(); // 이벤트 전파 중단!
+        e.stopPropagation();
         alert(`장바구니 추가: ${itemName}`);
     };
 
     if (loading) {
-        return <div className={styles.container}>상품 및 카테고리 정보를 불러오는 중...</div>;
-    }
-
-    if (error) {
-        return <div className={styles.container}>
-            <h2 className={styles.pageTitle}>상품 목록</h2>
-
-            {/* 카테고리 드롭다운 박스 */}
-            <div
-                className={styles.categoryContainer}
-                ref={dropdownRef} // ref 연결
-            >
-                <button
-                    className={styles.categoryButton}
-                    onClick={toggleDropdown}
-                >
-                    {categories.find(cat => cat.categoryId === selectedCategory)?.categoryName || '카테고리 선택'} ▼
-                </button>
-                <div className={`${styles.dropdownContent} ${isDropdownOpen ? styles.show : ''}`}>
-                    {categories.map((cat) => (
-                        <div
-                            key={cat.categoryId === null ? 'all' : cat.categoryId}
-                            className={styles.dropdownItem}
-                            onClick={() => handleCategorySelect(cat.categoryId)}
-                        >
-                            {cat.categoryName}
-                        </div>
+        return (
+            <div className={s.container}>
+                <div className={s.skeletonHero} />
+                <div className={s.skeletonGrid}>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className={s.skeletonCard} />
                     ))}
                 </div>
             </div>
-            <div className={styles.container}><p className={styles.error}>{error}</p></div>
-        </div>;
-
+        );
     }
 
     return (
-        <div className={styles.container}>
-            <h2 className={styles.pageTitle}>상품 목록</h2>
+        <div className={s.container}>
+            {/* 히어로 캐러셀 */}
+            <HeroCarousel slides={slides} onAction={onHeroAction} />
 
-            {/* 카테고리 드롭다운 박스 */}
-            <div
-                className={styles.categoryContainer}
-                ref={dropdownRef} // ref 연결
-            >
-                <button
-                    className={styles.categoryButton}
-                    onClick={toggleDropdown}
-                >
-                    {categories.find(cat => cat.categoryId === selectedCategory)?.categoryName || '카테고리 선택'} ▼
-                </button>
-                <div className={`${styles.dropdownContent} ${isDropdownOpen ? styles.show : ''}`}>
-                    {categories.map((cat) => (
-                        <div
-                            key={cat.categoryId === null ? 'all' : cat.categoryId}
-                            className={styles.dropdownItem}
-                            onClick={() => handleCategorySelect(cat.categoryId)}
+            {/* 카테고리 바 */}
+            <div className={s.categoryBarWrap}>
+                <div className={s.categoryBar}>
+                    {categories.map((c) => (
+                        <button
+                            key={c.categoryId === null ? "all" : c.categoryId}
+                            className={`${s.categoryChip} ${
+                                selectedCategory === c.categoryId ? s.active : ""
+                            }`}
+                            onClick={() => handleCategorySelect(c.categoryId)}
                         >
-                            {cat.categoryName}
-                        </div>
+                            {c.categoryName}
+                        </button>
                     ))}
+                </div>
+
+                <div className={s.categoryContainer} ref={dropdownRef}>
+                    <button
+                        className={s.categoryButton}
+                        onClick={() => setIsDropdownOpen((v) => !v)}
+                    >
+                        {categories.find((cat) => cat.categoryId === selectedCategory)
+                            ?.categoryName || "카테고리 선택"}{" "}
+                        ▼
+                    </button>
+                    <div
+                        className={`${s.dropdownContent} ${
+                            isDropdownOpen ? s.show : ""
+                        }`}
+                    >
+                        {categories.map((cat) => (
+                            <div
+                                key={cat.categoryId === null ? "all" : cat.categoryId}
+                                className={s.dropdownItem}
+                                onClick={() => handleCategorySelect(cat.categoryId)}
+                            >
+                                {cat.categoryName}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {items.length === 0 ? (
-                <p>등록된 상품이 없습니다.</p>
+            {/* 리스트 */}
+            {error ? (
+                <p className={s.error}>{error}</p>
+            ) : items.length === 0 ? (
+                <p className={s.error}>등록된 상품이 없습니다.</p>
             ) : (
-                <div className={styles.itemList}>
+                <div className={s.itemList}>
                     {items.map((item) => {
-
                         const thumbnailUrl = item.mainImageUrl;
+                        const priceText =
+                            item.status === "SALE"
+                                ? `${(item.itemPrice || 0).toLocaleString()}원`
+                                : "품절";
 
                         return (
-
                             <div
                                 key={item.itemId}
-                                className={styles.itemCard}
+                                className={s.itemCard}
                                 onClick={() => navigate(`/item/${item.itemId}`)}
                             >
                                 {thumbnailUrl ? (
-                                    <img src={thumbnailUrl} alt={item.itemName} className={styles.itemImage} />
+                                    <img
+                                        src={thumbnailUrl}
+                                        alt={item.itemName}
+                                        className={s.itemImage}
+                                    />
                                 ) : (
-                                    <div className={styles.noImagePlaceholder}>이미지 없음</div>
+                                    <div className={s.noImagePlaceholder}>이미지 없음</div>
                                 )}
 
-                                <div className={styles.itemInfo}>
-                                    <h3 className={styles.itemName}>{item.itemName}</h3>
-                                    <p className={styles.itemPrice}>{item.itemPrice.toLocaleString()}</p>
-                                    <p className={styles.itemStatus}>
-                                        {item.status === 'SALE' ? '판매 중' : '품절'}
-                                    </p>
-                                    <div className={styles.itemActions}>
-
+                                <div className={s.itemInfo}>
+                                    <h3 className={s.itemName}>{item.itemName}</h3>
+                                    <p className={s.itemPrice}>{priceText}</p>
+                                    <div className={s.itemActions}>
                                         <button
-                                            className={styles.cartButton}
-                                            onClick={(e) => handleCartClick(e, item.itemName)} // 수정된 핸들러 연결
-                                            disabled={item.status !== 'SALE'}
+                                            className={s.cartButton}
+                                            onClick={(e) => handleCartClick(e, item.itemName)}
+                                            disabled={item.status !== "SALE"}
                                         >
                                             장바구니 담기
                                         </button>
