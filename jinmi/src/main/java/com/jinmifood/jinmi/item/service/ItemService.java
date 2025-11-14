@@ -11,6 +11,7 @@ import com.jinmifood.jinmi.item.dto.request.UpdateItemRequest;
 import com.jinmifood.jinmi.item.dto.response.ViewItemResponse;
 import com.jinmifood.jinmi.item.repository.CategoryRepository;
 import com.jinmifood.jinmi.item.repository.ItemRepository;
+import com.jinmifood.jinmi.item.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final S3UploaderService s3UploaderService;
+    private final LikeRepository likeRepository;
 
     public List<ViewItemResponse> list(Long itemId) {
         List<Item> itemList = itemRepository.findAllByItemId(itemId);
@@ -159,5 +161,6 @@ public class ItemService {
                 .map(ViewItemResponse::new)
                 .collect(Collectors.toList());
     }
+
 
 }

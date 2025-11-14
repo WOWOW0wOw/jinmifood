@@ -43,33 +43,25 @@ public class ReviewController {
     }
 
     @PostMapping("/remove")
-    public StatusResponseDTO deleteReview(@AuthenticationPrincipal CustomUserDetails userDetails,@RequestParam Long reviewId) {
-
+    public StatusResponseDTO deleteReview(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam Long reviewId) {
         if (userDetails == null) {
-            log.error("@AuthenticationPrincipal userDetails is NULL. 인증 정보가 SecurityContext에 없습니다.");
             throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
         }
         Long userId = userDetails.getId();
-
-        reviewService.deleteReview(reviewId);
-
+        // 서비스 호출 시 userId 전달
+        reviewService.deleteReview(reviewId, userId);
         return StatusResponseDTO.ok("리뷰가 성공적으로 삭제되었습니다.");
     }
 
     @PostMapping("/update")
     public StatusResponseDTO updateReview(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody UpdateReviewRequest request, @RequestParam Long reviewId) {
-
         if (userDetails == null) {
-            log.error("@AuthenticationPrincipal userDetails is NULL. 인증 정보가 SecurityContext에 없습니다.");
             throw new CustomException(ErrorException.INVALID_ACCESS_TOKEN);
         }
         Long userId = userDetails.getId();
-
-        reviewService.updateReview(request,reviewId);
-
+        // 서비스 호출 시 userId 전달
+        reviewService.updateReview(request, reviewId, userId);
         return StatusResponseDTO.ok("리뷰가 성공적으로 수정되었습니다.");
-
-
     }
 
     @GetMapping("/listByItem")
@@ -82,9 +74,7 @@ public class ReviewController {
 
     @GetMapping("/listAll")
     public StatusResponseDTO getAllReviews() {
-
         List<ViewReviewResponse> list = reviewService.getAllReviewList();
-
         return StatusResponseDTO.ok(list);
     }
 
