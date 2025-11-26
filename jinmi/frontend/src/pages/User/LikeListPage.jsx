@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import apiClient from "../../api/apiClient.js";
+import s from "../item/css/ItemPage.module.css";
 
 export default function LikeListPage() {
     const [likeItems, setLikeItems] = useState([]);
@@ -12,7 +13,6 @@ export default function LikeListPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-
         const localAccessToken = localStorage.getItem('accessToken');
         const tokenToUse = accessToken || localAccessToken;
 
@@ -56,34 +56,89 @@ export default function LikeListPage() {
         };
 
         fetchLikes();
-
     }, [accessToken, isAuthLoading]);
 
-    if (loading) return <div>찜 목록 로딩 중...</div>;
-    if (error) return <div>에러: {error}</div>;
+
+    if (loading) {
+        return (
+            <div className={s.container}>
+                <div className={s.skeletonGrid}>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className={s.skeletonCard} />
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={s.container}>
+                <p className={s.error}>{error}</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="like-list-page">
+        <div className={s.container}>
             <h2>나의 찜 목록 ({likeItems.length}개)</h2>
             <hr />
+
             {likeItems.length === 0 ? (
-                <p>아직 찜한 상품이 없습니다. 마음에 드는 상품을 찾아보세요!</p>
+                <p className={s.error}>아직 찜한 상품이 없습니다. 마음에 드는 상품을 찾아보세요!</p>
             ) : (
-                <ul className="like-items-grid">
-                    {likeItems.map(item => (
-                        <li key={item.likeId || item.itemId} className="like-item-card">
+                <div className={s.itemList}>
+                    {likeItems.map(item => {
+                        const itemId = item.itemId;
+                        const thumbnailUrl = item.imageUrl || item.mainImageUrl;
+                        const itemName = item.name || item.itemName;
+                        const itemPrice = item.price || item.itemPrice;
+                        const itemStatus = item.status || 'SALE';
 
-                            <Link to={`/item/${item.itemId}`}>
-                                <img src={item.imageUrl} alt={item.name} className="item-image" />
+                        const priceText = itemStatus === "SALE"
+                            ? `${(itemPrice || 0).toLocaleString()}원`
+                            : "품절";
 
-                                <div className="item-details">
-                                    <p className="item-name">{item.name}</p>
-                                    <p className="item-price">{item.price ? item.price.toLocaleString() : '가격 정보 없음'}원</p>
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+
+                        return (
+                            <div
+                                key={item.likeId || itemId}
+                                className={s.itemCard}
+                                onClick={() => navigate(`/item/${itemId}`)}
+                            >
+                                <Link to={`/item/${itemId}`}>
+                                    {thumbnailUrl ? (
+                                        <img
+                                            src={thumbnailUrl}
+                                            alt={itemName}
+                                            className={s.itemImage}
+                                        />
+                                    ) : (
+                                        <div className={s.noImagePlaceholder}>이미지 없음</div>
+                                    )}
+
+                                    <div className={s.itemInfo}>
+                                        <h3 className={s.itemName}>{itemName}</h3>
+                                        <p className={s.itemPrice}>{priceText}</p>
+                                        <div className={s.itemActions}>
+                                            <button
+                                                className={s.cartButton}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    alert(`장바구니 추가: ${itemName}`);
+                                                }}
+                                                disabled={itemStatus !== 'SALE'}
+                                            >
+                                                장바구니 담기
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                        );
+                    })}
+                </div>
             )}
         </div>
     );
