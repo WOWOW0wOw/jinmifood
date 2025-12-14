@@ -18,7 +18,7 @@ import FindPassword from "./pages/User/FindPassword.jsx";
 import OAuth2RedirectHandler from "./pages/User/OAuth2RedirectHandler.jsx";
 import Home from "./components/Home.jsx";
 import LikeListPage from "./pages/User/LikeListPage.jsx";
-// import OrderPage from "./pages/User/OrderPage.jsx";
+import OrderPage from "./pages/User/OrderPage.jsx";
 
 const About    = () => <div className="page">회사소개</div>
 
@@ -43,7 +43,8 @@ export default function App() {
                 <Route path="/findPassword" element={<FindPassword />} />
                 <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
                 <Route path="/mypage/likes" element={<LikeListPage />} />
-                {/*<Route path="/mypage/order" element={<OrderPage />} />*/}
+                <Route path="/mypage/order" element={<OrderPage />} />
+
 
             </Routes>
             <Footer />

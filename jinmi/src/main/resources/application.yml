@@ -84,6 +84,7 @@ logging:
     com.jinmifood.jinmi: debug
     org.springframework.security: debug
 
+
 summarization:
   chunk:
     size: 1500
