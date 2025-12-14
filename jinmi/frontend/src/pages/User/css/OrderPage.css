@@ -1,0 +1,150 @@
+/* OrderPage.css */
+.order-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+.order-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #111;
+}
+
+.order-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f3f4f6;
+    margin-bottom: 16px;
+}
+
+.order-date {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+.order-status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.order-content {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.order-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 8px;
+    object-fit: cover;
+    background-color: #f9fafb;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-item-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #111;
+}
+
+.order-item-option {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.order-price-qty {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.order-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-cancel {
+    padding: 8px 14px;
+    background-color: #fff;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #fef2f2;
+}
+
+.btn-detail {
+    padding: 8px 14px;
+    background-color: #f3f4f6;
+    border: none;
+    color: #4b5563;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+}
+.order-content.clickable {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.order-content.clickable:hover {
+    opacity: 0.7; /* 마우스 올리면 살짝 투명해짐 */
+}
+
+.order-item-name:hover {
+    text-decoration: underline; /* 상품명에 밑줄 */
+}

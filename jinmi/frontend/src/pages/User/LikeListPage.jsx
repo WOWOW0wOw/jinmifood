@@ -81,7 +81,7 @@ export default function LikeListPage() {
 
     return (
         <div className={s.container}>
-            <h2>나의 찜 목록 ({likeItems.length}개)</h2>
+            <h2>나의 찜 목록</h2>
             <hr />
 
             {likeItems.length === 0 ? (

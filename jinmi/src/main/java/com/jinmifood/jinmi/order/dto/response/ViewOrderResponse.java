@@ -19,6 +19,7 @@ public class ViewOrderResponse {
     private OrderStatus orderStatus;
     private String orderCode;
     private String orderTime;
+    private Long itemId;
 
     public ViewOrderResponse(Orders order) {
         this.itemName = order.getItemName();
@@ -29,5 +30,6 @@ public class ViewOrderResponse {
         this.orderStatus = order.getOrderStatus();
         this.orderCode = order.getOrderCode();
         this.orderTime = order.getOrderTime();
+        this.itemId = order.getItemId();
     }
 }
