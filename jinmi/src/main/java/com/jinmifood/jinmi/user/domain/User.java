@@ -31,7 +31,7 @@ public class User {
     private String address; // 주소
 
     @Column
-    private long pointId; // 포인트 id 포인트 테이블 참조
+    private Long pointId; // 포인트 id 포인트 테이블 참조
 
     @Column(nullable = false)
     private String displayName; // 닉네임

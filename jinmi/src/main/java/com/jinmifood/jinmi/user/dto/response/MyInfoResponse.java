@@ -15,6 +15,7 @@ public class MyInfoResponse {
     private String phoneNumber;
     private String address;
     private String provider;
+    private String role;
 
     public static MyInfoResponse from(User user){
         return new MyInfoResponse(
@@ -23,7 +24,8 @@ public class MyInfoResponse {
                 user.getDisplayName(),
                 user.getPhoneNumber(),
                 user.getAddress(),
-                user.getProvider()
+                user.getProvider(),
+                user.getRole() != null ? user.getRole().name() : "USER"
         );
     }
 }

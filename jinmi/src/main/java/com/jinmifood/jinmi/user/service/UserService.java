@@ -128,6 +128,13 @@ public class UserService {
 
     @Transactional(readOnly = false)
     public TokenResponse login(LoginUserRequest request) {
+        User userForDebug = userRepository.findByEmail(request.getEmail()).orElse(null);
+        if (userForDebug != null) {
+            log.info("입력된 비번: {}", request.getPassword());
+            log.info("DB에 저장된 해시: [{}]", userForDebug.getPassword());
+            log.info("비번 일치 여부: {}", passwordEncoder.matches(request.getPassword(), userForDebug.getPassword()));
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
         Authentication authentication;

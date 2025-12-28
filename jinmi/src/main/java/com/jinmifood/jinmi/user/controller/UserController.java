@@ -191,4 +191,5 @@ public class UserController {
         log.info("이메일 중복 확인: {} 이메일 사용 가능", email);
         return StatusResponseDTO.ok("사용가능한 이메일 입니다 ");
     }
+
 }

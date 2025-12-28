@@ -8,7 +8,12 @@ export default function Header({ cartCnt = 0 }) {
 
     const { isLoggedIn, user, handleLogout } = useAuth();
 
+    console.log("현재 로그인 유저 정보:", user);
+    console.log("isAdmin 판정 결과:", user?.role?.toUpperCase() === 'ADMIN');
+
     const displayName = user?.displayName || '회원';
+
+    const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
     return (
         <header className="hd">
             {/* 상단 바: 우측 정렬 */}
@@ -29,6 +34,14 @@ export default function Header({ cartCnt = 0 }) {
                                     <li role="none">
                                         <Link role="menuitem" to="/mypage/order">주문 내역</Link>
                                     </li>
+
+                                    {isAdmin && (
+                                        <li role="none" className="admin-menu-item">
+                                            <Link role="menuitem" to="/admin" style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                                                ⚙️ 관리자 모드
+                                            </Link>
+                                        </li>
+                                    )}
                                     <li role="none">
                                         <button
                                             role="menuitem"
