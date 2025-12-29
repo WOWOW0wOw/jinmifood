@@ -20,6 +20,10 @@ import Home from "./components/Home.jsx";
 import LikeListPage from "./pages/User/LikeListPage.jsx";
 import OrderPage from "./pages/User/OrderPage.jsx";
 import AdminPage from "./pages/Admin/AdminPage.jsx";
+import MemberList from "./pages/Admin/User/MemberList.jsx";
+import AccessStats from "./pages/Admin/User/AccessStats.jsx";
+import AccessSearch from "./pages/Admin/User/AccessSearch.jsx";
+
 
 const About    = () => <div className="page">회사소개</div>
 
@@ -45,7 +49,11 @@ export default function App() {
                 <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
                 <Route path="/mypage/likes" element={<LikeListPage />} />
                 <Route path="/mypage/order" element={<OrderPage />} />
-                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin" element={<AdminPage />}>
+                    <Route index element={<MemberList />} />
+                    <Route path="stats" element={<AccessStats />} />
+                    <Route path="search" element={<AccessSearch />} />
+                </Route>
 
 
             </Routes>

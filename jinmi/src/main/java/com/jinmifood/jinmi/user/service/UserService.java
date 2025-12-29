@@ -27,7 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.jinmifood.jinmi.common.constant.ReservedKeywords;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -580,4 +583,26 @@ public class UserService {
     }
 
 
+
+    // 관리자 모드
+
+    // 전체 회원 목록
+    @Transactional(readOnly = true)
+    public List<AdminUserAllResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(AdminUserAllResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    // 특정 회원 삭제
+    @Transactional
+    public void forceDeleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorException.USER_NOT_FOUND));
+
+        userRepository.delete(user);
+        log.info("관리자에 의해 회원 삭제 완료: ID={}", userId);
+    }
 }

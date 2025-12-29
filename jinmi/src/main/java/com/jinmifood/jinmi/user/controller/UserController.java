@@ -12,10 +12,7 @@ import com.jinmifood.jinmi.user.dto.request.JoinUserRequest;
 import com.jinmifood.jinmi.user.dto.request.LoginUserRequest;
 import com.jinmifood.jinmi.user.dto.request.PasswordResetRequest;
 import com.jinmifood.jinmi.user.dto.request.UpdateMyInfoRequest;
-import com.jinmifood.jinmi.user.dto.response.FindIdResponse;
-import com.jinmifood.jinmi.user.dto.response.JoinUserResponse;
-import com.jinmifood.jinmi.user.dto.response.MyInfoResponse;
-import com.jinmifood.jinmi.user.dto.response.TokenResponse;
+import com.jinmifood.jinmi.user.dto.response.*;
 import com.jinmifood.jinmi.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -190,6 +189,19 @@ public class UserController {
 
         log.info("이메일 중복 확인: {} 이메일 사용 가능", email);
         return StatusResponseDTO.ok("사용가능한 이메일 입니다 ");
+    }
+
+    // 관리자모드
+    @GetMapping("/all")
+    public StatusResponseDTO getAllUsers() {
+        List<AdminUserAllResponse> userList = userService.getAllUsers();
+        return StatusResponseDTO.ok(userList);
+    }
+
+    @DeleteMapping("/admin/delete/{userId}")
+    public StatusResponseDTO deleteUser(@PathVariable Long userId) {
+        userService.forceDeleteUser(userId);
+        return StatusResponseDTO.ok("해당 회원이 강제 삭제되었습니다.");
     }
 
 }

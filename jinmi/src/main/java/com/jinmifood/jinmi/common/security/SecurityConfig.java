@@ -120,11 +120,14 @@ public class SecurityConfig {
 
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/all", "/users/admin/delete/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
                         .requestMatchers("/error").permitAll()
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합
                         .requestMatchers(
                                 // 내 정보 조회 및 수정
-                                "/users/myInfo", "/users/myUpdateInfo",
+                                "/users/myInfo",
+                                "/users/myUpdateInfo",
 
                                 // 로그아웃, 회원탈퇴
                                 "/users/logout", "/users/delete",
