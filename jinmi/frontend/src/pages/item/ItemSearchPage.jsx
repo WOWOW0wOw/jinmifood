@@ -1,4 +1,3 @@
-// ItemSearchPage.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { fetchItemsBySearch } from "../../api/itemApi";

@@ -404,6 +404,40 @@
     border-color: #8c5f21;
 }
 
+
+/* 우측 하단 플로팅 카카오톡 문의 버튼 */
+.kakao-floating-btn {
+    position: fixed;
+    right: 80px;
+    bottom: 80px;
+    width: 60px;
+    height: 60px;
+    background: #fee500; /* 카카오톡 공식 노란색 */
+    color: #3c1e1e; /* 카카오톡 글자색 */
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: floatingPulse 2s infinite;
+}
+
+.kakao-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 부드러운 펄스 애니메이션 */
+@keyframes floatingPulse {
+    0% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+    50% { box-shadow: 0 4px 20px rgba(254, 229, 0, 0.6); }
+    100% { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+}
+
 /* ========================================
    반응형
    ======================================== */
@@ -414,6 +448,12 @@
 }
 
 @media (max-width: 720px) {
+    .kakao-floating-btn {
+        right: 16px;
+        bottom: 16px;
+        width: 56px;
+        height: 56px;
+    }
     .hd__container {
         height: 40px;
     }
