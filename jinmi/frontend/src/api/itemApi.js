@@ -72,4 +72,17 @@ export const addItem = async (itemData) => {
         throw error;
     }
 };
+
 */
+
+export const fetchItemsBySearch = async (keyword) => {
+    try {
+        const response = await apiClient.get('/items/searchItem', {
+            params: { itemName: keyword }
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('검색 실패:', error);
+        throw error;
+    }
+};

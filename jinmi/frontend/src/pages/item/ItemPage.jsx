@@ -39,6 +39,7 @@ export default function ItemPage() {
                     selectedCategory === null
                         ? await fetchAllItems()
                         : await fetchItemsByCategoryId(selectedCategory);
+                console.log("API에서 받아온 전체 상품 데이터:", data);
 
                 setItems(data || []);
             } catch (e) {

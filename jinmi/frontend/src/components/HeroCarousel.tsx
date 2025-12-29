@@ -86,7 +86,12 @@ export default function HeroCarousel() {
             {/* 슬라이드 이미지 배경 */}
             <div
                 className="heroCarousel__bg"
-                style={{ backgroundImage: `url(${slide.bg})` }}
+                style={{
+                    backgroundImage: `url("${encodeURI(slide.bg)}")`,  // 한글/공백 방지
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat"
+                }}
             />
 
             {/* 좌우 화살표 */}

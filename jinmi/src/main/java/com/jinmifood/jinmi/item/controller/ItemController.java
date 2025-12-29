@@ -73,5 +73,13 @@ public class ItemController {
         return StatusResponseDTO.ok(item);
     }
 
+    @GetMapping("/searchItem")
+    public StatusResponseDTO searchItem(@RequestParam String itemName) {
+
+
+        List<ViewItemResponse> items = itemService.searchItemsByName(itemName.trim());
+        return StatusResponseDTO.ok(items);
+    }
+
 
 }

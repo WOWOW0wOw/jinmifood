@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,6 +160,18 @@ public class ItemService {
             throw new CustomException(ErrorException.NOT_FOUND);
         }
         return itemList.stream()
+                .map(ViewItemResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ViewItemResponse> searchItemsByName(String keyword) {
+        List<Item> items = itemRepository.findByItemNameContainingIgnoreCase(keyword);
+
+        if (items.isEmpty()) {
+            throw new CustomException(ErrorException.NOT_FOUND);
+        }
+
+        return items.stream()
                 .map(ViewItemResponse::new)
                 .collect(Collectors.toList());
     }
