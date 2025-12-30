@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.mysql:mysql-connector-j' // mysql:mysql-connector-java 대신 최신 의존성 사용
+    runtimeOnly 'com.mysql:mysql-connector-j:8.4.0' // mysql:mysql-connector-java 대신 최신 의존성 사용
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
