@@ -55,6 +55,9 @@ dependencies {
     // AWS S3
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 
+    // 브라우저, OS, 기기 정보 분석용
+    implementation 'eu.bitwalker:UserAgentUtils:1.21'
+
 }
 
 tasks.named('test') {

@@ -120,7 +120,10 @@ public class SecurityConfig {
 
                 // 인가 규칙
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/all", "/users/admin/delete/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/users/all",
+                                "/users/admin/delete/**",
+                                "/api/v1/admin/access-logs/**"
+                                ).hasAnyAuthority("ADMIN", "ROLE_ADMIN")
 
                         .requestMatchers("/error").permitAll()
                         //  인증 불필요 (permitAll) 경로를 URL 패턴으로 통합

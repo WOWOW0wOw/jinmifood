@@ -1,0 +1,80 @@
+.font-mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.country-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    background-color: #f0f2f5;
+    border-radius: 12px;
+    font-size: 0.85em;
+}
+
+.browser-tag {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.url-code {
+    background-color: #f8f9fa;
+    color: #d63384;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+
+.text-left {
+    text-align: left !important;
+    padding-left: 20px !important;
+}
+
+.period-filter {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 8px 15px;
+    border-radius: 30px; /* 둥근 캡슐 모양 */
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 10px;
+}
+
+.separator {
+    color: #999;
+    font-weight: bold;
+}
+
+.date-picker {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+
+.btn-reset {
+    background: #f0f0f0;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.text-blue {
+    color: #2563eb;
+}
